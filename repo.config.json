@@ -1,5 +1,5 @@
 {
-	"name": "My Plugin Repository",
-	"description": "Example plugin repository from the Valenced plugin template.",
+	"name": "Toad\u2019s Valenced Plugins",
+	"description": "JavaScript-only plugins adapted for sideloaded Discord on iOS. Device testing status is documented in the source repository.",
 	"channels": {}
 }

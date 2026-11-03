@@ -1,0 +1,23 @@
+{
+	"format": 1,
+	"id": "thetoadsage.message-logger",
+	"name": "Message Logger for iOS",
+	"description": "Temporarily retains deleted messages, removed attachments, and edit history. JavaScript-only adaptation for Valenced.",
+	"author": "thetoadsage",
+	"contributors": [
+		"Palm (https://github.com/PalmDevs \"Original Valenced Message Logger\")",
+		"Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
+	],
+	"version": "0.1.0",
+	"dependencies": {
+		"valenced.api": {
+			"version": ">=1 <2"
+		},
+		"discord": {
+			"version": ">=352.0 <353.0"
+		}
+	},
+	"dist": {
+		"script": "index.js"
+	}
+}

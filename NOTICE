@@ -1,0 +1,17 @@
+Message Logger for iOS
+
+Derived from Valenced Community Plugins' Message Logger by Palm and contributors:
+https://github.com/Valenced/valenced-community-plugins/tree/a83abd65971e6f7f771fad77030c8d02fc9fb954/plugins/message-logger
+The mobile interception, settings and action-sheet integration are adapted from this source.
+
+Behavior and portions of ignore-filter and nonce-protection logic adapted from Vencord:
+Vencord, a modification for Discord's desktop app
+Copyright (c) 2022 Vendicated and contributors
+https://github.com/Vendicated/Vencord/tree/main/src/plugins/messageLogger
+Vencord's source is licensed under GPL-3.0-or-later.
+
+Adaptations by thetoadsage: JavaScript-only iOS rendering, mobile history viewer,
+Discord 352.0 support, lifecycle cleanup, filtering and integration tests.
+
+Distributed under GNU GPL version 3. The full license is included as LICENSE.
+No affiliation with Discord or endorsement by the upstream projects is implied.
