@@ -49,7 +49,7 @@ interface Intl {
 const DeleteMessageKeys = ['xwMqD7', 'MWMcg7']
 
 export function patchMessageActionSheet(onError: (e: unknown) => void) {
-	let unpatch: (() => void) | undefined
+	const unpatches: Array<() => void> = []
 	let intl: Intl | undefined
 
 	const unsubscribeIntl = getModules(
@@ -65,36 +65,38 @@ export function patchMessageActionSheet(onError: (e: unknown) => void) {
 		withName<LongPressMessageActionSheet>('LongPressMessageActionSheet'),
 		mod => {
 			const module = mod as { default: LongPressMessageActionSheet }
-			unpatch = instead(module, 'default', (args, Sheet) => {
-				const tree = Reflect.apply(Sheet, undefined, args) as Element
+			unpatches.push(
+				instead(module, 'default', (args, Sheet) => {
+					const tree = Reflect.apply(Sheet, undefined, args) as Element
 
-				try {
-					const [{ message, channel }] = args
-					const log = getLog(message.id)
+					try {
+						const [{ message, channel }] = args
+						const log = getLog(message.id)
 
-					// It can't be deleted again
-					if (log?.deleted && intl)
-						removeFromActionSheet(
-							tree,
-							new Set(
-								DeleteMessageKeys.map(key => intl!.intl.string(intl!.t[key])),
-							),
-						)
+						// It can't be deleted again
+						if (log?.deleted && intl)
+							removeFromActionSheet(
+								tree,
+								new Set(
+									DeleteMessageKeys.map(key => intl!.intl.string(intl!.t[key])),
+								),
+							)
 
-					if (log)
-						addToActionSheet(
-							tree,
-							<MessageActions
-								message={message}
-								guildId={channel?.guild_id ?? undefined}
-							/>,
-						)
-				} catch (e) {
-					onError(e)
-				}
+						if (log)
+							addToActionSheet(
+								tree,
+								<MessageActions
+									message={message}
+									guildId={channel?.guild_id ?? undefined}
+								/>,
+							)
+					} catch (e) {
+						onError(e)
+					}
 
-				return tree
-			})
+					return tree
+				}),
+			)
 		},
 		{ returnNamespace: true },
 	)
@@ -102,12 +104,12 @@ export function patchMessageActionSheet(onError: (e: unknown) => void) {
 	return () => {
 		unsubscribeIntl()
 		unsubscribe()
-		unpatch?.()
+		for (const unpatch of unpatches.reverse()) unpatch()
 	}
 }
 
 export function patchChannelActionSheet(onError: (e: unknown) => void) {
-	let unpatch: (() => void) | undefined
+	const unpatches: Array<() => void> = []
 	const wrappers = new WeakMap<ChannelActionSheet, ChannelActionSheet>()
 
 	// Runs the inner sheet as part of the wrapper's render, so its hooks still work
@@ -142,33 +144,35 @@ export function patchChannelActionSheet(onError: (e: unknown) => void) {
 		withName<ChannelActionSheet>('ChannelLongPressActionSheet'),
 		mod => {
 			const module = mod as { default: ChannelActionSheet }
-			unpatch = instead(module, 'default', (args, Sheet) => {
-				const tree = Reflect.apply(
-					Sheet,
-					undefined,
-					args,
-				) as ReactElement<ChannelActionSheetProps> | null
+			unpatches.push(
+				instead(module, 'default', (args, Sheet) => {
+					const tree = Reflect.apply(
+						Sheet,
+						undefined,
+						args,
+					) as ReactElement<ChannelActionSheetProps> | null
 
-				// The action sheet is rendered by an inner component
-				const Inner = tree?.type
-				if (
-					typeof Inner !== 'function' ||
-					Inner.name !== 'ChannelLongPressActionSheetConnected'
-				)
-					return tree
+					// The action sheet is rendered by an inner component
+					const Inner = tree?.type
+					if (
+						typeof Inner !== 'function' ||
+						Inner.name !== 'ChannelLongPressActionSheetConnected'
+					)
+						return tree
 
-				return createElement(wrap(Inner as ChannelActionSheet), {
-					...tree!.props,
-					key: tree!.key,
-				})
-			})
+					return createElement(wrap(Inner as ChannelActionSheet), {
+						...tree!.props,
+						key: tree!.key,
+					})
+				}),
+			)
 		},
 		{ returnNamespace: true },
 	)
 
 	return () => {
 		unsubscribe()
-		unpatch?.()
+		for (const unpatch of unpatches.reverse()) unpatch()
 	}
 }
 

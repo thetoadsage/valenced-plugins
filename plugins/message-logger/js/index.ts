@@ -58,6 +58,7 @@ export default plugin<{ jsonStorage: Settings }>({
 						}),
 					)
 				},
+				{ max: 1 },
 			),
 		)
 	},

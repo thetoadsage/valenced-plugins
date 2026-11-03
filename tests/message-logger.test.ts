@@ -126,10 +126,14 @@ function harness(t: any, settings: any = {}) {
 					withName: (name: string) => ({ name }),
 					withProps: (...props: string[]) => ({ props }),
 				},
-				getModules: (filter: any, cb: any) => {
+				getModules: (filter: any, cb: any, options: any = {}) => {
 					let active = true
 					if (filter.name === 'RowManager')
-						pending.push(() => active && cb(RowManager))
+						pending.push(() => {
+							if (!active) return
+							cb(RowManager)
+							if (options.max !== 1) cb(RowManager)
+						})
 					if (filter.name === 'LongPressMessageActionSheet')
 						pending.push(() => active && cb(sheet))
 					return () => {
