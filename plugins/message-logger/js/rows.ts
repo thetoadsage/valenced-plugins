@@ -40,6 +40,7 @@ export function styleRow(
 	const log = getLog(message.id)
 	if (!log) return
 	const prefix: ContentNode[] = []
+	if (log.ghostPing) prefix.push(text('[Ghost ping] '))
 	if (log.deleted && log.highlighted) prefix.push(text('[Deleted] '))
 	if (log.removedAttachments.size && log.highlighted)
 		prefix.push(

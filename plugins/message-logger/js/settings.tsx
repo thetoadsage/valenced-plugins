@@ -34,14 +34,21 @@ export default function SettingsComponent({
 	const ignoredGuilds = setting('ignoreGuilds')
 	const [query, setQuery] = useState('')
 	const [limit, setLimit] = useState(50)
-	const [status, setStatus] = useState<'All' | 'Deleted' | 'Edited'>('All')
+	const [status, setStatus] = useState<
+		'All' | 'Deleted' | 'Edited' | 'Ghost pings'
+	>('All')
 	useEffect(() => {
 		archive?.applyRetention()
 		return archive?.subscribe(() => update(value => value + 1))
 	}, [])
 	const view = archive?.view()
 	const logs = (view?.entries ?? []).filter(entry => {
-		if (status !== 'All' && entry.deleted !== (status === 'Deleted'))
+		if (status === 'Ghost pings' && !entry.ghostPing) return false
+		if (
+			status !== 'All' &&
+			status !== 'Ghost pings' &&
+			entry.deleted !== (status === 'Deleted')
+		)
 			return false
 		const text = [
 			entry.id,
@@ -66,10 +73,15 @@ export default function SettingsComponent({
 	const retentionDays = setting('retentionDays')
 	const maxMessages = setting('maxMessages')
 	const maxStorageMiB = setting('maxStorageMiB')
+	const saveAttachments = setting('saveAttachments')
+	const maxAttachmentMiB = setting('maxAttachmentMiB')
+	const maxMediaMiB = setting('maxMediaMiB')
 	const [draft, setDraft] = useState({
 		retentionDays: String(retentionDays),
 		maxMessages: String(maxMessages),
 		maxStorageMiB: String(maxStorageMiB),
+		maxAttachmentMiB: String(maxAttachmentMiB),
+		maxMediaMiB: String(maxMediaMiB),
 	})
 	const [retentionError, setRetentionError] = useState('')
 	const retention = (key: keyof typeof draft, value: string) =>
@@ -79,12 +91,16 @@ export default function SettingsComponent({
 			retentionDays: Number(draft.retentionDays),
 			maxMessages: Number(draft.maxMessages),
 			maxStorageMiB: Number(draft.maxStorageMiB),
+			maxAttachmentMiB: Number(draft.maxAttachmentMiB),
+			maxMediaMiB: Number(draft.maxMediaMiB),
 		}
 		if (
 			Object.values(values).some(n => !Number.isInteger(n) || n < 1) ||
 			values.retentionDays > 3650 ||
 			values.maxMessages > 10000 ||
-			values.maxStorageMiB > 20
+			values.maxStorageMiB > 20 ||
+			values.maxAttachmentMiB > 10 ||
+			values.maxMediaMiB > 50
 		) {
 			setRetentionError('Enter whole numbers within the ranges shown.')
 			return
@@ -173,7 +189,7 @@ export default function SettingsComponent({
 									? 'Sign in to view this account’s history.'
 									: view.saving
 										? 'Saving history…'
-										: 'Stored on this iPhone for this account. Attachment files are not downloaded.')
+										: 'Stored on this iPhone for this account. Saved files have a separate storage limit.')
 							}
 							disabled
 						/>
@@ -196,7 +212,9 @@ export default function SettingsComponent({
 									? 'Deleted'
 									: status === 'Deleted'
 										? 'Edited'
-										: 'All',
+										: status === 'Edited'
+											? 'Ghost pings'
+											: 'All',
 							)
 							setLimit(50)
 						}}
@@ -216,7 +234,7 @@ export default function SettingsComponent({
 						{logs.slice(0, limit).map(entry => (
 							<TableRow
 								key={entry.id}
-								label={`${entry.deleted ? 'Deleted' : 'Edited'} · ${entry.message.author.global_name || entry.message.author.username || entry.message.author.id}`}
+								label={`${entry.ghostPing ? 'Ghost ping' : entry.deleted ? 'Deleted' : 'Edited'} · ${entry.message.author.global_name || entry.message.author.username || entry.message.author.id}`}
 								subLabel={`${entry.channelName} · ${new Date(entry.savedAt).toLocaleString()}\n${entry.message.content.slice(0, 160) || '(Attachment or empty message)'}`}
 								onPress={() => openArchiveHistory(entry)}
 							/>
@@ -251,6 +269,47 @@ export default function SettingsComponent({
 						value={draft.maxStorageMiB}
 						onChange={value => retention('maxStorageMiB', value)}
 					/>
+					<TableRowGroup title="Saved attachment files">
+						<TableSwitchRow
+							label="Download deleted attachments"
+							value={saveAttachments}
+							subLabel="Off by default. Saves files from deleted messages and removed attachments while Discord runs. Downloads use your network connection. Turning this off keeps existing saved files."
+							onValueChange={async value => {
+								await storage.set({ saveAttachments: value })
+								archive?.applyRetention()
+							}}
+						/>
+						<TableRow
+							label={`${archive?.media()?.usage().count ?? 0} saved files`}
+							subLabel={`${((archive?.media()?.usage().bytes ?? 0) / 1024 / 1024).toFixed(1)} MiB used. Files are stored locally; the cache limit includes encoding overhead. Oldest files are removed when full, and files follow message retention.`}
+							disabled
+						/>
+					</TableRowGroup>
+					<TextInput
+						label="Maximum download size per file in MiB (1–10)"
+						value={draft.maxAttachmentMiB}
+						onChange={value => retention('maxAttachmentMiB', value)}
+					/>
+					<TextInput
+						label="Maximum saved-file storage in MiB (1–50)"
+						value={draft.maxMediaMiB}
+						onChange={value => retention('maxMediaMiB', value)}
+					/>
+					<Button
+						text="Retry attachment downloads"
+						variant="secondary"
+						onPress={() => archive?.media()?.retry()}
+					/>
+					<Button
+						text="Clear saved attachment files"
+						variant="destructive"
+						onPress={() =>
+							confirmClearHistory(() => {
+								void archive?.media()?.clear()
+							}, true)
+						}
+					/>
+
 					{retentionError && <TableRow label={retentionError} disabled />}
 					<Button
 						text="Apply retention limits now"

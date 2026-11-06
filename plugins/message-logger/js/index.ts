@@ -34,6 +34,7 @@ export default plugin<{ jsonStorage: Settings }>({
 		})
 		cleanup(() => {
 			appState.remove()
+			history.stopDownloads()
 			setArchive(undefined)
 		})
 		cleanup(

@@ -9,6 +9,8 @@ export interface Attachment {
 	id: string
 	filename?: string
 	url?: string
+	size?: number
+	content_type?: string
 }
 
 export interface MessageRecord {
@@ -22,6 +24,8 @@ export interface MessageRecord {
 	nonce?: string
 	timestamp?: string
 	edited_timestamp?: string
+	mentions?: Array<string | { id: string }>
+	capturedAt?: number
 }
 
 export interface Log {
@@ -31,6 +35,9 @@ export interface Log {
 	highlighted: boolean
 	/** Previous versions, oldest first */
 	edits: MessageRecord[]
+	editTimes: number[]
+	capturedAt?: number
+	ghostPing?: boolean
 	removedAttachments: Set<string>
 }
 
@@ -52,6 +59,8 @@ interface UpdatePayload {
 		channel_id: string
 		content?: string
 		attachments?: Attachment[]
+		mentions?: MessageRecord['mentions']
+		edited_timestamp?: string
 	}
 }
 
@@ -85,6 +94,7 @@ function logOf({ id, channel_id }: MessageRecord) {
 			deleted: false,
 			highlighted: true,
 			edits: [],
+			editTimes: [],
 			removedAttachments: new Set(),
 		}
 		logs.set(id, log)
@@ -126,6 +136,13 @@ function keepDeleted(channelId: string, id: string, settings: Settings) {
 	if (!shouldLog(record, settings)) return false
 
 	logOf(record).deleted = true
+	const self = AuthenticationStore().getId()
+	logOf(record).ghostPing =
+		record.author.id !== self &&
+		!!self &&
+		(record.mentions?.some(m => (typeof m === 'string' ? m : m.id) === self) ||
+			record.content.includes(`<@${self}>`) ||
+			record.content.includes(`<@!${self}>`))
 	saveRecord(record)
 	changed.add(id)
 	return true
@@ -305,6 +322,8 @@ export function interceptMessages(settings: () => Settings) {
 				update.content !== record.content
 			) {
 				logOf(record).edits.push(record)
+				logOf(record).editTimes.push(Date.now())
+				logOf(record).editTimes = logOf(record).editTimes.slice(-50)
 				logOf(record).edits = logOf(record).edits.slice(-50)
 				changed.add(record.id)
 			}
@@ -320,7 +339,14 @@ export function interceptMessages(settings: () => Settings) {
 				logs.has(record.id) &&
 				(update.content !== undefined || update.attachments !== undefined)
 			)
-				saveRecord({ ...snapshot(record), ...update, author: record.author })
+				saveRecord({
+					...snapshot(record),
+					...update,
+					author: record.author,
+					mentions:
+						update.mentions ??
+						(update.content !== undefined ? [] : record.mentions),
+				})
 			return payload
 		}),
 	]
@@ -329,6 +355,7 @@ export function interceptMessages(settings: () => Settings) {
 function saveRecord(record: MessageRecord) {
 	const log = logs.get(record.id)
 	if (!log) return
+	log.capturedAt = Date.now()
 	const channel = (
 		Stores.ChannelStore as DiscordModules.Flux.Store<{
 			getChannel(id: string): { name?: string } | undefined

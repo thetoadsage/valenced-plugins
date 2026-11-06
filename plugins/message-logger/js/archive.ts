@@ -1,5 +1,6 @@
 import { exists, readFile, writeFile } from '@valenced/modules/native/fs'
 import { pluginStorageDirFor } from '@valenced/plugins/constants'
+import { AttachmentCache } from './media'
 import type { Log, MessageRecord } from './logger'
 import type { Settings } from './shared'
 
@@ -9,11 +10,13 @@ export interface ArchivedMessage {
 	channelName: string
 	savedAt: number
 	deleted: boolean
+	ghostPing?: boolean
 	message: MessageRecord
 	edits: MessageRecord[]
 	removedAttachments: string[]
 }
 interface Context {
+	media: AttachmentCache
 	account: string
 	entries: Map<string, ArchivedMessage>
 	pending: Array<() => void>
@@ -60,7 +63,15 @@ export function snapshot(message: MessageRecord): MessageRecord {
 			id: a.id,
 			filename: a.filename?.slice(0, 1000),
 			url: a.url?.slice(0, 4096),
+			size: Number.isFinite(a.size) && a.size! >= 0 ? a.size : undefined,
+			content_type: a.content_type?.slice(0, 200),
 		})),
+		mentions: message.mentions
+			?.slice(0, 100)
+			.map(m => (typeof m === 'string' ? m : m.id)),
+		capturedAt: Number.isFinite(message.capturedAt)
+			? message.capturedAt
+			: undefined,
 		timestamp: date(message.timestamp),
 		edited_timestamp: date(message.edited_timestamp),
 	}
@@ -72,6 +83,13 @@ function validMessage(m: MessageRecord) {
 		typeof m.id === 'string' &&
 		typeof m.channel_id === 'string' &&
 		typeof m.content === 'string' &&
+		(m.capturedAt === undefined ||
+			(Number.isFinite(m.capturedAt) &&
+				m.capturedAt >= 0 &&
+				m.capturedAt <= 8640000000000000)) &&
+		(m.mentions === undefined ||
+			(Array.isArray(m.mentions) &&
+				m.mentions.every(x => typeof x === 'string'))) &&
 		typeof m.flags === 'number' &&
 		!!m.author &&
 		typeof m.author.id === 'string' &&
@@ -83,7 +101,7 @@ function validMessage(m: MessageRecord) {
 			a =>
 				a &&
 				typeof a.id === 'string' &&
-				[a.filename, a.url].every(
+				[a.filename, a.url, a.content_type].every(
 					x => x === undefined || typeof x === 'string',
 				),
 		)
@@ -110,6 +128,7 @@ function decode(text: string, account: string) {
 			e.savedAt < 0 ||
 			e.savedAt > 8640000000000000 ||
 			typeof e.deleted !== 'boolean' ||
+			(e.ghostPing !== undefined && typeof e.ghostPing !== 'boolean') ||
 			!validMessage(e.message) ||
 			e.id !== e.message.id ||
 			e.channelId !== e.message.channel_id ||
@@ -146,12 +165,16 @@ export class MessageArchive {
 	}
 	switchAccount(account?: string) {
 		if (this.current?.account === account) return
+		this.current?.media.pause()
 		this.current = undefined
 		if (account && /^[a-zA-Z0-9_-]+$/.test(account)) {
 			let ctx = this.contexts.get(account)
 			if (!ctx) {
 				ctx = {
 					account,
+					media: new AttachmentCache(account, this.settings, () =>
+						this.notify(),
+					),
 					entries: new Map(),
 					pending: [],
 					loaded: false,
@@ -162,7 +185,10 @@ export class MessageArchive {
 			}
 			this.current = ctx
 		}
-		if (this.current) this.schedule(this.current)
+		if (this.current) {
+			this.current.media.resume()
+			this.schedule(this.current)
+		}
 		this.notify()
 	}
 	private path(ctx: Context) {
@@ -229,6 +255,7 @@ export class MessageArchive {
 					await writeFile(this.path(ctx), contents)
 					await writeFile(`${this.path(ctx)}.bak`, contents)
 					ctx.error = ''
+					ctx.media.sync([...ctx.entries.values()])
 					this.notify()
 				}
 			})
@@ -255,8 +282,12 @@ export class MessageArchive {
 			channelName: channelName.slice(0, 200),
 			savedAt: Date.now(),
 			deleted: log.deleted,
-			message: snapshot(message),
-			edits: log.edits.slice(-50).map(snapshot),
+			ghostPing: !!log.ghostPing,
+			message: { ...snapshot(message), capturedAt: log.capturedAt },
+			edits: log.edits.slice(-50).map((edit, index) => ({
+				...snapshot(edit),
+				capturedAt: log.editTimes[index],
+			})),
 			removedAttachments: [...log.removedAttachments],
 		}
 		this.mutate(ctx => {
@@ -269,10 +300,15 @@ export class MessageArchive {
 					overlap > 0 &&
 					!old
 						.slice(-overlap)
-						.every((m, i) => JSON.stringify(m) === JSON.stringify(incoming[i]))
+						.every(
+							(m, i) =>
+								JSON.stringify({ ...m, capturedAt: undefined }) ===
+								JSON.stringify({ ...incoming[i], capturedAt: undefined }),
+						)
 				)
 					overlap--
 				entry.edits = [...old, ...incoming.slice(overlap)].slice(-50)
+				entry.ghostPing = entry.ghostPing || previous.ghostPing
 			}
 			ctx.entries.set(entry.id, entry)
 		})
@@ -311,6 +347,12 @@ export class MessageArchive {
 		}
 		await Promise.all([...this.contexts.values()].map(ctx => ctx.task))
 	}
+	stopDownloads() {
+		for (const ctx of this.contexts.values()) ctx.media.pause()
+	}
+	media() {
+		return this.current?.media
+	}
 	view() {
 		const ctx = this.current
 		return {
@@ -319,7 +361,7 @@ export class MessageArchive {
 				: [],
 			loading: !!ctx && !ctx.loaded,
 			saving: !!ctx?.task,
-			error: ctx?.error ?? '',
+			error: ctx?.error || ctx?.media.error || '',
 			account: ctx?.account,
 		}
 	}

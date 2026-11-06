@@ -8,8 +8,8 @@ import { withName, withProps } from '@valenced/modules/finders/filters'
 import { instead } from '@valenced/patcher'
 import { lookupGeneratedIconComponent } from '@valenced/utils/discord'
 import { createElement } from 'react'
-import { ScrollView } from 'react-native'
 import { archive } from './archive'
+import { HistoryContent } from './history'
 import {
 	clearChannelLogs,
 	getLog,
@@ -297,38 +297,48 @@ function MessageActions({
 export function openMessageHistory(message: MessageRecord) {
 	const log = getLog(message.id)
 	if (!log) return
-	const versions = log.edits.map(
-		(edit, index) => `Previous version ${index + 1}\n${edit.content}`,
-	)
-	versions.push(
-		`${log.deleted ? 'Deleted message' : 'Current version'}\n${message.content}`,
-	)
-	if (log.removedAttachments.size)
-		versions.push(
-			`${log.removedAttachments.size} removed attachment(s) retained in chat.`,
-		)
+	const entry: ArchivedMessage = {
+		id: message.id,
+		channelId: message.channel_id,
+		channelName: message.channel_id,
+		savedAt: log.capturedAt ?? Date.now(),
+		deleted: log.deleted,
+		ghostPing: log.ghostPing,
+		message: { ...message, capturedAt: log.capturedAt },
+		edits: log.edits.map((m, i) => ({ ...m, capturedAt: log.editTimes[i] })),
+		removedAttachments: [...log.removedAttachments],
+	}
+
 	AlertActionCreators.openAlert(
 		'thetoadsage-message-history',
 		<Design.AlertModal
 			title="Message history"
-			content={versions.join('\n\n')}
+			content={<HistoryContent entry={entry} />}
 			actions={<Design.AlertActionButton variant="primary" text="Done" />}
 		/>,
 	)
 }
 
-export function confirmClearHistory(clear: () => void) {
+export function confirmClearHistory(clear: () => void, filesOnly = false) {
 	const account = archive?.view().account
 	AlertActionCreators.openAlert(
 		'thetoadsage-clear-history',
 		<Design.AlertModal
-			title="Clear this account’s history?"
-			content="This permanently removes saved edits and deletions from this iPhone, including the recovery copy."
+			title={
+				filesOnly
+					? 'Clear saved attachment files?'
+					: 'Clear this account’s history?'
+			}
+			content={
+				filesOnly
+					? 'This removes downloaded files for this account. Message text and links remain saved.'
+					: 'This permanently removes saved edits, deletions, and downloaded files from this iPhone, including the recovery copy.'
+			}
 			actions={
 				<>
 					<Design.AlertActionButton text="Cancel" variant="secondary" />
 					<Design.AlertActionButton
-						text="Clear history"
+						text={filesOnly ? 'Clear files' : 'Clear history'}
 						variant="primary"
 						onPress={() => {
 							if (account && archive?.view().account === account) clear()
@@ -342,33 +352,12 @@ export function confirmClearHistory(clear: () => void) {
 
 export function openArchiveHistory(entry: ArchivedMessage) {
 	const account = archive?.view().account
-	const versions = entry.edits.map(
-		(edit, index) => `Previous version ${index + 1}\n${edit.content}`,
-	)
-	versions.push(
-		`${entry.deleted ? 'Deleted message' : 'Latest captured version'}\n${entry.message.content}`,
-	)
-	const attachments = entry.message.attachments.map(a =>
-		[a.filename || a.id, a.url].filter(Boolean).join('\n'),
-	)
-	if (attachments.length)
-		versions.push(`Attachments (links may expire)\n${attachments.join('\n\n')}`)
+
 	AlertActionCreators.openAlert(
 		'thetoadsage-saved-history',
 		<Design.AlertModal
 			title="Saved message history"
-			content={
-				<ScrollView style={{ maxHeight: 320 }}>
-					<Design.Text selectable variant="text-md/normal">
-						{[
-							`Author: ${entry.message.author.global_name || entry.message.author.username || entry.message.author.id} (${entry.message.author.id})`,
-							`Channel: ${entry.channelName} (${entry.channelId})`,
-							`Saved: ${new Date(entry.savedAt).toLocaleString()}`,
-							...versions,
-						].join('\n\n')}
-					</Design.Text>
-				</ScrollView>
-			}
+			content={<HistoryContent entry={entry} />}
 			actions={
 				<>
 					<Design.AlertActionButton text="Done" variant="primary" />

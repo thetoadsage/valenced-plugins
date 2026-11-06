@@ -2,6 +2,14 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
+function renderText(node: any): string {
+	if (node == null || typeof node === 'boolean') return ''
+	if (typeof node === 'string' || typeof node === 'number') return String(node)
+	if (Array.isArray(node)) return node.map(renderText).join('')
+	if (typeof node.type === 'function') return renderText(node.type(node.props))
+	return renderText(node.props?.children)
+}
+
 const code = readFileSync(
 	new URL('../plugins/message-logger/build/js/index.js', import.meta.url),
 	'utf8',
@@ -23,6 +31,61 @@ function message(id = 'm1', content = 'Original text', extra: any = {}) {
 function harness(t: any, settings: any = {}, config: any = {}) {
 	const disk: Map<string, string> = config.disk ?? new Map()
 	let account = config.account ?? 'self'
+	class MockXHR {
+		readyState = 0
+		status = 0
+		response: any
+		responseURL = ''
+		responseType = ''
+		timeout = 0
+		url = ''
+		done = false
+		onload?: () => void
+		onerror?: () => void
+		onabort?: () => void
+		onprogress?: (value: any) => void
+		onreadystatechange?: () => void
+		open(_method: string, url: string) {
+			this.url = url
+			this.responseURL = url
+		}
+		getResponseHeader() {
+			return String(config.network?.[this.url]?.declaredLength ?? 0)
+		}
+		send() {
+			config.requests?.push(this)
+			if (!config.deferDownloads) Promise.resolve().then(() => this.complete())
+		}
+		complete() {
+			if (this.done) return
+			const reply = config.network?.[this.url]
+			this.readyState = 2
+			this.onreadystatechange?.()
+			if (this.done) return
+			if (!reply) {
+				this.done = true
+				this.onerror?.()
+				return
+			}
+			const bytes = Uint8Array.from(reply.bytes ?? [])
+			this.onprogress?.({
+				loaded: bytes.length,
+				total: bytes.length,
+				lengthComputable: true,
+			})
+			if (this.done) return
+			this.responseURL = reply.redirect ?? this.url
+			this.response = bytes.buffer
+			this.status = reply.status ?? 200
+			this.done = true
+			this.onload?.()
+		}
+		abort() {
+			if (this.done) return
+			this.done = true
+			this.onabort?.()
+		}
+	}
 	const hookState: any[] = []
 	let hookIndex = 0
 	let failWrites = false
@@ -35,6 +98,7 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		writeFile: async (path: string, value: string) => {
 			if (failWrites) throw Error('Disk full')
 			disk.set(path, value)
+			config.writes?.push(path)
 		},
 	}
 
@@ -47,7 +111,7 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 	const channels = new Map([
 		['c1', { id: 'c1', parent_id: 'category', guild_id: 'server' }],
 	])
-	const component = () => null
+	const component = (props: any) => props?.children ?? null
 	const jsx = (type: any, props: any) => ({ type, props })
 	const Design: any = new Proxy(
 		{},
@@ -102,6 +166,20 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 	}
 	const api: any = {
 		discord: {
+			native: {
+				FileModule: {
+					writeFile: async (
+						_dir: string,
+						path: string,
+						data: string,
+						encoding: string,
+					) => {
+						config.exports?.push({ path, data, encoding })
+						return `/cache/${path}`
+					},
+					removeFile: async () => true,
+				},
+			},
 			common: {
 				flux: { Dispatcher: { dispatch } },
 				tokens: {
@@ -196,16 +274,23 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 			ReactJSXRuntime: { jsx, jsxs: jsx },
 			ReactNative: {
 				ScrollView: component,
+				Share: {
+					share: async (value: any) => {
+						config.shares?.push(value)
+					},
+				},
 				AppState: { addEventListener: () => ({ remove() {} }) },
 				processColor: () => 0xffed4245,
 			},
 		},
 	}
 
-	const options = new Function('valenced', 'plugin', `return ${code}`)(
-		api,
-		(options: any) => options,
-	).default
+	const options = new Function(
+		'valenced',
+		'plugin',
+		'XMLHttpRequest',
+		`return ${code}`,
+	)(api, (options: any) => options, MockXHR).default
 	const storage = {
 		cache: { ...options.jsonStorage.default, ...settings },
 		use() {
@@ -479,8 +564,8 @@ test('message history opens from the mobile long-press sheet', t => {
 	const action = h.menu().find(item => item.label === 'View message history')
 	assert.ok(action)
 	action.onPress()
-	assert.match(h.alerts[0].props.content, /Original text/)
-	assert.match(h.alerts[0].props.content, /Updated/)
+	assert.match(renderText(h.alerts[0].props.content), /Original text/)
+	assert.match(renderText(h.alerts[0].props.content), /Updated/)
 })
 
 test('removing history really removes a retained deleted message locally', t => {
@@ -556,14 +641,8 @@ test('archive survives stop/restart and opens history without Discord cache', as
 		.ui()
 		.find(n => n.props?.label === 'Deleted · Alice')
 		.props.onPress()
-	assert.match(
-		reopened.alerts[0].props.content.props.children.props.children,
-		/Original/,
-	)
-	assert.match(
-		reopened.alerts[0].props.content.props.children.props.children,
-		/Updated/,
-	)
+	assert.match(renderText(reopened.alerts[0].props.content), /Original/)
+	assert.match(renderText(reopened.alerts[0].props.content), /Updated/)
 })
 
 test('queues events received during startup, and merges later-session edits', async t => {
@@ -808,5 +887,348 @@ test('wrong-account archive is rejected and can be explicitly cleared', async t 
 	assert.equal(
 		JSON.parse(disk.get('/plugin-data/archive-self.json')!).account,
 		'self',
+	)
+})
+
+const attachmentURL =
+	'https://cdn.discordapp.com/attachments/123/456/file.png?ex=abc&hm=def'
+function attachmentMessage(id = 'm1', extra: any = {}) {
+	return message(id, 'File', {
+		attachments: [
+			{ id: 'a', filename: 'file.png', url: attachmentURL, size: 4, ...extra },
+		],
+	})
+}
+function openSaved(h: any, id = 'm1') {
+	const index = h.saved().findIndex((entry: any) => entry.id === id)
+	const row = h
+		.ui()
+		.filter((n: any) =>
+			/^(Deleted|Edited|Ghost ping) ·/.test(n.props?.label ?? ''),
+		)[index]
+
+	assert.ok(row)
+	row.props.onPress()
+	return renderText(h.alerts.at(-1).props.content)
+}
+
+test('edit history shows source timestamps, capture timestamps and marked word differences', async t => {
+	const h = harness(t)
+	h.records.set(
+		'm1',
+		message('m1', 'Hello old world', { timestamp: '2026-11-06T10:00:00Z' }),
+	)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: {
+			id: 'm1',
+			channel_id: 'c1',
+			content: 'Hello new world',
+			edited_timestamp: '2026-11-06T10:05:00Z',
+		},
+	})
+	await h.settle()
+	const e = h.saved()[0]
+	assert.ok(e.edits[0].capturedAt > 0)
+	assert.ok(e.message.capturedAt > 0)
+	const text = openSaved(h)
+	assert.match(text, /Version time:/)
+	assert.match(text, /Captured:/)
+	assert.match(text, /\[− old\]/)
+	assert.match(text, /\[\+ new\]/)
+})
+
+test('direct ghost pings survive restart and filter separately from ordinary deletions', async t => {
+	const h = harness(t)
+	h.records.set(
+		'm1',
+		message('m1', 'Hi <@self>', { mentions: [{ id: 'self' }] }),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	h.records.set('m2', message('m2', '@everyone', { mentions: [] }))
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm2', channelId: 'c1' })
+	h.records.set(
+		'm3',
+		message('m3', '<@self>', {
+			author: { id: 'self' },
+			mentions: [{ id: 'self' }],
+		}),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm3', channelId: 'c1' })
+	await h.settle()
+	assert.equal(h.saved().find((e: any) => e.id === 'm1').ghostPing, true)
+	assert.ok(!h.saved().find((e: any) => e.id === 'm2').ghostPing)
+	assert.ok(!h.saved().find((e: any) => e.id === 'm3').ghostPing)
+	assert.match(h.text(), /Ghost ping/)
+	h.stop()
+	const next = harness(t, {}, { disk: h.disk })
+	await next.settle()
+	assert.match(openSaved(next), /directly mentioned you/)
+	for (const label of ['All', 'Deleted', 'Edited'])
+		next
+			.ui()
+			.find((n: any) => n.props?.text === `Show: ${label}`)
+			.props.onPress()
+	assert.ok(
+		next.ui().some((n: any) => n.props?.title === '1 matching messages'),
+	)
+})
+
+test('attachment saving is opt-in and binary files survive restart and export exactly', async t => {
+	const requests: any[] = [],
+		exports: any[] = [],
+		shares: any[] = []
+	const off = harness(t, {}, { requests })
+	off.records.set('m1', attachmentMessage())
+	off.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await off.settle()
+	assert.equal(requests.length, 0)
+	off.stop()
+	const on = harness(
+		t,
+		{ saveAttachments: true },
+		{
+			disk: off.disk,
+			requests,
+			exports,
+			shares,
+			network: { [attachmentURL]: { bytes: [0, 1, 128, 255] } },
+		},
+	)
+	await on.settle()
+	assert.equal(requests.length, 1)
+	const media = JSON.parse(on.disk.get('/plugin-data/media-self.json')!)
+	assert.deepEqual(
+		[...Buffer.from(media.files[0].data, 'base64')],
+		[0, 1, 128, 255],
+	)
+	on.stop()
+	const next = harness(t, {}, { disk: on.disk, exports, shares })
+	await next.settle()
+	next
+		.ui()
+		.find((n: any) => n.props?.label === 'Deleted · other')
+		.props.onPress()
+	const content = next.alerts.at(-1).props.content
+	function nodes(node: any): any[] {
+		if (!node || typeof node !== 'object') return []
+		if (Array.isArray(node)) return node.flatMap(nodes)
+		return [
+			node,
+			...nodes(
+				typeof node.type === 'function'
+					? node.type(node.props)
+					: node.props?.children,
+			),
+		]
+	}
+	const button = nodes(content).find(
+		n => n.props?.text === 'Open saved file: file.png',
+	)
+	assert.ok(button)
+	await button.props.onPress()
+	assert.equal(exports[0].encoding, 'base64')
+	assert.deepEqual(
+		[...Buffer.from(exports[0].data, 'base64')],
+		[0, 1, 128, 255],
+	)
+	assert.match(shares[0].url, /^file:\/\/\/cache\//)
+})
+
+test('downloads enforce metadata and streamed size limits and reject non-CDN URLs', async t => {
+	const requests: any[] = []
+	const h = harness(
+		t,
+		{ saveAttachments: true, maxAttachmentMiB: 1 },
+		{
+			requests,
+			network: { [attachmentURL]: { bytes: new Uint8Array(1024 * 1024 + 1) } },
+		},
+	)
+	h.records.set('large', attachmentMessage('large', { size: 2 * 1024 * 1024 }))
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'large', channelId: 'c1' })
+	await h.settle()
+	assert.equal(requests.length, 0)
+	h.records.set(
+		'bad',
+		attachmentMessage('bad', { url: 'https://example.com/file', size: 0 }),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'bad', channelId: 'c1' })
+	await h.settle()
+	assert.equal(requests.length, 0)
+	h.records.set('stream', attachmentMessage('stream', { size: 0 }))
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'stream', channelId: 'c1' })
+	await h.settle()
+	assert.equal(requests.length, 1)
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		0,
+	)
+	assert.match(openSaved(h, 'stream'), /limit/)
+})
+
+test('removing message history deletes cached files and disabling aborts downloads', async t => {
+	const requests: any[] = []
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{ requests, network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } } },
+	)
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		1,
+	)
+	h.menu()
+		.find((n: any) => n.label === 'Remove History')
+		.onPress()
+	await h.settle()
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		0,
+	)
+	const pending: any[] = []
+	const next = harness(
+		t,
+		{ saveAttachments: true },
+		{ requests: pending, deferDownloads: true },
+	)
+	next.records.set('m1', attachmentMessage())
+	next.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await next.settle()
+	assert.equal(pending.length, 1)
+	next.stop()
+	await next.settle()
+	assert.equal(pending[0].done, true)
+	assert.equal(
+		JSON.parse(next.disk.get('/plugin-data/media-self.json')!).files.length,
+		0,
+	)
+})
+
+test('saved-file cache has a separate encoded byte budget and clear action', async t => {
+	const requests: any[] = []
+	const bytes = new Uint8Array(450000)
+	const h = harness(
+		t,
+		{ saveAttachments: true, maxMediaMiB: 1 },
+		{ requests, network: { [attachmentURL]: { bytes } } },
+	)
+	for (const id of ['a', 'b', 'c']) {
+		h.records.set(id, attachmentMessage(id, { size: bytes.length }))
+		h.dispatch({ type: 'MESSAGE_DELETE', id, channelId: 'c1' })
+	}
+	await h.settle()
+	const raw = h.disk.get('/plugin-data/media-self.json')!
+	assert.ok(Buffer.byteLength(raw) <= 1024 * 1024)
+	assert.equal(JSON.parse(raw).files.length, 1)
+	assert.equal(h.saved().length, 3)
+	h.ui()
+		.find((n: any) => n.props?.text === 'Clear saved attachment files')
+		.props.onPress()
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Clear files',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		0,
+	)
+	assert.equal(h.saved().length, 3)
+})
+
+test('cached files stay account-isolated and ordinary text edits do not rewrite file blobs', async t => {
+	const writes: string[] = []
+	const requests: any[] = []
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{ writes, requests, network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } } },
+	)
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const count = writes.filter(p => p.endsWith('media-self.json')).length
+	h.records.set('m2', message('m2', 'before'))
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm2', channel_id: 'c1', content: 'after' },
+	})
+	await h.settle()
+	assert.equal(writes.filter(p => p.endsWith('media-self.json')).length, count)
+	h.dispatch({ type: 'LOGOUT' })
+	h.setAccount('second')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	assert.ok(h.ui().some((n: any) => n.props?.label === '0 saved files'))
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		1,
+	)
+})
+
+test('corrupt attachment cache does not block text history and is preserved until cleared', async t => {
+	const disk = new Map([
+		['/plugin-data/media-self.json', 'corrupted saved files'],
+	])
+	const h = harness(t, { saveAttachments: true }, { disk })
+	h.records.set('m1', message())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	assert.equal(h.saved().length, 1)
+	assert.equal(
+		disk.get('/plugin-data/media-self.json'),
+		'corrupted saved files',
+	)
+	assert.ok(
+		h.ui().some((n: any) => n.props?.subLabel?.includes('could not be read')),
+	)
+	h.ui()
+		.find((n: any) => n.props?.text === 'Clear saved attachment files')
+		.props.onPress()
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Clear files',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.equal(
+		JSON.parse(disk.get('/plugin-data/media-self.json')!).files.length,
+		0,
+	)
+})
+
+test('removed attachments are downloaded and failed URLs retry only on request or refresh', async t => {
+	const requests: any[] = []
+	const network: any = {}
+	const h = harness(t, { saveAttachments: true }, { requests, network })
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', attachments: [] },
+	})
+	await h.settle()
+	assert.equal(requests.length, 1)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'edit' },
+	})
+	await h.settle()
+	assert.equal(requests.length, 1)
+	network[attachmentURL] = { bytes: [1, 2, 3, 4] }
+	h.ui()
+		.find((n: any) => n.props?.text === 'Retry attachment downloads')
+		.props.onPress()
+	await h.settle()
+	assert.equal(requests.length, 2)
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		1,
 	)
 })

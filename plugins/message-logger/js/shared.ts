@@ -1,4 +1,7 @@
 export interface Settings {
+	saveAttachments: boolean
+	maxAttachmentMiB: number
+	maxMediaMiB: number
 	retentionDays: number
 	maxMessages: number
 	maxStorageMiB: number
@@ -14,6 +17,9 @@ export interface Settings {
 }
 
 export const DefaultSettings: Settings = {
+	saveAttachments: false,
+	maxAttachmentMiB: 5,
+	maxMediaMiB: 25,
 	retentionDays: 30,
 	maxMessages: 1000,
 	maxStorageMiB: 5,
