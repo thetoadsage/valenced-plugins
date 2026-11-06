@@ -1,0 +1,16 @@
+{
+	"format": 1,
+	"id": "thetoadsage.no-reply-mention",
+	"name": "No Reply Mention",
+	"description": "Disables reply mentions by default, with optional user and role exceptions.",
+	"author": "thetoadsage",
+	"contributors": [
+		"Vencord contributors (https://github.com/Vendicated/Vencord/tree/main/src/plugins/noReplyMention \"Original plugin\")"
+	],
+	"version": "0.1.0",
+	"dependencies": {
+		"valenced.api": { "version": ">=1 <2" },
+		"discord": { "version": ">=352.0 <353.0" }
+	},
+	"dist": { "script": "index.js" }
+}

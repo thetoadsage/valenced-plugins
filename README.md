@@ -10,9 +10,15 @@ Add this repository URL in Valenced's plugin repository settings:
 https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/index.json
 ```
 
-Install **Toad URL Cleaner** or **Message Logger for iOS** from Browse and enable it. Disable the corresponding original community plugin first to prevent overlapping hooks.
+Install **Toad URL Cleaner**, **Message Logger for iOS**, or **No Reply Mention** from Browse and enable it. Disable the corresponding original community plugin first to prevent overlapping hooks.
 
 Plugin ZIPs are also available as build artifacts. Some iOS builds hide the file installer, so use the repository's Browse screen when available. These are plugin ZIPs, not IPAs; Discord does not need rebuilding.
+
+## No Reply Mention
+
+Defaults reply mentions to off, while keeping Discord's reply mention toggle available for individual replies. In settings, enter comma- or space-separated user and role IDs to control exceptions: by default only listed users and roles are mentioned; turn off **Only mention listed users and roles** to mention everyone except those listed. Role matching requires the member's roles to be available in Discord's local cache. An explicitly disabled mention stays disabled. Replies without a visible mention toggle are left alone. Desktop shift-click behavior is not applicable to iOS.
+
+Targets Discord 352.x and Valenced API 1.x. The mobile reply hooks have local integration coverage but have not been tested on a physical iPhone. Check the mention indicator before sending, particularly if role data is unavailable.
 
 ## Toad URL Cleaner
 
@@ -97,4 +103,6 @@ ZIPs are written to `build/dist`. The public `gh-pages` branch holds versioned p
 
 [Valenced Message Logger](https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/message-logger) by Palm and contributors supplies the mobile foundation. [Vencord MessageLogger](https://github.com/Vendicated/Vencord/tree/main/src/plugins/messageLogger) by Vendicated and contributors supplies the desktop behavior reference. Build tooling comes from the [Valenced plugin template](https://github.com/Valenced/valenced-plugin-template).
 
-GPL version 3. See [LICENSE](LICENSE), [Message Logger notices](NOTICE), and [URL Cleaner notices](plugins/url-cleaner/NOTICE). URL Cleaner packages include the Clipboard Cleaner, ClearURLs, uAssets, and URL parser license texts.
+[Vencord NoReplyMention](https://github.com/Vendicated/Vencord/tree/main/src/plugins/noReplyMention) is the behavior reference for No Reply Mention.
+
+GPL version 3. See [LICENSE](LICENSE), [Message Logger notices](NOTICE), [URL Cleaner notices](plugins/url-cleaner/NOTICE), and [No Reply Mention notices](plugins/no-reply-mention/NOTICE). URL Cleaner packages include the Clipboard Cleaner, ClearURLs, uAssets, and URL parser license texts.
