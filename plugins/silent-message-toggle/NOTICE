@@ -1,0 +1,6 @@
+Silent Message Toggle is an iOS Valenced adaptation of Vencord's
+SilentMessageToggle plugin by Nuckyz, CatNoir, and contributors.
+https://github.com/Vendicated/Vencord/tree/main/src/plugins/silentMessageToggle
+The mobile chat button integration is adapted from Valenced Community Plugins'
+Silent Typing plugin. https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/silent-typing
+Both projects are licensed under GPL-3.0-or-later. See LICENSE.

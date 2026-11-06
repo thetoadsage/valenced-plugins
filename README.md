@@ -7,6 +7,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 | [Message Logger for iOS](#message-logger-for-ios) | Saves deleted messages, edit history, and optionally attachments. |
 | [Toad URL Cleaner](#toad-url-cleaner) | Removes tracking from links copied, sent, or edited in Discord. |
 | [No Reply Mention](#no-reply-mention) | Turns off the automatic ping when replying. |
+| [Silent Message Toggle](#silent-message-toggle) | Sends messages without notifications using a chat button. |
 
 ## Install
 
@@ -20,7 +21,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
+These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention, Silent Message Toggle and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
 
 ## Message Logger for iOS
 
@@ -66,6 +67,10 @@ Turns off the automatic mention when you reply. You can still use Discord's repl
 
 In settings, add comma- or space-separated user and role IDs to control exceptions. By default, only listed users and roles are pinged. Turn off **Only mention listed users and roles** to ping everyone except those listed. Role matching depends on Discord having the member's roles cached. Check the reply mention indicator before sending, especially when role data may be unavailable.
 
+## Silent Message Toggle
+
+Tap the bell in the chat bar to add Discord's `@silent` prefix to the next message. The toggle turns off after sending by default. Settings can keep it enabled after sending or when changing channels. Silent messages suppress notifications, but mentions remain visible in Discord.
+
 ## Development
 
 Use Node 26 and npm:
@@ -84,6 +89,6 @@ To refresh URL Cleaner's rules and reference corpus from a reviewed local [Clipb
 
 ## Credits and license
 
-Message Logger is adapted from [Valenced Community Plugins](https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/message-logger), with [Vencord MessageLogger](https://github.com/Vendicated/Vencord/tree/main/src/plugins/messageLogger) as a behavior reference. No Reply Mention is based on [Vencord NoReplyMention](https://github.com/Vendicated/Vencord/tree/main/src/plugins/noReplyMention). URL Cleaner uses [Clipboard Cleaner](https://github.com/thetoadsage/clipboard-cleaner) rules and Valenced Clear URLs as an integration reference. Build tooling comes from the [Valenced plugin template](https://github.com/Valenced/valenced-plugin-template).
+Message Logger is adapted from [Valenced Community Plugins](https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/message-logger), with [Vencord MessageLogger](https://github.com/Vendicated/Vencord/tree/main/src/plugins/messageLogger) as a behavior reference. No Reply Mention and Silent Message Toggle are based on their Vencord counterparts; the latter uses the [Silent Typing](https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/silent-typing) mobile button integration. URL Cleaner uses [Clipboard Cleaner](https://github.com/thetoadsage/clipboard-cleaner) rules and Valenced Clear URLs as an integration reference. Build tooling comes from the [Valenced plugin template](https://github.com/Valenced/valenced-plugin-template).
 
-GPL-3.0. See [LICENSE](LICENSE) and the notices for [Message Logger](NOTICE), [URL Cleaner](plugins/url-cleaner/NOTICE), and [No Reply Mention](plugins/no-reply-mention/NOTICE).
+GPL-3.0. See [LICENSE](LICENSE) and the notices for [Message Logger](NOTICE), [URL Cleaner](plugins/url-cleaner/NOTICE), [No Reply Mention](plugins/no-reply-mention/NOTICE), and [Silent Message Toggle](plugins/silent-message-toggle/NOTICE).
