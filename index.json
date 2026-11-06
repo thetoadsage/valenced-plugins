@@ -12,7 +12,7 @@
         "Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
       ],
       "channels": {
-        "latest": "0.5.2"
+        "latest": "0.5.3"
       },
       "versions": {
         "0.1.0": {
@@ -97,6 +97,19 @@
           "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.message-logger@0.5.2.zip",
           "sha256": "ec5c5b63cddb25e100e5ff330112899a1b82f30c5fd31fd99451775bed72797a",
           "size": 28356,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <353.0"
+            }
+          }
+        },
+        "0.5.3": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.message-logger@0.5.3.zip",
+          "sha256": "5ea3523c1c5464aa6f7dbcec5b5b9a3faf20399fe0f2324599148f66f623c12e",
+          "size": 28790,
           "dependencies": {
             "valenced.api": {
               "version": ">=1 <2"
