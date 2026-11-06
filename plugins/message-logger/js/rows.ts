@@ -1,9 +1,8 @@
-import { Tokens } from '@valenced/discord/common/tokens'
-import { Stores } from '@valenced/discord/flux'
 import { processColor } from 'react-native'
+import { logColors } from './colors'
 import { getLog, takeChanged } from './logger'
-import type { DiscordModules } from '@valenced/discord/types'
 import type { MessageRecord } from './logger'
+import type { Settings } from './shared'
 
 export interface GenerateArgs {
 	message: MessageRecord
@@ -25,14 +24,13 @@ interface ContentNode {
 export interface RowManager {
 	generate(args: GenerateArgs): MessageRow
 }
-type ThemeStore = DiscordModules.Flux.Store<{ theme: string }>
 const text = (content: string): ContentNode => ({ type: 'text', content })
 
 export function styleRow(
 	row: MessageRow,
 	args: GenerateArgs,
 	generate: (args: GenerateArgs) => MessageRow,
-	inlineEdits: boolean,
+	settings: Settings,
 ) {
 	if (row?.type !== 1 || !row.message) return
 	const message = row.message
@@ -53,24 +51,49 @@ export function styleRow(
 		prefix.push(
 			text(`[${log.removedAttachments.size} removed attachment(s) retained]\n`),
 		)
-	if (inlineEdits && !log.restored)
-		for (const edit of log.edits) {
-			prefix.push(text('[Previous version] '))
+	if (settings.inlineEdits && !log.restored && log.edits.length) {
+		log.edits.forEach((edit, index) => {
+			const time = log.editTimes[index]
+			const date =
+				Number.isFinite(time) && time > 0 && time <= 8640000000000000
+					? new Date(time).toLocaleString()
+					: undefined
 			prefix.push(
-				...(generate({ ...args, message: edit }).message?.content ?? []),
+				text(`[Previous version ${index + 1}${date ? ` · ${date}` : ''}]\n`),
 			)
-			prefix.push(text('\n'))
-		}
-	message.content = [...prefix, ...(message.content ?? [])]
-	if (log.deleted && log.highlighted) {
-		const theme = (Stores.ThemeStore as ThemeStore).theme
-		const { colors, internal } = Tokens.default
-		const color = processColor(
-			internal.resolveSemanticColor(theme, colors.TEXT_FEEDBACK_CRITICAL),
+			// Quote only a display copy. Inheriting the record keeps its native getters/methods intact.
+			const quoted = Object.create(edit) as MessageRecord
+			Object.defineProperty(quoted, 'content', {
+				value: edit.content
+					.split('\n')
+					.map(line => `> ${line}`)
+					.join('\n'),
+				enumerable: true,
+			})
+			prefix.push(
+				...(generate({ ...args, message: quoted }).message?.content ?? []),
+			)
+			prefix.push(text('\n\n'))
+		})
+		prefix.push(
+			text(`[${log.deleted ? 'Deleted version' : 'Current version'}]\n`),
 		)
+	}
+
+	message.content = [...prefix, ...(message.content ?? [])]
+	const colors = logColors(settings)
+	const selected = log.deleted
+		? log.highlighted
+			? colors.deleted
+			: undefined
+		: log.edits.length
+			? colors.edited
+			: undefined
+	if (selected) {
+		const color = processColor(selected)
 		if (typeof color === 'number') {
 			message.textColor = color
-			message.timestampColor = color
+			if (log.deleted) message.timestampColor = color
 		}
 	}
 }

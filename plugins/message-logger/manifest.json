@@ -8,7 +8,7 @@
 		"Palm (https://github.com/PalmDevs \"Original Valenced Message Logger\")",
 		"Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
 	],
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"dependencies": {
 		"valenced.api": {
 			"version": ">=1 <2"

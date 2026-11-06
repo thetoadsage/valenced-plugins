@@ -2,6 +2,7 @@ import { Design } from '@valenced/discord/design'
 import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { archive } from './archive'
+import { getLogColors, subscribeLogColors } from './colors'
 import { wordDiff } from './diff'
 import type { ArchivedMessage } from './archive'
 import type { MessageRecord } from './logger'
@@ -17,6 +18,9 @@ export function versionTime(message: MessageRecord) {
 	return parts.join(' · ') || 'Timestamp unavailable for this older record'
 }
 export function HistoryContent({ entry }: { entry: ArchivedMessage }) {
+	const [, refreshColors] = useState(0)
+	useEffect(() => subscribeLogColors(() => refreshColors(n => n + 1)), [])
+	const colors = getLogColors()
 	const versions = [...entry.edits, entry.message]
 	return (
 		<ScrollView style={{ maxHeight: 400 }}>
@@ -45,7 +49,17 @@ export function HistoryContent({ entry }: { entry: ArchivedMessage }) {
 						<Design.Text variant="text-sm/normal">
 							{versionTime(message)}
 						</Design.Text>
-						<Design.Text selectable variant="text-md/normal">
+						<Design.Text
+							selectable
+							variant="text-md/normal"
+							style={
+								index < entry.edits.length
+									? { color: colors.edited }
+									: entry.deleted
+										? { color: colors.deleted }
+										: undefined
+							}
+						>
 							{message.content || '(Empty message)'}
 						</Design.Text>
 						{index > 0 && versions[index - 1].content !== message.content && (
@@ -58,19 +72,16 @@ export function HistoryContent({ entry }: { entry: ArchivedMessage }) {
 										(part, i) => (
 											<Design.Text
 												key={i}
-												color={
-													part.kind === 'removed'
-														? 'text-feedback-critical'
-														: part.kind === 'added'
-															? 'text-feedback-positive'
-															: undefined
-												}
 												style={
 													part.kind === 'removed'
-														? { textDecorationLine: 'line-through' }
+														? {
+																textDecorationLine: 'line-through',
+																color: colors.deleted,
+															}
 														: part.kind === 'added'
 															? {
 																	fontWeight: 'bold',
+																	color: colors.edited,
 																	textDecorationLine: 'underline',
 																}
 															: undefined

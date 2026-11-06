@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { confirmClearHistory, openArchiveHistory } from './actionsheet'
 import { archive } from './archive'
+import ColorSetting from './ColorSetting'
 import { resetLogs } from './logger'
 import { DefaultSettings } from './shared'
 import type { PluginSettingsComponent } from '@valenced/plugins/types'
@@ -28,6 +29,8 @@ export default function SettingsComponent({
 	const ignoreSelf = setting('ignoreSelf')
 	const ignoreBots = setting('ignoreBots')
 	const inlineEdits = setting('inlineEdits')
+	const deletedColor = setting('deletedColor')
+	const editedColor = setting('editedColor')
 	const restoreDeletions = setting('restoreDeletions')
 	const logDeletedAttachments = setting('logDeletedAttachments')
 	const ignoredUsers = setting('ignoreUsers')
@@ -152,6 +155,28 @@ export default function SettingsComponent({
 							onValueChange={inlineEdits => storage.set({ inlineEdits })}
 						/>
 					</TableRowGroup>
+					<TableRowGroup title="Text colors">
+						<TableRow
+							label="Red for deletions, orange for edits by default"
+							subLabel="Chat applies one color to the whole message row. Previous versions appear as numbered quote blocks with capture times. Deleted rows take precedence over edited rows. In history, previous versions use the edited color and the latest deleted version uses the deleted color. Preview colors against your current theme before applying."
+							disabled
+						/>
+					</TableRowGroup>
+					<ColorSetting
+						label="Deleted text color"
+						value={deletedColor}
+						defaultColor={DefaultSettings.deletedColor}
+						preview="[Deleted] This message was deleted."
+						onChange={color => storage.set({ deletedColor: color })}
+					/>
+					<ColorSetting
+						label="Edited text color"
+						value={editedColor}
+						defaultColor={DefaultSettings.editedColor}
+						preview="[Previous version] This message was edited."
+						onChange={color => storage.set({ editedColor: color })}
+					/>
+
 					<TableRowGroup title="Ignore">
 						<TableSwitchRow
 							icon={<TableRowAssetIcon name="UserIcon" />}

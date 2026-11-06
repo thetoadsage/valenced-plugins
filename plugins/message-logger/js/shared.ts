@@ -1,4 +1,6 @@
 export interface Settings {
+	deletedColor: string
+	editedColor: string
 	restoreDeletions: boolean
 	saveAttachments: boolean
 	maxAttachmentMiB: number
@@ -18,6 +20,8 @@ export interface Settings {
 }
 
 export const DefaultSettings: Settings = {
+	deletedColor: '#ED4245',
+	editedColor: '#FAA61A',
 	restoreDeletions: false,
 	saveAttachments: false,
 	maxAttachmentMiB: 5,

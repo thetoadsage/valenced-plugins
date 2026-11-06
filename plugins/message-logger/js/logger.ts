@@ -405,3 +405,12 @@ export function hydrateRestoredLog(entry: ArchivedMessage) {
 	})
 	changed.add(entry.id)
 }
+
+/** Rebuild logged rows after a color change without rewriting captured message content. */
+export function refreshLogColors() {
+	for (const [id, log] of logs) {
+		if (!MessageStore().getMessage(log.channelId, id)) continue
+		changed.add(id)
+		Dispatcher.dispatch(rerender(log.channelId, id))
+	}
+}

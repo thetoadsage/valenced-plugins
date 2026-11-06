@@ -6,7 +6,8 @@ import { getErrorStack } from '@valenced/utils/error'
 import { AppState } from 'react-native'
 import { patchChannelActionSheet, patchMessageActionSheet } from './actionsheet'
 import { MessageArchive, setArchive } from './archive'
-import { interceptMessages, resetLogs } from './logger'
+import { updateLogColors } from './colors'
+import { interceptMessages, refreshLogColors, resetLogs } from './logger'
 import { restoreSavedDeletions } from './restore'
 import { styleRow } from './rows'
 import SettingsComponent from './settings'
@@ -21,6 +22,20 @@ export default plugin<{ jsonStorage: Settings }>({
 			...DefaultSettings,
 			...(storage.cache as Partial<Settings> | undefined),
 		})
+
+		updateLogColors(settings())
+		let active = true
+		cleanup(
+			() => {
+				active = false
+			},
+			storage.subscribe(() => {
+				if (updateLogColors(settings()))
+					Promise.resolve().then(() => {
+						if (active) refreshLogColors()
+					})
+			}),
+		)
 
 		const history = new MessageArchive(settings, error =>
 			plugin.reportError(error),
@@ -67,7 +82,7 @@ export default plugin<{ jsonStorage: Settings }>({
 									row,
 									args[0],
 									(args: GenerateArgs) => original.call(this, args),
-									settings().inlineEdits,
+									settings(),
 								)
 							} catch (e) {
 								plugin.reportError(

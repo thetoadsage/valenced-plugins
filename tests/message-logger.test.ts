@@ -129,7 +129,22 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 				changeType: 0,
 				message: {
 					id: record.id,
-					content: [{ type: 'text', content: record.content }],
+					content: record.content.startsWith('> ')
+						? [
+								{
+									type: 'blockQuote',
+									content: [
+										{
+											type: 'text',
+											content: record.content
+												.split('\n')
+												.map((line: string) => line.replace(/^> /, ''))
+												.join('\n'),
+										},
+									],
+								},
+							]
+						: [{ type: 'text', content: record.content }],
 				},
 			}
 		}
@@ -398,7 +413,10 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 					},
 				},
 				AppState: { addEventListener: () => ({ remove() {} }) },
-				processColor: () => 0xffed4245,
+				processColor: (color: string) =>
+					/^#[0-9a-f]{6}$/i.test(color)
+						? 0xff000000 + parseInt(color.slice(1), 16)
+						: null,
 			},
 		},
 	}
@@ -441,10 +459,16 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 	})
 	const row = (id = 'm1') =>
 		new RowManager().generate({ message: records.get(id) })
-	const text = (id = 'm1') =>
-		row(id)
-			.message.content.map((n: any) => n.content)
-			.join('')
+	const contentText = (value: any): string =>
+		typeof value === 'string'
+			? value
+			: Array.isArray(value)
+				? value.map(contentText).join('')
+				: value && typeof value === 'object'
+					? contentText(value.content)
+					: ''
+	const text = (id = 'm1') => contentText(row(id).message.content)
+
 	const menu = (id = 'm1') => {
 		const tree = sheet.default({
 			message: records.get(id),
@@ -478,7 +502,13 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 			if (!node) return
 			if (Array.isArray(node)) return node.forEach(walk)
 			nodes.push(node)
-			walk(node.props?.children)
+			if (
+				typeof node.type === 'function' &&
+				typeof node.props?.defaultColor === 'string' &&
+				typeof node.props?.preview === 'string'
+			)
+				walk(node.type(node.props))
+			else walk(node.props?.children)
 		}
 		walk(tree)
 		return nodes
@@ -551,8 +581,8 @@ test('retains empty earlier text and multiple distinct edits inline', t => {
 		message: { id: 'm1', channel_id: 'c1', content: 'Third' },
 	})
 	assert.equal(
-		h.text(),
-		'[Previous version] \n[Previous version] Second\nThird',
+		h.text().replace(/ · [^\]]+/g, ''),
+		'[Previous version 1]\n\n\n[Previous version 2]\nSecond\n\n[Current version]\nThird',
 	)
 })
 
@@ -1722,4 +1752,214 @@ test('startup cache copies of saved deletions get labeled until a fresh server b
 	loadChannel(h, [3], { hasMoreBefore: false, hasMoreAfter: false })
 	await h.settle()
 	assert.equal(h.text(restoredId(3)), 'Server 3')
+})
+
+test('deleted rows default red, edited rows orange, and unlogged rows retain native colors', t => {
+	const h = harness(t)
+	h.records.set('edited', message('edited', 'Before'))
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'edited', channel_id: 'c1', content: 'After' },
+	})
+	assert.equal(h.row('edited').message.textColor, 0xfffaa61a)
+	assert.equal(h.row('edited').message.timestampColor, undefined)
+	h.records.set('normal', message('normal'))
+	assert.equal(h.row('normal').message.textColor, undefined)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'edited', channelId: 'c1' })
+	assert.equal(h.row('edited').message.textColor, 0xffed4245)
+	h.menu('edited')
+		.find((a: any) => a.label === 'Toggle Deleted Highlight')
+		.onPress()
+	assert.equal(h.row('edited').message.textColor, undefined)
+})
+
+test('color changes persist in settings and regenerate rows without changing saved history', async t => {
+	const h = harness(t)
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'After' },
+	})
+	await h.settle()
+	const before = JSON.stringify(h.saved())
+	await h.storage.set({ editedColor: '#123456', deletedColor: '#aBc' })
+	await h.settle()
+	assert.equal(h.row().message.textColor, 0xff123456)
+	assert.ok(
+		h.events.some(
+			(e: any) =>
+				e.type === 'MESSAGE_UPDATE' && e.message.content === undefined,
+		),
+	)
+	assert.equal(JSON.stringify(h.saved()), before)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	assert.equal(h.row().message.textColor, 0xffaabbcc)
+})
+
+test('invalid saved color values fall back to opaque defaults', t => {
+	const h = harness(t, {
+		deletedColor: 'transparent',
+		editedColor: '#12345600',
+	})
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'After' },
+	})
+	assert.equal(h.row().message.textColor, 0xfffaa61a)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	assert.equal(h.row().message.textColor, 0xffed4245)
+})
+
+test('color pickers support RGB, hex validation, cancel, reset and explicit apply', async t => {
+	const h = harness(t)
+	const find = (label: string) =>
+		h
+			.ui()
+			.find(
+				(n: any) =>
+					n.props?.label === label &&
+					(typeof n.props.onPress === 'function' ||
+						(label.endsWith('hex value') &&
+							typeof n.props.onChange === 'function')),
+			)
+	const button = (text: string) =>
+		h.ui().find((n: any) => n.props?.text === text)
+	find('Edited text color').props.onPress()
+	assert.equal(
+		h.ui().filter((n: any) => n.props?.maximumValue === 255).length,
+		3,
+	)
+	find('Edited text color hex value').props.onChange('#0f8')
+	await button('Apply edited text color').props.onPress()
+	assert.equal(h.storage.cache.editedColor, '#00FF88')
+	find('Edited text color').props.onPress()
+	find('Edited text color hex value').props.onChange('not a color')
+	await button('Apply edited text color').props.onPress()
+	assert.equal(h.storage.cache.editedColor, '#00FF88')
+	assert.ok(
+		h
+			.ui()
+			.some(
+				(n: any) =>
+					n.props?.children ===
+					'Enter a three- or six-digit hex color, such as #ED4245.',
+			),
+	)
+	button('Cancel edited text color').props.onPress()
+	assert.equal(h.storage.cache.editedColor, '#00FF88')
+	find('Edited text color').props.onPress()
+	button('Reset edited text color').props.onPress()
+	await button('Apply edited text color').props.onPress()
+	assert.equal(h.storage.cache.editedColor, '#FAA61A')
+	find('Deleted text color').props.onPress()
+	h.ui()
+		.find((n: any) => n.props?.maximumValue === 255)
+		.props.onValueChange(0)
+	await button('Apply deleted text color').props.onPress()
+	assert.equal(h.storage.cache.deletedColor, '#004245')
+})
+
+test('restored saved deletions use the chosen deleted color and retain their saved label', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true, deletedColor: '#112233' },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	assert.equal(h.row(restoredId(3)).message.textColor, 0xff112233)
+	assert.match(h.text(restoredId(3)), /^\[Saved deletion\]/)
+})
+
+test('previous versions form numbered quote blocks while current content and archive stay unchanged', async t => {
+	const h = harness(t)
+	const original = message('m1', 'First line\nSecond line')
+	h.records.set('m1', original)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Current text' },
+	})
+	await h.settle()
+	const row = h.row()
+	assert.equal(
+		row.message.content.filter((n: any) => n.type === 'blockQuote').length,
+		1,
+	)
+	assert.match(h.text(), /Previous version 1 · /)
+	assert.match(h.text(), /\[Current version\]\nCurrent text$/)
+	assert.equal(original.content, 'First line\nSecond line')
+	assert.equal(h.records.get('m1').content, 'Current text')
+	assert.equal(h.saved()[0].edits[0].content, 'First line\nSecond line')
+	assert.equal(h.saved()[0].message.content, 'Current text')
+})
+
+test('turning off inline history leaves current content without quote blocks or version labels', t => {
+	const h = harness(t, { inlineEdits: false })
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Current' },
+	})
+	assert.equal(
+		h.row().message.content.some((n: any) => n.type === 'blockQuote'),
+		false,
+	)
+	assert.equal(h.text(), 'Current')
+	assert.equal(h.row().message.textColor, 0xfffaa61a)
+})
+
+test('history uses configured colors for previous/deleted versions and diff additions/removals', async t => {
+	const h = harness(t, { editedColor: '#123456', deletedColor: '#654321' })
+	h.records.set('m1', message('m1', 'Before'))
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'After' },
+	})
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	h.menu()
+		.find((n: any) => n.label === 'View message history')
+		.onPress()
+	const nodes: any[] = []
+	const walk = (node: any) => {
+		if (!node || typeof node !== 'object') return
+		if (Array.isArray(node)) {
+			node.forEach(walk)
+			return
+		}
+		nodes.push(node)
+		walk(
+			typeof node.type === 'function'
+				? node.type(node.props)
+				: node.props?.children,
+		)
+	}
+	walk(h.alerts.at(-1).props.content)
+	assert.ok(
+		nodes.some(
+			n =>
+				n.props?.children === 'Before' && n.props?.style?.color === '#123456',
+		),
+	)
+	assert.ok(
+		nodes.some(
+			n => n.props?.children === 'After' && n.props?.style?.color === '#654321',
+		),
+	)
+	assert.ok(
+		nodes.some(
+			n =>
+				n.props?.children === '[− Before]' &&
+				n.props?.style?.color === '#654321',
+		),
+	)
+	assert.ok(
+		nodes.some(
+			n =>
+				n.props?.children === '[+ After]' &&
+				n.props?.style?.color === '#123456',
+		),
+	)
 })
