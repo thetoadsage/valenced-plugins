@@ -15,6 +15,7 @@ import {
 	getLog,
 	hasChannelLogs,
 	removeLog,
+	removeSavedLog,
 	toggleHighlight,
 } from './logger'
 import type { FC, ReactElement, ReactNode } from 'react'
@@ -375,7 +376,7 @@ export function openArchiveHistory(entry: ArchivedMessage) {
 						variant="secondary"
 						onPress={() => {
 							if (account && archive?.view().account === account)
-								archive.remove(entry.id)
+								removeSavedLog(entry)
 						}}
 					/>
 				</>

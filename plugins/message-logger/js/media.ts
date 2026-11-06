@@ -48,6 +48,7 @@ function base64(bytes: Uint8Array) {
 
 export class AttachmentCache {
 	private files = new Map<string, SavedFile>()
+	private uncommitted = new Set<string>()
 	private desired = new Map<string, Attachment>()
 	private dirty = false
 	private retryMissing = false
@@ -121,6 +122,7 @@ export class AttachmentCache {
 			files: [...this.files.values()],
 		})
 		await writeFile(this.path(), text)
+		this.uncommitted.clear()
 		this.dirty = false
 	}
 	private fileBytes(file: SavedFile) {
@@ -285,6 +287,7 @@ export class AttachmentCache {
 								'base64',
 							)
 							this.files.set(key, file)
+							this.uncommitted.add(key)
 							this.dirty = true
 							await this.prune()
 							await this.persist()
@@ -335,7 +338,7 @@ export class AttachmentCache {
 	}
 	status(message: string, attachment: string) {
 		const key = keyFor(message, attachment)
-		return key && this.files.has(key)
+		return key && this.has(message, attachment)
 			? 'Saved on this iPhone'
 			: key
 				? ((this.statuses.get(key) === 'Saved on this iPhone'
@@ -345,7 +348,7 @@ export class AttachmentCache {
 	}
 	has(message: string, attachment: string) {
 		const key = keyFor(message, attachment)
-		return !!key && this.files.has(key)
+		return !!key && this.files.has(key) && !this.uncommitted.has(key)
 	}
 	async share(message: string, attachment: string) {
 		const key = keyFor(message, attachment)
@@ -370,6 +373,7 @@ export class AttachmentCache {
 			return
 		}
 		this.files.clear()
+		this.uncommitted.clear()
 		this.dirty = true
 		this.statuses = new Map(
 			[...this.desired.keys()].map(key => [
@@ -399,7 +403,8 @@ export class AttachmentCache {
 	}
 	usage() {
 		return {
-			count: this.files.size,
+			count: [...this.files.keys()].filter(key => !this.uncommitted.has(key))
+				.length,
 			bytes:
 				256 +
 				[...this.files.values()].reduce(

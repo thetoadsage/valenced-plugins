@@ -334,6 +334,7 @@ export class MessageArchive {
 	clear() {
 		const ctx = this.current
 		if (!ctx) return
+		void ctx.media.clear()
 		ctx.blocked = false
 		ctx.pending = [
 			() => {

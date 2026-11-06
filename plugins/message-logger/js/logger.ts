@@ -223,6 +223,15 @@ export function removeLog(
 	}
 }
 
+export function removeSavedLog(entry: ArchivedMessage) {
+	const record = MessageStore().getMessage(entry.channelId, entry.id)
+	if (record && logs.has(entry.id)) removeLog(record)
+	else {
+		logs.delete(entry.id)
+		archive?.remove(entry.id)
+	}
+}
+
 export function hasChannelLogs(channelId: string) {
 	for (const log of logs.values()) if (log.channelId === channelId) return true
 	return false

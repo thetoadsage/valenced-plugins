@@ -96,7 +96,8 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 			return disk.get(path)!
 		},
 		writeFile: async (path: string, value: string) => {
-			if (failWrites) throw Error('Disk full')
+			if (failWrites || (config.failIndex && path.endsWith('/index.json')))
+				throw Error('Disk full')
 			disk.set(path, value)
 			config.writes?.push(path)
 		},
@@ -2285,4 +2286,122 @@ test('failed attachment deletion is reported and retried without losing file tra
 		.props.onPress()
 	await h.settle()
 	assert.ok(!h.disk.has(path))
+})
+
+test('removing a saved entry clears its live edit history before later edits', async t => {
+	const h = harness(t)
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Second' },
+	})
+	await h.settle()
+	openSaved(h)
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Remove saved entry',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.equal(h.saved().length, 0)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Third' },
+	})
+	await h.settle()
+	assert.deepEqual(
+		h.saved()[0].edits.map((e: any) => e.content),
+		['Second'],
+	)
+})
+
+test('clearing history removes unindexed files even with a corrupt attachment index', async t => {
+	const folder = '/documents/valenced/messagelogger/attachments/self/'
+	const disk = new Map([
+		[`${folder}index.json`, 'corrupt'],
+		[`${folder}orphan.png`, 'private file'],
+		['/documents/valenced/messagelogger/attachments/second/keep.png', 'keep'],
+	])
+	const h = harness(t, {}, { disk })
+	await h.settle()
+	h.ui()
+		.find(n => n.props?.text === 'Clear saved history for this account')
+		.props.onPress()
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Clear history',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.ok(!disk.has(`${folder}orphan.png`))
+	assert.equal(JSON.parse(disk.get(`${folder}index.json`)!).files.length, 0)
+	assert.equal(
+		disk.get('/documents/valenced/messagelogger/attachments/second/keep.png'),
+		'keep',
+	)
+})
+
+test('clearing history reports attachment cleanup failure and allows retry', async t => {
+	const config = { failRemovals: true }
+	const h = harness(t, {}, config)
+	await h.settle()
+	const path = '/documents/valenced/messagelogger/attachments/self/orphan.png'
+	h.disk.set(path, 'private file')
+	const clearHistory = () => {
+		h.ui()
+			.find(n => n.props?.text === 'Clear saved history for this account')
+			.props.onPress()
+		h.alerts
+			.at(-1)
+			.props.actions.props.children.find(
+				(n: any) => n.props.text === 'Clear history',
+			)
+			.props.onPress()
+	}
+	clearHistory()
+	await h.settle()
+	assert.ok(h.disk.has(path))
+	assert.ok(
+		h.ui().some(n => n.props?.subLabel?.includes('Could not clear saved')),
+	)
+	config.failRemovals = false
+	clearHistory()
+	await h.settle()
+	assert.ok(!h.disk.has(path))
+})
+
+test('an attachment is not advertised as saved until its index is written', async t => {
+	const requests: any[] = []
+	const config = {
+		failIndex: false,
+		requests,
+		network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } },
+	}
+	const h = harness(t, { saveAttachments: true }, config)
+	await h.settle()
+	config.failIndex = true
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	assert.match(openSaved(h), /Disk full/)
+	assert.doesNotMatch(openSaved(h), /Saved on this iPhone/)
+	assert.ok(h.ui().some(n => n.props?.label === '0 saved files'))
+	config.failIndex = false
+	h.ui()
+		.find(n => n.props?.text === 'Retry attachment downloads')
+		.props.onPress()
+	await h.settle()
+	assert.match(openSaved(h), /Saved on this iPhone/)
+	assert.ok(h.ui().some(n => n.props?.label === '1 saved files'))
+	assert.equal(requests.length, 1)
+	assert.equal(
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
+		1,
+	)
 })
