@@ -147,6 +147,33 @@
         }
       }
     },
+    "thetoadsage.silent-message-toggle": {
+      "name": "Silent Message Toggle",
+      "description": "Adds a chat button for sending messages without notifications.",
+      "author": "thetoadsage",
+      "contributors": [
+        "Vencord contributors (https://github.com/Vendicated/Vencord/tree/main/src/plugins/silentMessageToggle \"Original plugin\")",
+        "Valenced Community Plugins contributors (https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/silent-typing \"Mobile chat button reference\")"
+      ],
+      "channels": {
+        "latest": "0.1.0"
+      },
+      "versions": {
+        "0.1.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.silent-message-toggle@0.1.0.zip",
+          "sha256": "b22a8772ecb35c23c0689c148dec2514d8b30cd3964d4559e8381ea6f7ca02d0",
+          "size": 13877,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <353.0"
+            }
+          }
+        }
+      }
+    },
     "thetoadsage.url-cleaner": {
       "name": "Toad URL Cleaner",
       "description": "Cleans tracking, embedded redirects, and optional product-link clutter using Clipboard Cleaner rules.",
