@@ -1,8 +1,9 @@
 import { FileModule } from '@valenced/discord/native'
 import { exists, readFile, writeFile } from '@valenced/modules/native/fs'
-import { pluginStorageDirFor } from '@valenced/plugins/constants'
 import { Share } from 'react-native'
 import { bounded, utf8Size } from './archive'
+import { documentsPath, storageRoot } from './paths'
+import { MaximumSettings } from './shared'
 import type { ArchivedMessage } from './archive'
 import type { Attachment } from './logger'
 import type { Settings } from './shared'
@@ -10,7 +11,6 @@ import type { Settings } from './shared'
 interface SavedFile {
 	key: string
 	filename: string
-	data: string
 	size: number
 	savedAt: number
 }
@@ -50,6 +50,7 @@ export class AttachmentCache {
 	private files = new Map<string, SavedFile>()
 	private desired = new Map<string, Attachment>()
 	private dirty = false
+	private retryMissing = false
 	private loaded = false
 	private blocked = false
 	private paused = false
@@ -64,19 +65,27 @@ export class AttachmentCache {
 		private settings: () => Settings,
 		private notify: () => void,
 	) {}
+	private directory() {
+		return `${storageRoot}/attachments/${this.account}`
+	}
 	private path() {
-		return `${pluginStorageDirFor('thetoadsage.message-logger')}/media-${this.account}.json`
+		return documentsPath(`${this.directory()}/index.json`)
+	}
+	private relative(file: SavedFile) {
+		const name =
+			file.filename.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-120) || 'attachment'
+		return `${this.directory()}/${file.key}-${name}`
 	}
 	private async load() {
 		if (this.loaded) return
 		try {
 			if (await exists(this.path())) {
 				const raw = await readFile(this.path())
-				if (utf8Size(raw) > 70 * 1024 * 1024)
+				if (utf8Size(raw) > (MaximumSettings.maxMediaMiB + 1) * 1024 * 1024)
 					throw Error('File cache exceeds the read limit')
 				const data = JSON.parse(raw)
 				if (
-					data.version !== 1 ||
+					data.version !== 2 ||
 					data.account !== this.account ||
 					!Array.isArray(data.files)
 				)
@@ -87,17 +96,11 @@ export class AttachmentCache {
 						typeof f.key !== 'string' ||
 						!/^[a-zA-Z0-9_-]+$/.test(f.key) ||
 						typeof f.filename !== 'string' ||
-						typeof f.data !== 'string' ||
-						/[^A-Za-z0-9+/=]/.test(f.data) ||
-						f.data.length % 4 !== 0 ||
-						/=/.test(f.data.slice(0, -2)) ||
-						(f.data.at(-2) === '=' && f.data.at(-1) !== '=') ||
-						!Number.isInteger(f.size) ||
+						f.filename.length > 1000 ||
+						!Number.isSafeInteger(f.size) ||
 						f.size < 0 ||
 						!Number.isFinite(f.savedAt) ||
-						f.size !==
-							(f.data.length / 4) * 3 -
-								(f.data.endsWith('==') ? 2 : f.data.endsWith('=') ? 1 : 0)
+						f.savedAt < 0
 					)
 						throw Error('Invalid saved file')
 				}
@@ -113,7 +116,7 @@ export class AttachmentCache {
 	}
 	private async persist() {
 		const text = JSON.stringify({
-			version: 1,
+			version: 2,
 			account: this.account,
 			files: [...this.files.values()],
 		})
@@ -121,25 +124,45 @@ export class AttachmentCache {
 		this.dirty = false
 	}
 	private fileBytes(file: SavedFile) {
-		return (
-			utf8Size(JSON.stringify({ ...file, data: '' })) + file.data.length + 1
-		)
+		return utf8Size(JSON.stringify(file)) + file.size + 1
 	}
-	private prune() {
+	private async prune() {
 		const before = [...this.files.keys()].join('\0')
-		for (const key of this.files.keys())
-			if (!this.desired.has(key)) this.files.delete(key)
-		const max = bounded(this.settings().maxMediaMiB, 25, 50) * 1024 * 1024
+		for (const [key, file] of this.files) {
+			const path = documentsPath(this.relative(file))
+			if (!this.desired.has(key)) {
+				if (
+					(await exists(path)) &&
+					!(await FileModule.removeFile('documents', this.relative(file)))
+				)
+					throw Error('Could not remove an attachment file')
+				this.files.delete(key)
+				this.dirty = true
+			} else if (!(await exists(path))) {
+				this.files.delete(key)
+				this.dirty = true
+				this.statuses.set(
+					key,
+					'File missing from Files; retry to download again',
+				)
+			}
+		}
+		const max =
+			bounded(this.settings().maxMediaMiB, 25, MaximumSettings.maxMediaMiB) *
+			1024 *
+			1024
 		let bytes = 256
 		const sorted = [...this.files.values()].sort(
 			(a, b) => b.savedAt - a.savedAt,
 		)
-		this.files.clear()
 		for (const file of sorted) {
 			const size = this.fileBytes(file)
-			if (bytes + size > max) continue
-			bytes += size
-			this.files.set(file.key, file)
+			if (bytes + size > max) {
+				if (!(await FileModule.removeFile('documents', this.relative(file))))
+					throw Error('Could not remove an attachment file')
+				this.files.delete(file.key)
+				this.dirty = true
+			} else bytes += size
 		}
 		if ([...this.files.keys()].join('\0') !== before) this.dirty = true
 	}
@@ -209,14 +232,25 @@ export class AttachmentCache {
 				if (this.blocked) return
 				while (!this.paused && this.processed !== this.revision) {
 					this.processed = this.revision
-					this.prune()
+					await this.prune()
+					if (this.retryMissing) {
+						for (const [key, status] of this.statuses)
+							if (status.startsWith('File missing')) this.statuses.delete(key)
+						this.retryMissing = false
+					}
 					if (this.dirty) await this.persist()
 					if (!this.settings().saveAttachments) continue
 					for (const [key, att] of [...this.desired]) {
 						if (this.paused || !this.settings().saveAttachments) break
 						if (this.files.has(key) || this.statuses.has(key)) continue
 						const limit =
-							bounded(this.settings().maxAttachmentMiB, 5, 10) * 1024 * 1024
+							bounded(
+								this.settings().maxAttachmentMiB,
+								5,
+								MaximumSettings.maxAttachmentMiB,
+							) *
+							1024 *
+							1024
 						if (!att.url || !allowedURL(att.url)) {
 							this.statuses.set(key, 'Unsupported attachment URL')
 							continue
@@ -241,13 +275,18 @@ export class AttachmentCache {
 							const file = {
 								key,
 								filename: (att.filename || att.id).slice(0, 1000),
-								data: base64(bytes),
 								size: bytes.byteLength,
 								savedAt: Date.now(),
 							}
+							await FileModule.writeFile(
+								'documents',
+								this.relative(file),
+								base64(bytes),
+								'base64',
+							)
 							this.files.set(key, file)
 							this.dirty = true
-							this.prune()
+							await this.prune()
 							await this.persist()
 							this.statuses.set(
 								key,
@@ -256,7 +295,6 @@ export class AttachmentCache {
 									: 'File exceeds the saved-file storage limit',
 							)
 						} catch (e) {
-							this.files.delete(key)
 							this.dirty = true
 							if (
 								this.paused ||
@@ -290,6 +328,7 @@ export class AttachmentCache {
 			})
 	}
 	retry() {
+		this.retryMissing = true
 		this.statuses.clear()
 		this.revision++
 		this.start()
@@ -312,27 +351,24 @@ export class AttachmentCache {
 		const key = keyFor(message, attachment)
 		const file = key && this.files.get(key)
 		if (!file) return
-		// Only write a binary export after the user requests the iOS share sheet.
-		const safeName =
-			file.filename.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-120) || 'attachment'
-		const relative = `valenced-message-logger/${this.account}-${key}-${safeName}`
-		try {
-			const path = await FileModule.writeFile(
-				'cache',
-				relative,
-				file.data,
-				'base64',
-			)
-			await Share.share({
-				url: path.startsWith('file://') ? path : `file://${path}`,
-			})
-		} finally {
-			await FileModule.removeFile('cache', relative)
-		}
+		const path = documentsPath(this.relative(file))
+		if (!(await exists(path)))
+			throw Error('Saved file was moved or deleted in Files')
+		await Share.share({ url: `file://${path}` })
 	}
 	async clear() {
 		this.pause()
 		await this.task
+		try {
+			if (!(await FileModule.clearFolder('documents', this.directory())))
+				throw Error('Could not clear attachment folder')
+		} catch {
+			this.error =
+				'Could not clear saved attachment files. Check available storage.'
+			this.paused = false
+			this.notify()
+			return
+		}
 		this.files.clear()
 		this.dirty = true
 		this.statuses = new Map(

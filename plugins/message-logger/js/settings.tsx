@@ -7,7 +7,7 @@ import { confirmClearHistory, openArchiveHistory } from './actionsheet'
 import { archive } from './archive'
 import ColorSetting from './ColorSetting'
 import { resetLogs } from './logger'
-import { DefaultSettings } from './shared'
+import { DefaultSettings, MaximumSettings } from './shared'
 import type { PluginSettingsComponent } from '@valenced/plugins/types'
 import type { ComponentProps } from 'react'
 import type { Settings } from './shared'
@@ -100,11 +100,11 @@ export default function SettingsComponent({
 		}
 		if (
 			Object.values(values).some(n => !Number.isInteger(n) || n < 1) ||
-			values.retentionDays > 3650 ||
-			values.maxMessages > 10000 ||
-			values.maxStorageMiB > 20 ||
-			values.maxAttachmentMiB > 10 ||
-			values.maxMediaMiB > 50
+			values.retentionDays > MaximumSettings.retentionDays ||
+			values.maxMessages > MaximumSettings.maxMessages ||
+			values.maxStorageMiB > MaximumSettings.maxStorageMiB ||
+			values.maxAttachmentMiB > MaximumSettings.maxAttachmentMiB ||
+			values.maxMediaMiB > MaximumSettings.maxMediaMiB
 		) {
 			setRetentionError('Enter whole numbers within the ranges shown.')
 			return
@@ -283,22 +283,22 @@ export default function SettingsComponent({
 					<TableRowGroup title="Retention">
 						<TableRow
 							label="Oldest history is removed automatically"
-							subLabel="Limits apply to this account’s saved archive. At most 50 previous versions are kept per message. Tap Apply retention limits now to save changes and remove history beyond the limits."
+							subLabel="History is saved in Documents/valenced/messagelogger/messages, grouped by account. Limits apply to this account’s saved archive. At most 50 previous versions are kept per message. Tap Apply retention limits now to save changes and remove history beyond the limits."
 							disabled
 						/>
 					</TableRowGroup>
 					<TextInput
-						label="Keep history for days (1–3650)"
+						label={`Keep history for days (1–${MaximumSettings.retentionDays})`}
 						value={draft.retentionDays}
 						onChange={value => retention('retentionDays', value)}
 					/>
 					<TextInput
-						label="Maximum saved messages (1–10000)"
+						label={`Maximum saved messages (1–${MaximumSettings.maxMessages})`}
 						value={draft.maxMessages}
 						onChange={value => retention('maxMessages', value)}
 					/>
 					<TextInput
-						label="Maximum archive size in MiB (1–20)"
+						label={`Maximum archive size in MiB (1–${MaximumSettings.maxStorageMiB})`}
 						value={draft.maxStorageMiB}
 						onChange={value => retention('maxStorageMiB', value)}
 					/>
@@ -314,17 +314,17 @@ export default function SettingsComponent({
 						/>
 						<TableRow
 							label={`${archive?.media()?.usage().count ?? 0} saved files`}
-							subLabel={`${((archive?.media()?.usage().bytes ?? 0) / 1024 / 1024).toFixed(1)} MiB used. Files are stored locally; the cache limit includes encoding overhead. Oldest files are removed when full, and files follow message retention.`}
+							subLabel={`${((archive?.media()?.usage().bytes ?? 0) / 1024 / 1024).toFixed(1)} MiB used. Files are saved in Documents/valenced/messagelogger/attachments, grouped by account. The limit counts file bytes and index metadata. Oldest files are removed when full, and files follow message retention.`}
 							disabled
 						/>
 					</TableRowGroup>
 					<TextInput
-						label="Maximum download size per file in MiB (1–10)"
+						label={`Maximum download size per file in MiB (1–${MaximumSettings.maxAttachmentMiB})`}
 						value={draft.maxAttachmentMiB}
 						onChange={value => retention('maxAttachmentMiB', value)}
 					/>
 					<TextInput
-						label="Maximum saved-file storage in MiB (1–50)"
+						label={`Maximum saved-file storage in MiB (1–${MaximumSettings.maxMediaMiB})`}
 						value={draft.maxMediaMiB}
 						onChange={value => retention('maxMediaMiB', value)}
 					/>

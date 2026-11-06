@@ -19,6 +19,14 @@ export interface Settings {
 	ignoreGuilds: string
 }
 
+export const MaximumSettings = {
+	retentionDays: 3650,
+	maxMessages: 50000,
+	maxStorageMiB: 50,
+	maxAttachmentMiB: 25,
+	maxMediaMiB: 100,
+} as const
+
 export const DefaultSettings: Settings = {
 	deletedColor: '#ED4245',
 	editedColor: '#FAA61A',

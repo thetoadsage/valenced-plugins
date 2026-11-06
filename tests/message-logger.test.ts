@@ -289,16 +289,36 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		discord: {
 			native: {
 				FileModule: {
+					getConstants: () => ({ DocumentsDirPath: '/documents' }),
 					writeFile: async (
-						_dir: string,
+						dir: string,
 						path: string,
 						data: string,
 						encoding: string,
 					) => {
+						if (failWrites) throw Error('Disk full')
 						config.exports?.push({ path, data, encoding })
-						return `/cache/${path}`
+						const absolute = `/${dir}/${path}`
+						disk.set(
+							absolute,
+							encoding === 'base64'
+								? Buffer.from(data, 'base64').toString('latin1')
+								: data,
+						)
+						config.writes?.push(absolute)
+						return absolute
 					},
-					removeFile: async () => true,
+					removeFile: async (dir: string, path: string) => {
+						if (config.failRemovals) throw Error('Delete failed')
+						disk.delete(`/${dir}/${path}`)
+						return true
+					},
+					clearFolder: async (dir: string, path: string) => {
+						if (config.failRemovals) throw Error('Delete failed')
+						for (const key of disk.keys())
+							if (key.startsWith(`/${dir}/${path}/`)) disk.delete(key)
+						return true
+					},
 				},
 			},
 			common: {
@@ -492,8 +512,11 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		for (let i = 0; i < 80; i++) await Promise.resolve()
 	}
 	const saved = (id = account) =>
-		JSON.parse(disk.get(`/plugin-data/archive-${id}.json`) ?? '{"entries":[]}')
-			.entries
+		JSON.parse(
+			disk.get(
+				`/documents/valenced/messagelogger/messages/${id}/archive.json`,
+			) ?? '{"entries":[]}',
+		).entries
 	const ui = () => {
 		hookIndex = 0
 		const tree = options.SettingsComponent({ api: { jsonStorage: storage } })
@@ -861,8 +884,11 @@ test('count retention and explicit clear remove durable history and recovery cop
 	await h.settle()
 	assert.equal(h.saved().length, 0)
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/archive-self.json.bak')!).entries
-			.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/messages/self/archive.json.bak',
+			)!,
+		).entries.length,
 		0,
 	)
 })
@@ -876,13 +902,22 @@ test('retention prunes old entries on reopen and enforces UTF-8 storage bound', 
 	}
 	await h.settle()
 	assert.ok(
-		Buffer.byteLength(h.disk.get('/plugin-data/archive-self.json')!) <=
+		Buffer.byteLength(
+			h.disk.get(
+				'/documents/valenced/messagelogger/messages/self/archive.json',
+			)!,
+		) <=
 			1024 * 1024,
 	)
 	assert.ok(h.saved().length < 20)
-	const data = JSON.parse(h.disk.get('/plugin-data/archive-self.json')!)
+	const data = JSON.parse(
+		h.disk.get('/documents/valenced/messagelogger/messages/self/archive.json')!,
+	)
 	data.entries[0].savedAt = Date.now() - 40 * 86400000
-	h.disk.set('/plugin-data/archive-self.json', JSON.stringify(data))
+	h.disk.set(
+		'/documents/valenced/messagelogger/messages/self/archive.json',
+		JSON.stringify(data),
+	)
 	h.stop()
 	const next = harness(t, {}, { disk: h.disk })
 	await next.settle()
@@ -897,17 +932,29 @@ test('recovers damaged primary from backup and preserves unreadable files', asyn
 	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
 	await h.settle()
 	h.stop()
-	h.disk.set('/plugin-data/archive-self.json', 'broken')
+	h.disk.set(
+		'/documents/valenced/messagelogger/messages/self/archive.json',
+		'broken',
+	)
 	const next = harness(t, {}, { disk: h.disk })
 	await next.settle()
 	assert.equal(next.saved().length, 1)
 	next.stop()
-	h.disk.set('/plugin-data/archive-self.json', 'broken')
-	h.disk.set('/plugin-data/archive-self.json.bak', 'also broken')
+	h.disk.set(
+		'/documents/valenced/messagelogger/messages/self/archive.json',
+		'broken',
+	)
+	h.disk.set(
+		'/documents/valenced/messagelogger/messages/self/archive.json.bak',
+		'also broken',
+	)
 	const damaged = harness(t, {}, { disk: h.disk, allowErrors: true })
 	await damaged.settle()
 	assert.match(damaged.errors[0], /preserved/)
-	assert.equal(h.disk.get('/plugin-data/archive-self.json'), 'broken')
+	assert.equal(
+		h.disk.get('/documents/valenced/messagelogger/messages/self/archive.json'),
+		'broken',
+	)
 })
 
 test('reports failed writes and retries without dropping earlier edits', async t => {
@@ -976,7 +1023,7 @@ test('retention drafts allow typing, validate ranges and apply only on request',
 	const h = harness(t)
 	await h.settle()
 	const field = () =>
-		h.ui().find(n => n.props?.label === 'Maximum saved messages (1–10000)')
+		h.ui().find(n => n.props?.label === 'Maximum saved messages (1–50000)')
 	field().props.onChange('')
 	assert.equal(field().props.value, '')
 	assert.equal(h.storage.cache.maxMessages, 1000)
@@ -1020,7 +1067,9 @@ test('archives only allowlisted fields and preserves attachment metadata', async
 	)
 	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
 	await h.settle()
-	const raw = h.disk.get('/plugin-data/archive-self.json')!
+	const raw = h.disk.get(
+		'/documents/valenced/messagelogger/messages/self/archive.json',
+	)!
 	assert.ok(!/secret|private|renderState/.test(raw))
 	assert.equal(h.saved()[0].message.attachments[0].filename, 'file.png')
 })
@@ -1028,7 +1077,7 @@ test('archives only allowlisted fields and preserves attachment metadata', async
 test('wrong-account archive is rejected and can be explicitly cleared', async t => {
 	const disk = new Map([
 		[
-			'/plugin-data/archive-self.json',
+			'/documents/valenced/messagelogger/messages/self/archive.json',
 			JSON.stringify({ version: 1, account: 'someone-else', entries: [] }),
 		],
 	])
@@ -1043,7 +1092,9 @@ test('wrong-account archive is rejected and can be explicitly cleared', async t 
 		.props.onPress()
 	await h.settle()
 	assert.equal(
-		JSON.parse(disk.get('/plugin-data/archive-self.json')!).account,
+		JSON.parse(
+			disk.get('/documents/valenced/messagelogger/messages/self/archive.json')!,
+		).account,
 		'self',
 	)
 })
@@ -1155,9 +1206,22 @@ test('attachment saving is opt-in and binary files survive restart and export ex
 	)
 	await on.settle()
 	assert.equal(requests.length, 1)
-	const media = JSON.parse(on.disk.get('/plugin-data/media-self.json')!)
+	const media = JSON.parse(
+		on.disk.get(
+			'/documents/valenced/messagelogger/attachments/self/index.json',
+		)!,
+	)
+	assert.equal(media.files[0].data, undefined)
+	assert.equal(media.files[0].data, undefined)
 	assert.deepEqual(
-		[...Buffer.from(media.files[0].data, 'base64')],
+		[
+			...Buffer.from(
+				on.disk.get(
+					'/documents/valenced/messagelogger/attachments/self/m1_a-file.png',
+				)!,
+				'latin1',
+			),
+		],
 		[0, 1, 128, 255],
 	)
 	on.stop()
@@ -1190,7 +1254,10 @@ test('attachment saving is opt-in and binary files survive restart and export ex
 		[...Buffer.from(exports[0].data, 'base64')],
 		[0, 1, 128, 255],
 	)
-	assert.match(shares[0].url, /^file:\/\/\/cache\//)
+	assert.equal(
+		shares[0].url,
+		'file:///documents/valenced/messagelogger/attachments/self/m1_a-file.png',
+	)
 })
 
 test('downloads enforce metadata and streamed size limits and reject non-CDN URLs', async t => {
@@ -1219,7 +1286,11 @@ test('downloads enforce metadata and streamed size limits and reject non-CDN URL
 	await h.settle()
 	assert.equal(requests.length, 1)
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		0,
 	)
 	assert.match(openSaved(h, 'stream'), /limit/)
@@ -1236,7 +1307,11 @@ test('removing message history deletes cached files and disabling aborts downloa
 	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
 	await h.settle()
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		1,
 	)
 	h.menu()
@@ -1244,7 +1319,11 @@ test('removing message history deletes cached files and disabling aborts downloa
 		.onPress()
 	await h.settle()
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		0,
 	)
 	const pending: any[] = []
@@ -1261,12 +1340,16 @@ test('removing message history deletes cached files and disabling aborts downloa
 	await next.settle()
 	assert.equal(pending[0].done, true)
 	assert.equal(
-		JSON.parse(next.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			next.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		0,
 	)
 })
 
-test('saved-file cache has a separate encoded byte budget and clear action', async t => {
+test('saved-file cache has a separate binary byte budget and clear action', async t => {
 	const requests: any[] = []
 	const bytes = new Uint8Array(450000)
 	const h = harness(
@@ -1279,9 +1362,11 @@ test('saved-file cache has a separate encoded byte budget and clear action', asy
 		h.dispatch({ type: 'MESSAGE_DELETE', id, channelId: 'c1' })
 	}
 	await h.settle()
-	const raw = h.disk.get('/plugin-data/media-self.json')!
+	const raw = h.disk.get(
+		'/documents/valenced/messagelogger/attachments/self/index.json',
+	)!
 	assert.ok(Buffer.byteLength(raw) <= 1024 * 1024)
-	assert.equal(JSON.parse(raw).files.length, 1)
+	assert.equal(JSON.parse(raw).files.length, 2)
 	assert.equal(h.saved().length, 3)
 	h.ui()
 		.find((n: any) => n.props?.text === 'Clear saved attachment files')
@@ -1294,7 +1379,11 @@ test('saved-file cache has a separate encoded byte budget and clear action', asy
 		.props.onPress()
 	await h.settle()
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		0,
 	)
 	assert.equal(h.saved().length, 3)
@@ -1311,28 +1400,40 @@ test('cached files stay account-isolated and ordinary text edits do not rewrite 
 	h.records.set('m1', attachmentMessage())
 	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
 	await h.settle()
-	const count = writes.filter(p => p.endsWith('media-self.json')).length
+	const count = writes.filter(p =>
+		p.endsWith('attachments/self/index.json'),
+	).length
 	h.records.set('m2', message('m2', 'before'))
 	h.dispatch({
 		type: 'MESSAGE_UPDATE',
 		message: { id: 'm2', channel_id: 'c1', content: 'after' },
 	})
 	await h.settle()
-	assert.equal(writes.filter(p => p.endsWith('media-self.json')).length, count)
+	assert.equal(
+		writes.filter(p => p.endsWith('attachments/self/index.json')).length,
+		count,
+	)
 	h.dispatch({ type: 'LOGOUT' })
 	h.setAccount('second')
 	h.dispatch({ type: 'LOGIN_SUCCESS' })
 	await h.settle()
 	assert.ok(h.ui().some((n: any) => n.props?.label === '0 saved files'))
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		1,
 	)
 })
 
 test('corrupt attachment cache does not block text history and is preserved until cleared', async t => {
 	const disk = new Map([
-		['/plugin-data/media-self.json', 'corrupted saved files'],
+		[
+			'/documents/valenced/messagelogger/attachments/self/index.json',
+			'corrupted saved files',
+		],
 	])
 	const h = harness(t, { saveAttachments: true }, { disk })
 	h.records.set('m1', message())
@@ -1340,7 +1441,7 @@ test('corrupt attachment cache does not block text history and is preserved unti
 	await h.settle()
 	assert.equal(h.saved().length, 1)
 	assert.equal(
-		disk.get('/plugin-data/media-self.json'),
+		disk.get('/documents/valenced/messagelogger/attachments/self/index.json'),
 		'corrupted saved files',
 	)
 	assert.ok(
@@ -1357,7 +1458,11 @@ test('corrupt attachment cache does not block text history and is preserved unti
 		.props.onPress()
 	await h.settle()
 	assert.equal(
-		JSON.parse(disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		0,
 	)
 })
@@ -1386,7 +1491,11 @@ test('removed attachments are downloaded and failed URLs retry only on request o
 	await h.settle()
 	assert.equal(requests.length, 2)
 	assert.equal(
-		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
+		JSON.parse(
+			h.disk.get(
+				'/documents/valenced/messagelogger/attachments/self/index.json',
+			)!,
+		).files.length,
 		1,
 	)
 })
@@ -1420,7 +1529,7 @@ function restoreFixture(offset: number, extra: any = {}) {
 function restoreDisk(entries: any[]) {
 	return new Map([
 		[
-			'/plugin-data/archive-self.json',
+			'/documents/valenced/messagelogger/messages/self/archive.json',
 			JSON.stringify({ version: 1, account: 'self', entries }),
 		],
 	])
@@ -1689,7 +1798,7 @@ test('restored rich-message metadata is displayed as safe text and account archi
 	entry.message.flags = 8192
 	const disk = restoreDisk([entry])
 	disk.set(
-		'/plugin-data/archive-second.json',
+		'/documents/valenced/messagelogger/messages/second/archive.json',
 		JSON.stringify({
 			version: 1,
 			account: 'second',
@@ -1962,4 +2071,218 @@ test('history uses configured colors for previous/deleted versions and diff addi
 				n.props?.style?.color === '#123456',
 		),
 	)
+})
+
+test('expanded retention settings accept maxima and reject values above them', async t => {
+	const h = harness(t)
+	await h.settle()
+	const fields = [
+		['Maximum saved messages (1–50000)', 'maxMessages', 50000],
+		['Maximum archive size in MiB (1–50)', 'maxStorageMiB', 50],
+		['Maximum download size per file in MiB (1–25)', 'maxAttachmentMiB', 25],
+		['Maximum saved-file storage in MiB (1–100)', 'maxMediaMiB', 100],
+	] as const
+	const apply = () =>
+		h
+			.ui()
+			.find(n => n.props?.text === 'Apply retention limits now')
+			.props.onPress()
+	for (const [label, , max] of fields)
+		h.ui()
+			.find(n => n.props?.label === label)
+			.props.onChange(String(max))
+	await apply()
+	for (const [, key, max] of fields) assert.equal(h.storage.cache[key], max)
+	for (const [label, key, max] of fields) {
+		h.ui()
+			.find(n => n.props?.label === label)
+			.props.onChange(String(max + 1))
+		await apply()
+		assert.equal(h.storage.cache[key], max)
+		assert.ok(
+			h
+				.ui()
+				.some(
+					n =>
+						n.props?.label === 'Enter whole numbers within the ranges shown.',
+				),
+		)
+		h.ui()
+			.find(n => n.props?.label === label)
+			.props.onChange(String(max))
+	}
+})
+
+test('archives above the old count and read-size limits survive reopening', async t => {
+	const entries = Array.from({ length: 10001 }, (_, i) => ({
+		id: String(i),
+		channelId: 'c1',
+		channelName: 'c1',
+		savedAt: Date.now(),
+		deleted: true,
+		message: message(String(i), 'x'.repeat(2800)),
+		edits: [],
+		removedAttachments: [],
+	}))
+	const raw = JSON.stringify({ version: 1, account: 'self', entries })
+	assert.ok(Buffer.byteLength(raw) > 25 * 1024 * 1024)
+	const disk = new Map([
+		['/documents/valenced/messagelogger/messages/self/archive.json', raw],
+	])
+	const settings = { maxMessages: 50000, maxStorageMiB: 50 }
+	const h = harness(t, settings, { disk })
+	await h.settle()
+	assert.equal(h.saved().length, entries.length)
+	h.stop()
+	const next = harness(t, settings, { disk })
+	await next.settle()
+	assert.equal(next.saved().length, entries.length)
+})
+
+test('expanded attachment limits download files above the old per-file cap', async t => {
+	const bytes = new Uint8Array(11 * 1024 * 1024)
+	const h = harness(
+		t,
+		{ saveAttachments: true, maxAttachmentMiB: 25, maxMediaMiB: 100 },
+		{
+			network: { [attachmentURL]: { bytes } },
+		},
+	)
+	h.records.set('m1', attachmentMessage('m1', { size: bytes.length }))
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const media = JSON.parse(
+		h.disk.get(
+			'/documents/valenced/messagelogger/attachments/self/index.json',
+		)!,
+	)
+	assert.equal(media.files[0].size, bytes.length)
+	assert.equal(
+		h.disk.get(
+			'/documents/valenced/messagelogger/attachments/self/m1_a-file.png',
+		)!.length,
+		bytes.length,
+	)
+})
+
+test('Documents storage starts fresh and leaves old plugin data untouched', async t => {
+	const disk = new Map([
+		['/plugin-data/archive-self.json', 'legacy history'],
+		['/plugin-data/media-self.json', 'legacy attachments'],
+	])
+	const h = harness(t, {}, { disk })
+	await h.settle()
+	assert.equal(h.saved().length, 0)
+	assert.equal(disk.get('/plugin-data/archive-self.json'), 'legacy history')
+	assert.equal(disk.get('/plugin-data/media-self.json'), 'legacy attachments')
+	h.records.set('m1', message())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	assert.equal(h.saved().length, 1)
+	assert.ok(
+		disk.has(
+			'/documents/valenced/messagelogger/messages/self/archive.json.bak',
+		),
+	)
+})
+
+test('files deleted in Files stop being advertised and can be downloaded again', async t => {
+	const requests: any[] = []
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{
+			requests,
+			network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } },
+		},
+	)
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const path =
+		'/documents/valenced/messagelogger/attachments/self/m1_a-file.png'
+	assert.ok(h.disk.has(path))
+	h.disk.delete(path)
+	h.ui()
+		.find(n => n.props?.text === 'Apply retention limits now')
+		.props.onPress()
+	await h.settle()
+	assert.match(openSaved(h), /File missing/)
+	assert.equal(requests.length, 1)
+	h.ui()
+		.find(n => n.props?.text === 'Retry attachment downloads')
+		.props.onPress()
+	await h.settle()
+	assert.equal(requests.length, 2)
+	assert.ok(h.disk.has(path))
+})
+
+test('attachment filenames stay within the account folder and clear removes binary files', async t => {
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{
+			network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } },
+		},
+	)
+	h.records.set(
+		'm1',
+		attachmentMessage('m1', { filename: '../../other/account.png' }),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const path =
+		'/documents/valenced/messagelogger/attachments/self/m1_a-.._.._other_account.png'
+	assert.ok(h.disk.has(path))
+	h.disk.set(
+		'/documents/valenced/messagelogger/attachments/second/keep.png',
+		'keep',
+	)
+	h.ui()
+		.find(n => n.props?.text === 'Clear saved attachment files')
+		.props.onPress()
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Clear files',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.ok(!h.disk.has(path))
+	assert.equal(
+		h.disk.get('/documents/valenced/messagelogger/attachments/second/keep.png'),
+		'keep',
+	)
+})
+
+test('failed attachment deletion is reported and retried without losing file tracking', async t => {
+	const config = {
+		failRemovals: false,
+		network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } },
+	}
+	const h = harness(t, { saveAttachments: true }, config)
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const path =
+		'/documents/valenced/messagelogger/attachments/self/m1_a-file.png'
+	config.failRemovals = true
+	h.menu()
+		.find((n: any) => n.label === 'Remove History')
+		.onPress()
+	await h.settle()
+	assert.ok(h.disk.has(path))
+	assert.ok(
+		h
+			.ui()
+			.some(n =>
+				n.props?.subLabel?.includes('Could not save attachment files'),
+			),
+	)
+	config.failRemovals = false
+	h.ui()
+		.find(n => n.props?.text === 'Retry attachment downloads')
+		.props.onPress()
+	await h.settle()
+	assert.ok(!h.disk.has(path))
 })

@@ -1,6 +1,7 @@
 import { exists, readFile, writeFile } from '@valenced/modules/native/fs'
-import { pluginStorageDirFor } from '@valenced/plugins/constants'
 import { AttachmentCache } from './media'
+import { documentsPath, storageRoot } from './paths'
+import { MaximumSettings } from './shared'
 import type { Log, MessageRecord } from './logger'
 import type { Settings } from './shared'
 
@@ -108,14 +109,14 @@ function validMessage(m: MessageRecord) {
 	)
 }
 function decode(text: string, account: string) {
-	if (utf8Size(text) > 25 * 1024 * 1024)
+	if (utf8Size(text) > (MaximumSettings.maxStorageMiB + 5) * 1024 * 1024)
 		throw Error('Archive exceeds the read limit')
 	const data = JSON.parse(text)
 	if (
 		data.version !== 1 ||
 		data.account !== account ||
 		!Array.isArray(data.entries) ||
-		data.entries.length > 10000
+		data.entries.length > MaximumSettings.maxMessages
 	)
 		throw Error('Unsupported or invalid archive')
 	for (const e of data.entries) {
@@ -192,18 +193,24 @@ export class MessageArchive {
 		this.notify()
 	}
 	private path(ctx: Context) {
-		return `${pluginStorageDirFor('thetoadsage.message-logger')}/archive-${ctx.account}.json`
+		return documentsPath(`${storageRoot}/messages/${ctx.account}/archive.json`)
 	}
 	private prune(ctx: Context) {
 		const s = this.settings()
-		const cutoff = Date.now() - bounded(s.retentionDays, 30, 3650) * 86400000
-		const maxBytes = bounded(s.maxStorageMiB, 5, 20) * 1024 * 1024
+		const cutoff =
+			Date.now() -
+			bounded(s.retentionDays, 30, MaximumSettings.retentionDays) * 86400000
+		const maxBytes =
+			bounded(s.maxStorageMiB, 5, MaximumSettings.maxStorageMiB) * 1024 * 1024
 		const entries = [...ctx.entries.values()]
 			.filter(e => e.savedAt >= cutoff)
 			.sort((a, b) => b.savedAt - a.savedAt)
 		ctx.entries.clear()
 		let bytes = 256
-		for (const entry of entries.slice(0, bounded(s.maxMessages, 1000, 10000))) {
+		for (const entry of entries.slice(
+			0,
+			bounded(s.maxMessages, 1000, MaximumSettings.maxMessages),
+		)) {
 			const size = utf8Size(JSON.stringify(entry)) + 1
 			if (bytes + size > maxBytes) continue
 			bytes += size
