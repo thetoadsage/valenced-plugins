@@ -76,6 +76,7 @@ export function patchMessageActionSheet(onError: (e: unknown) => void) {
 					try {
 						const [{ message, channel }] = args
 						const log = getLog(message.id)
+						const saved = archive?.entry(message.id)
 
 						// It can't be deleted again
 						if (log?.deleted && intl)
@@ -86,7 +87,12 @@ export function patchMessageActionSheet(onError: (e: unknown) => void) {
 								),
 							)
 
-						if (log)
+						if (
+							log ||
+							(saved &&
+								!saved.deleted &&
+								saved.channelId === message.channel_id)
+						)
 							addToActionSheet(
 								tree,
 								<MessageActions
@@ -262,15 +268,24 @@ function MessageActions({
 	guildId?: string
 }) {
 	const log = getLog(message.id)
-	if (!log) return null
+	const saved = archive?.entry(message.id)
+	if (
+		!log &&
+		(!saved || saved.deleted || saved.channelId !== message.channel_id)
+	)
+		return null
 
 	return (
 		<ActionSheetRow.Group>
 			<ActionSheetRow
 				label="View message history"
-				onPress={closeAndRun(() => openMessageHistory(message))}
+				onPress={closeAndRun(() =>
+					log
+						? openMessageHistory(message)
+						: saved && openArchiveHistory(saved),
+				)}
 			/>
-			{(log.deleted || log.removedAttachments.size > 0) && (
+			{log && (log.deleted || log.removedAttachments.size > 0) && (
 				<ActionSheetRow
 					label="Toggle Deleted Highlight"
 					icon={
@@ -289,7 +304,9 @@ function MessageActions({
 						IconComponent={lookupGeneratedIconComponent('TrashIcon')}
 					/>
 				}
-				onPress={closeAndRun(() => removeLog(message, guildId))}
+				onPress={closeAndRun(() =>
+					log ? removeLog(message, guildId) : saved && removeSavedLog(saved),
+				)}
 			/>
 		</ActionSheetRow.Group>
 	)

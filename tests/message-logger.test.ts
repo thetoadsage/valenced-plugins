@@ -1720,7 +1720,8 @@ test('restored rows use archive history for attachments and edits; removing arch
 	await h.settle()
 	assert.deepEqual(h.records.get(restoredId(3)).attachments, [])
 	assert.match(h.text(restoredId(3)), /archived attachment/)
-	assert.ok(!h.text(restoredId(3)).includes('Previous version'))
+	assert.match(h.text(restoredId(3)), /Previous version 1/)
+	assert.match(h.text(restoredId(3)), /Earlier version/)
 	h.menu(restoredId(3))
 		.find((n: any) => n.label === 'View message history')
 		.onPress()
@@ -1862,6 +1863,74 @@ test('startup cache copies of saved deletions get labeled until a fresh server b
 	loadChannel(h, [3], { hasMoreBefore: false, hasMoreAfter: false })
 	await h.settle()
 	assert.equal(h.text(restoredId(3)), 'Server 3')
+})
+
+test('saved edits reappear inline on live messages after startup and remain editable', async t => {
+	const entry = restoreFixture(3, { deleted: false })
+	entry.message.content = 'Second'
+	entry.edits = [restoreRecord(3, 'Original')]
+	const h = harness(t, {}, { disk: restoreDisk([entry]) })
+	loadChannel(h, [5, 3, 1])
+	await h.settle()
+	assert.match(h.text(restoredId(3)), /Previous version 1/)
+	assert.match(h.text(restoredId(3)), /Original/)
+	assert.match(h.text(restoredId(3)), /Second/)
+	assert.match(h.text(restoredId(3)), /Server 3/)
+	assert.ok(h.events.some((event: any) => event.type === 'MESSAGE_UPDATE'))
+	const beforeToggle = h.events.length
+	await h.storage.set({ inlineEdits: false })
+	await h.settle()
+	assert.doesNotMatch(h.text(restoredId(3)), /Original/)
+	assert.ok(h.events.length > beforeToggle)
+	await h.storage.set({ inlineEdits: true })
+	await h.settle()
+	assert.match(h.text(restoredId(3)), /Original/)
+	h.menu(restoredId(3))
+		.find((item: any) => item.label === 'View message history')
+		.onPress()
+	assert.match(renderText(h.alerts.at(-1).props.content), /Original/)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: restoredId(3), channel_id: 'c1', content: 'New edit' },
+	})
+	await h.settle()
+	assert.deepEqual(
+		h.saved()[0].edits.map((edit: any) => edit.content),
+		['Original', 'Second', 'Server 3'],
+	)
+	assert.match(h.text(restoredId(3)), /Original/)
+	assert.match(h.text(restoredId(3)), /Server 3/)
+	assert.match(h.text(restoredId(3)), /New edit/)
+})
+
+test('saved inline edits respect ignores and disappear when history is removed', async t => {
+	const entry = restoreFixture(3, { deleted: false })
+	entry.edits = [restoreRecord(3, 'Original')]
+	const h = harness(t, {}, { disk: restoreDisk([entry]) })
+	await h.settle()
+	loadChannel(h, [5, 3, 1])
+	await h.settle()
+	assert.match(h.text(restoredId(3)), /Original/)
+	await h.storage.set({ ignoreChannels: 'c1' })
+	await h.settle()
+	assert.doesNotMatch(h.text(restoredId(3)), /Original/)
+	await h.storage.set({ ignoreChannels: '' })
+	await h.settle()
+	h.menu(restoredId(3))
+		.find((item: any) => item.label === 'Remove History')
+		.onPress()
+	await h.settle()
+	assert.equal(h.saved().length, 0)
+	assert.doesNotMatch(h.text(restoredId(3)), /Original/)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: restoredId(3), channel_id: 'c1', content: 'Later' },
+	})
+	await h.settle()
+	assert.deepEqual(
+		h.saved()[0].edits.map((edit: any) => edit.content),
+		['Server 3'],
+	)
 })
 
 test('deleted rows default red, edited rows orange, and unlogged rows retain native colors', t => {

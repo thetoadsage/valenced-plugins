@@ -24,13 +24,18 @@ export default plugin<{ jsonStorage: Settings }>({
 		})
 
 		updateLogColors(settings())
+		let inlineEdits = settings().inlineEdits
 		let active = true
 		cleanup(
 			() => {
 				active = false
 			},
 			storage.subscribe(() => {
-				if (updateLogColors(settings()))
+				const current = settings()
+				const colorsChanged = updateLogColors(current)
+				const inlineChanged = inlineEdits !== current.inlineEdits
+				inlineEdits = current.inlineEdits
+				if (colorsChanged || inlineChanged)
 					Promise.resolve().then(() => {
 						if (active) refreshLogColors()
 					})

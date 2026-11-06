@@ -31,6 +31,7 @@ export interface MessageRecord {
 
 export interface Log {
 	restored?: boolean
+	archiveSeeded?: boolean
 	archivedAttachmentCount?: number
 	channelId: string
 	deleted: boolean
@@ -89,21 +90,59 @@ export const getLog = (id: string) => logs.get(id)
 
 export const takeChanged = (id: string) => changed.delete(id)
 
-function logOf({ id, channel_id }: MessageRecord) {
+function savedEdits(record: MessageRecord) {
+	const entry = archive?.entry(record.id)
+	return entry &&
+		!entry.deleted &&
+		entry.channelId === record.channel_id &&
+		entry.message.author.id === record.author.id
+		? entry
+		: undefined
+}
+
+function savedVersions(entry: ArchivedMessage, record: MessageRecord) {
+	return [
+		...entry.edits,
+		...(entry.message.content !== record.content ? [entry.message] : []),
+	].slice(-50)
+}
+
+function logOf(record: MessageRecord) {
+	const { id, channel_id } = record
 	let log = logs.get(id)
 	if (!log) {
+		const saved = savedEdits(record)
+		const edits = saved ? savedVersions(saved, record) : []
 		log = {
 			channelId: channel_id,
+			archiveSeeded: !!saved,
 			deleted: false,
 			highlighted: true,
-			edits: [],
-			editTimes: [],
+			edits,
+			editTimes: edits.map(m => m.capturedAt ?? 0),
 			removedAttachments: new Set(),
 		}
 		logs.set(id, log)
 	}
 
 	return log
+}
+
+export function savedEditLog(
+	record: MessageRecord,
+	settings: Settings,
+): Log | undefined {
+	const entry = savedEdits(record)
+	if (!entry?.edits.length || !shouldLog(record, settings)) return
+	const edits = savedVersions(entry, record)
+	return {
+		channelId: record.channel_id,
+		deleted: false,
+		highlighted: true,
+		edits,
+		editTimes: edits.map(m => m.capturedAt ?? 0),
+		removedAttachments: new Set(),
+	}
 }
 
 function ignored(list: string, id?: string | null) {
@@ -157,6 +196,11 @@ const rerender = (channelId: string, id: string, guildId?: string) => ({
 	guildId,
 	message: { id, channel_id: channelId },
 })
+
+export function refreshSavedEdit(channelId: string, id: string) {
+	changed.add(id)
+	Dispatcher.dispatch(rerender(channelId, id))
+}
 
 // Removed attachments stay in the record, so Discord can still open them
 function keepRemovedAttachments(

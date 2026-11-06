@@ -1,6 +1,6 @@
 import { processColor } from 'react-native'
 import { logColors } from './colors'
-import { getLog, takeChanged } from './logger'
+import { getLog, savedEditLog, takeChanged } from './logger'
 import type { MessageRecord } from './logger'
 import type { Settings } from './shared'
 
@@ -35,7 +35,7 @@ export function styleRow(
 	if (row?.type !== 1 || !row.message) return
 	const message = row.message
 	if (takeChanged(message.id)) row.changeType = 2
-	const log = getLog(message.id)
+	const log = getLog(message.id) ?? savedEditLog(args.message, settings)
 	if (!log) return
 	const prefix: ContentNode[] = []
 	if (log.ghostPing) prefix.push(text('[Ghost ping] '))
@@ -51,7 +51,7 @@ export function styleRow(
 		prefix.push(
 			text(`[${log.removedAttachments.size} removed attachment(s) retained]\n`),
 		)
-	if (settings.inlineEdits && !log.restored && log.edits.length) {
+	if (settings.inlineEdits && log.edits.length) {
 		log.edits.forEach((edit, index) => {
 			const time = log.editTimes[index]
 			const date =
@@ -62,7 +62,7 @@ export function styleRow(
 				text(`[Previous version ${index + 1}${date ? ` · ${date}` : ''}]\n`),
 			)
 			// Quote only a display copy. Inheriting the record keeps its native getters/methods intact.
-			const quoted = Object.create(edit) as MessageRecord
+			const quoted = Object.create(args.message) as MessageRecord
 			Object.defineProperty(quoted, 'content', {
 				value: edit.content
 					.split('\n')

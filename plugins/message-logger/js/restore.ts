@@ -3,7 +3,12 @@ import { getModules } from '@valenced/modules/finders'
 import { withProps } from '@valenced/modules/finders/filters'
 import { instead } from '@valenced/patcher'
 import { archive, bounded } from './archive'
-import { forgetRestoredLog, hydrateRestoredLog, shouldLog } from './logger'
+import {
+	forgetRestoredLog,
+	hydrateRestoredLog,
+	refreshSavedEdit,
+	shouldLog,
+} from './logger'
 import type { ArchivedMessage } from './archive'
 import type { MessageRecord } from './logger'
 import type { Settings } from './shared'
@@ -136,6 +141,8 @@ export function restoreSavedDeletions(
 	const channels = new Map<string, string>()
 	const inserted = new Map<string, Set<string>>()
 	const hydrated = new Map<string, ArchivedMessage>()
+	const shownEdits = new Map<string, Map<string, ArchivedMessage>>()
+	const shownInline = new Map<string, boolean>()
 	const unpatches: Array<() => void> = []
 	const patched = new WeakSet<object>()
 	const self = () =>
@@ -158,6 +165,36 @@ export function restoreSavedDeletions(
 		const current = collection.toArray()
 		const previous = new Set(inserted.get(collection.channelId) ?? [])
 		const archived = archive?.channelEntries(collection.channelId) ?? []
+		const oldEdits = shownEdits.get(collection.channelId) ?? new Map()
+		const oldInline = shownInline.get(collection.channelId)
+		const inline = settings().inlineEdits
+		const liveIds = new Map(current.map(message => [message.id, message]))
+		const nextEdits = new Map(
+			(forceOff ? [] : archived)
+				.filter(entry => {
+					const message = liveIds.get(entry.id)
+					return (
+						!!message &&
+						!entry.deleted &&
+						entry.edits.length > 0 &&
+						entry.message.author.id === message.author.id &&
+						shouldLog(message, settings())
+					)
+				})
+				.map(entry => [entry.id, entry] as const),
+		)
+		shownEdits.set(collection.channelId, nextEdits)
+		shownInline.set(collection.channelId, inline)
+		const refreshIds = new Set([...oldEdits.keys(), ...nextEdits.keys()])
+		for (const id of refreshIds) {
+			if (oldEdits.get(id) === nextEdits.get(id) && oldInline === inline)
+				continue
+			const channel = collection.channelId
+			Promise.resolve().then(() => {
+				if (active && archive?.accountId() === owner && self() === owner)
+					refreshSavedEdit(channel, id)
+			})
+		}
 		// Native startup caches can contain a message received before its deletion. The archive can label it,
 		// but only a fresh server batch is authoritative enough to supersede the saved deletion.
 		if (
@@ -235,10 +272,11 @@ export function restoreSavedDeletions(
 					for (const id of ids) forgetRestoredLog(id)
 				inserted.clear()
 				hydrated.clear()
+				shownEdits.clear()
+				shownInline.clear()
 				channels.clear()
 				lastAccount = account
 			}
-			if (!forceOff && !settings().restoreDeletions && !inserted.size) return
 			for (const [channel, owner] of channels) {
 				if (owner !== account) continue
 				const before = manager.getOrCreate(channel)
@@ -313,7 +351,7 @@ export function restoreSavedDeletions(
 						const result = original.apply(this, args)
 						if (!reconciling) {
 							observe(result)
-							if (settings().restoreDeletions || inserted.size) refresh()
+							refresh()
 						}
 						return result
 					}),

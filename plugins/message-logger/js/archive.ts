@@ -299,7 +299,7 @@ export class MessageArchive {
 		}
 		this.mutate(ctx => {
 			const previous = ctx.entries.get(entry.id)
-			if (previous) {
+			if (previous && !log.archiveSeeded) {
 				const old = previous.edits
 				const incoming = entry.edits
 				let overlap = Math.min(old.length, incoming.length)
@@ -315,8 +315,8 @@ export class MessageArchive {
 				)
 					overlap--
 				entry.edits = [...old, ...incoming.slice(overlap)].slice(-50)
-				entry.ghostPing = entry.ghostPing || previous.ghostPing
 			}
+			if (previous) entry.ghostPing = entry.ghostPing || previous.ghostPing
 			ctx.entries.set(entry.id, entry)
 		})
 	}
@@ -357,6 +357,10 @@ export class MessageArchive {
 	}
 	accountId() {
 		return this.current?.account
+	}
+	entry(id: string) {
+		const ctx = this.current
+		return ctx?.loaded && !ctx.blocked ? ctx.entries.get(id) : undefined
 	}
 	channelEntries(channel: string) {
 		const ctx = this.current
