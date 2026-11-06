@@ -5,20 +5,33 @@
   "plugins": {
     "thetoadsage.message-logger": {
       "name": "Message Logger for iOS",
-      "description": "Temporarily retains deleted messages, removed attachments, and edit history. JavaScript-only adaptation for Valenced.",
+      "description": "Saves deleted messages and edit history across restarts, with searchable per-account history and retention limits. JavaScript-only adaptation for Valenced.",
       "author": "thetoadsage",
       "contributors": [
         "Palm (https://github.com/PalmDevs \"Original Valenced Message Logger\")",
         "Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
       ],
       "channels": {
-        "latest": "0.1.0"
+        "latest": "0.2.0"
       },
       "versions": {
         "0.1.0": {
           "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.message-logger@0.1.0.zip",
           "sha256": "15adaabedc21fa58d4c5198200f2b14868270220c348f5a29cabbaee17d917df",
           "size": 16819,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <353.0"
+            }
+          }
+        },
+        "0.2.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.message-logger@0.2.0.zip",
+          "sha256": "051e30640a582338d8a49b297e861785fc3c8f4a02c580dec2010c4dde1ce088",
+          "size": 20594,
           "dependencies": {
             "valenced.api": {
               "version": ">=1 <2"
