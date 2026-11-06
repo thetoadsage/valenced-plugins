@@ -28,7 +28,7 @@ jobs:
       - run: node scripts/package.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: message-logger-ios
+          name: valenced-plugins
           path: |
             build/dist/*.zip
             build/SHA256SUMS

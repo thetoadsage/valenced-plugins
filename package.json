@@ -7,12 +7,13 @@
 		"package": "npm run build && node scripts/package.mjs",
 		"test": "npm run build && node --experimental-strip-types --test tests/*.test.ts",
 		"lint": "biome check plugins scripts tests package.json repo.config.json",
-		"lint:types": "tsc -p plugins/message-logger/tsconfig.json",
+		"lint:types": "tsc -p plugins/message-logger/tsconfig.json && tsc -p plugins/url-cleaner/tsconfig.json",
 		"generate-index": "valenced-plugin generate-index"
 	},
 	"dependencies": {
 		"@valenced/plugin-cli": "git+https://github.com/Valenced/valenced-plugin-cli.git#9ea9f9bfc91319e2b18c6b1c9ac0b993f8600c1d",
-		"@valenced/types": "https://codeload.github.com/Valenced/valenced-types/tar.gz/c67dd726d1ec28b38d8ac93862fdd3b6029b1d29"
+		"@valenced/types": "https://codeload.github.com/Valenced/valenced-types/tar.gz/c67dd726d1ec28b38d8ac93862fdd3b6029b1d29",
+		"react-native-url-polyfill": "4.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.14",

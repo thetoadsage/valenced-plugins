@@ -1,0 +1,26 @@
+Toad URL Cleaner
+
+TypeScript adaptation of Clipboard Cleaner's URL engine and bundled rule data:
+https://github.com/thetoadsage/clipboard-cleaner/tree/936a4b357a6693ae7465feec1945bd4acbe25bc6
+Original implementation Copyright (c) 2026 thetoadsage, MIT license.
+Modifications: JavaScript URL parsing, URL extraction from Discord text, optional
+canonical rewrites, and independent copy/send/edit settings. Credential-bearing
+and custom-port URLs are not canonicalized. Message code spans are preserved.
+
+Valenced Clear URLs by hakuxyz and nexpid supplies the integration reference:
+https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/clear-urls
+Its NOTICE attributes send/edit patching to nexpid's RevengePlugins (CC BY 4.0):
+https://github.com/nexpid/RevengePlugins/blob/main/src/plugins/clean-urls/src/stuff/patcher.ts
+https://creativecommons.org/licenses/by/4.0/
+This adaptation uses property-based discovery and supports object message payloads.
+
+tracking-rules.json retains its ClearURLs/Rules LGPL-3.0 provenance and reviewed
+uBlock Origin uAssets GPL-3.0 subset. Upstream commit identifiers are embedded
+in that file. Provider exceptions and conditional/preservation rules are retained.
+See licenses/ for license texts and the original Clipboard Cleaner MIT notice.
+
+URL parsing uses react-native-url-polyfill 4.0.0, Copyright (c) Nicolas Charpentier,
+MIT license (included in licenses/URL-Polyfill-MIT.txt). It is bundled locally;
+this plugin does not install global polyfills or fetch URLs/rules at runtime.
+
+Distributed under GNU GPL version 3. See LICENSE.

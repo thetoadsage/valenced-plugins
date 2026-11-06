@@ -1,0 +1,1982 @@
+{
+	"source": "Derived from ClearURLs/Rules (https://github.com/ClearURLs/Rules), LGPL-3.0",
+	"sourceCommit": "11086f40512774dcadef54079f1ba023bfacf940",
+	"generatedAt": "2026-10-21T02:10:55Z",
+	"global": [],
+	"localGlobalAdditionsNote": "Hand-maintained entries below are NOT derived from ClearURLs; see LOCAL_GLOBAL_ADDITIONS in scripts/update_tracking_rules.py.",
+	"localGlobalAdditions": ["wbraid", "gbraid", "gclsrc"],
+	"localDomainAdditionsNote": "Hand-maintained entries below are NOT derived from ClearURLs; they are reviewed for the named domain only.",
+	"localDomainAdditions": {
+		"z-lib.gd": ["dsource"],
+		"kkinstagram.com": ["mdxt"],
+		"instagram.com": [
+			"dlrf",
+			"psln",
+			"rpxt",
+			"obrf",
+			"vrfl",
+			"cplk",
+			"mdxt",
+			"igsi",
+			"si",
+			"stkn"
+		],
+		"github.com": [
+			"utm_source",
+			"utm_medium",
+			"utm_campaign",
+			"utm_term",
+			"utm_content",
+			"utm_id"
+		]
+	},
+	"domains": {
+		"z-lib.gd": ["dsource"],
+		"kkinstagram.com": ["mdxt"],
+		"instagram.com": [
+			"dlrf",
+			"psln",
+			"rpxt",
+			"obrf",
+			"vrfl",
+			"cplk",
+			"mdxt",
+			"igsi",
+			"si",
+			"stkn"
+		],
+		"github.com": [
+			"utm_source",
+			"utm_medium",
+			"utm_campaign",
+			"utm_term",
+			"utm_content",
+			"utm_id"
+		]
+	},
+	"providers": [
+		{
+			"name": "80000hours.org",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:80000hours\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["int_campaign"]
+		},
+		{
+			"name": "9gag.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:9gag\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?"
+			],
+			"rules": ["ref"]
+		},
+		{
+			"name": "ClearURLsTest",
+			"urlPattern": "^https?://(?:kevinroebert\\.gitlab\\.io)(?::[0-9]+)?(?=[/?#]|$)/ClearUrls/void/index\\.html(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["test"]
+		},
+		{
+			"name": "ClearURLsTest2",
+			"urlPattern": "^https?://(?:test\\.clearurls\\.xyz)(?::[0-9]+)?(?=[/?#]|$)/void/index\\.html(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["test"]
+		},
+		{
+			"name": "LinkedIn",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:linkedin\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["refId", "trk", "li[a-z]{2}", "trackingId"]
+		},
+		{
+			"name": "LinkedIn Learning",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:linkedin\\.com)(?::[0-9]+)?(?=[/?#]|$)/learning(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["u"]
+		},
+		{
+			"name": "SPIEGEL ONLINE",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:spiegel\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["b"]
+		},
+		{
+			"name": "academic.oup.com",
+			"urlPattern": "^https?://(?:academic\\.oup\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["redirectedFrom"]
+		},
+		{
+			"name": "accounts.firefox.com",
+			"urlPattern": "^https?://(?:(?:accounts\\.)?firefox\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["entrypoint", "form_type"]
+		},
+		{
+			"name": "agata88.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:agata88\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source"]
+		},
+		{
+			"name": "airbnb",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:airbnb\\.(com|ae|ca|co\\.in|co\\.nz|co\\.uk|co\\.za|com\\.au|com\\.mt|com\\.sg|de|gy|ie))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"federated_search_id",
+				"search_type",
+				"source",
+				"source_impression_id"
+			]
+		},
+		{
+			"name": "aktualne.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:aktualne\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id"
+			]
+		},
+		{
+			"name": "alibaba cloud arms",
+			"urlPattern": "^https?://(?:arms\\-retcode\\.aliyuncs\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"pid",
+				"uid",
+				"tag",
+				"release",
+				"environment",
+				"sample",
+				"behavior",
+				"enableSPA",
+				"enableLinkTrace",
+				"page",
+				"begin",
+				"c2",
+				"c3",
+				"success",
+				"code",
+				"msg",
+				"api",
+				"traceId",
+				"pv_id",
+				"flag",
+				"sr",
+				"vp",
+				"ct",
+				"_v",
+				"sampling",
+				"dl",
+				"post_res"
+			]
+		},
+		{
+			"name": "aliexpress",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:aliexpress(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"ws_ab_test",
+				"btsid",
+				"algo_expid",
+				"algo_pvid",
+				"gps-id",
+				"scm[_a-z-]*",
+				"cv",
+				"af",
+				"mall_affr",
+				"sk",
+				"dp",
+				"terminal_id",
+				"aff_request_id"
+			]
+		},
+		{
+			"name": "allegro.pl",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:allegro\\.pl)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["reco_id", "sid"]
+		},
+		{
+			"name": "allrecipes.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:allrecipes\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"internalSource",
+				"referringId",
+				"referringContentType",
+				"clickId"
+			]
+		},
+		{
+			"name": "amazon",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:amazon(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/gp\\/.*?(?:redirector.html|cart\\/ajax-update.html|video\\/api\\/)",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/(?:hz\\/reviews-render\\/ajax\\/|message-us\\?|s\\?)"
+			],
+			"rules": [
+				"p[fd]_rd_[a-z]*",
+				"qid",
+				"srs?",
+				"__mk_[a-z]{1,3}_[a-z]{1,3}",
+				"spIA",
+				"ms3_c",
+				"[a-z%0-9]*ie",
+				"refRID",
+				"colii?d",
+				"[^a-z%0-9]adId",
+				"qualifier",
+				"_encoding",
+				"smid",
+				"field-lbr_brands_browse-bin",
+				"ref_?",
+				"th",
+				"sprefix",
+				"crid",
+				"keywords",
+				"cv_ct_[a-z]+",
+				"linkCode",
+				"creativeASIN",
+				"ascsubtag",
+				"aaxitk",
+				"hsa_cr_id",
+				"sb-ci-[a-z]+",
+				"rnid",
+				"dchild",
+				"camp",
+				"creative",
+				"content-id",
+				"dib",
+				"dib_tag",
+				"social_share",
+				"starsLeft",
+				"skipTwisterOG"
+			]
+		},
+		{
+			"name": "amazon search",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:amazon(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)/s\\?",
+			"exceptions": [],
+			"rules": [
+				"p[fd]_rd_[a-z]*",
+				"qid",
+				"srs?",
+				"__mk_[a-z]{1,3}_[a-z]{1,3}",
+				"spIA",
+				"ms3_c",
+				"[a-z%0-9]*ie",
+				"refRID",
+				"colii?d",
+				"[^a-z%0-9]adId",
+				"qualifier",
+				"_encoding",
+				"smid",
+				"field-lbr_brands_browse-bin",
+				"ref_?",
+				"th",
+				"sprefix",
+				"crid",
+				"cv_ct_[a-z]+",
+				"linkCode",
+				"creativeASIN",
+				"ascsubtag",
+				"aaxitk",
+				"hsa_cr_id",
+				"sb-ci-[a-z]+",
+				"rnid",
+				"dchild",
+				"camp",
+				"creative"
+			]
+		},
+		{
+			"name": "apple.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:apple\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["app", "ign-itsc[a-z]+"]
+		},
+		{
+			"name": "argos.co.uk",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:argos\\.co\\.uk)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"istCompanyId",
+				"istFeedId",
+				"istItemId",
+				"istBid",
+				"clickOrigin"
+			]
+		},
+		{
+			"name": "autoplus.fr",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:autoplus\\.fr)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["idprob", "hash", "sending_id", "site_id", "dr_tracker"]
+		},
+		{
+			"name": "backcountry.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:backcountry\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"CMP_SKU",
+				"MER",
+				"mr:trackingCode",
+				"mr:device",
+				"mr:adType",
+				"iv_",
+				"CMP_ID",
+				"k_clickid",
+				"rmatt",
+				"INT_ID",
+				"ti",
+				"fl"
+			]
+		},
+		{
+			"name": "bahn.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bahn\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["dbkanal_[0-9]{3}"]
+		},
+		{
+			"name": "bbc",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bbc\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["xtor", "at_[a-z_]+"]
+		},
+		{
+			"name": "bestbuy.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bestbuy\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["irclickid", "irgwc", "loc", "acampID", "mpid", "intl"]
+		},
+		{
+			"name": "bigfishgames.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bigfishgames\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["pc", "npc", "npv[0-9]+", "npi"]
+		},
+		{
+			"name": "bilibili.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bilibili\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/space\\.bilibili\\.com"
+			],
+			"rules": [
+				"callback",
+				"spm_id_from",
+				"from_source",
+				"from",
+				"seid",
+				"mid",
+				"share_source",
+				"msource",
+				"refer_from",
+				"share_from",
+				"share_medium",
+				"share_source",
+				"share_plat",
+				"share_tag",
+				"share_session_id",
+				"timestamp",
+				"unique_k",
+				"vd_source",
+				"plat_id",
+				"buvid",
+				"is_story_h5",
+				"up_id"
+			]
+		},
+		{
+			"name": "billiger.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:billiger\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["log", "p"]
+		},
+		{
+			"name": "bing",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bing(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?bing(?:\\.[a-z]{2,}){1,}\\/WS\\/redirect\\/"
+			],
+			"rules": ["cvid", "sk", "sp", "sc", "qs", "qp"]
+		},
+		{
+			"name": "bloculus.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:bloculus\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["tl_[a-z_]+"]
+		},
+		{
+			"name": "boredpanda.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:boredpanda\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["h"]
+		},
+		{
+			"name": "cafepedagogique.net",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:cafepedagogique\\.net)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["actId", "actCampaignType", "actSource"]
+		},
+		{
+			"name": "cell.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:cell\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["_returnURL"]
+		},
+		{
+			"name": "ceneo.pl",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:ceneo\\.pl)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["tag"]
+		},
+		{
+			"name": "change.org",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:change\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source_location", "psf_variant", "share_intent"]
+		},
+		{
+			"name": "cnbc.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:cnbc\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["__source"]
+		},
+		{
+			"name": "cnet",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:cnet\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ftag"]
+		},
+		{
+			"name": "dailycodingproblem.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:dailycodingproblem\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["email"]
+		},
+		{
+			"name": "deeplearning.ai",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:deeplearning\\.ai)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ecid", "_hsmi", "_hsenc"]
+		},
+		{
+			"name": "diepresse.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:diepresse\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["from", "xtor", "xt_at"]
+		},
+		{
+			"name": "disq.us",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:disq\\.us)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["cuid"]
+		},
+		{
+			"name": "ebay",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:ebay(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["_trkparms", "_trksid", "_from", "hash"]
+		},
+		{
+			"name": "eonline.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:eonline\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source", "medium", "content"]
+		},
+		{
+			"name": "epicgames.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:epicgames\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["epic_affiliate", "epic_gameId"]
+		},
+		{
+			"name": "etsy.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:etsy\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["click_key", "click_sum", "organic_search_click"]
+		},
+		{
+			"name": "europe1.fr",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:europe1\\.fr)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["xtor"]
+		},
+		{
+			"name": "facebook",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:facebook\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/.*?(plugins|ajax)\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/dialog\\/(?:share|send)",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/photo\\.php\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/privacy\\/specific_audience_selector_dialog\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/photo\\/download\\/"
+			],
+			"rules": [
+				"hc_[a-z_%\\[\\]0-9]*",
+				"[a-z]*ref[a-z]*",
+				"__tn__",
+				"eid",
+				"__(?:xts|cft)__(?:\\[|%5B)\\d(?:\\]|%5D)",
+				"comment_tracking",
+				"dti",
+				"app",
+				"video_source",
+				"ftentidentifier",
+				"pageid",
+				"padding",
+				"ls_ref",
+				"action_history",
+				"tracking",
+				"referral_code",
+				"referral_story_type",
+				"eav",
+				"sfnsn",
+				"idorvanity",
+				"wtsid",
+				"rdc",
+				"rdr",
+				"paipv",
+				"_nc_x",
+				"_rdr",
+				"mibextid"
+			]
+		},
+		{
+			"name": "faei.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:faei\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"sznclid",
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id"
+			]
+		},
+		{
+			"name": "fiverr.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:fiverr\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["context_referrer", "source", "ref_ctx_id", "funnel"]
+		},
+		{
+			"name": "flipkart",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:flipkart\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"otracker.?",
+				"ssid",
+				"[cilp]id",
+				"marketplace",
+				"store",
+				"srno",
+				"store",
+				"ppn",
+				"ppt",
+				"fm",
+				"collection-tab-name",
+				"sattr\\[\\]",
+				"p\\[\\]",
+				"st",
+				"qH",
+				"hpid",
+				"ctx",
+				"nnc"
+			]
+		},
+		{
+			"name": "forbes.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:forbes\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["sh"]
+		},
+		{
+			"name": "gamespot.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:gamespot\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["PostType", "ServiceType", "ftag", "UniqueID", "TheTime"]
+		},
+		{
+			"name": "giphy.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:giphy\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ref"]
+		},
+		{
+			"name": "github.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:github\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["email_token", "email_source"]
+		},
+		{
+			"name": "globalRules",
+			"urlPattern": ".*",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(?:cloudflare\\.com|prismic\\.io|tangerine\\.ca|gitlab\\.com)",
+				"^https?:\\/\\/myaccount.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/accounts.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gcsip\\.(?:com|nl)[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/[^/]+/[^/]+/[^/]+\\/-\\/refs\\/switch[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/bugtracker\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?battle\\.net\\/login",
+				"^https?:\\/\\/blizzard\\.com\\/oauth2",
+				"^https?:\\/\\/kreditkarten-banking\\.lbb\\.de",
+				"^https?:\\/\\/www\\.tinkoff\\.ru",
+				"^https?:\\/\\/www\\.cyberport\\.de\\/adscript\\.php",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?tweakers\\.net\\/ext\\/lt\\.dsp\\?.*?(?:%3F)?&?ref_?=.",
+				"^https?:\\/\\/git(lab)?\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/message-us\\?",
+				"^https?:\\/\\/authorization\\.td\\.com",
+				"^https?:\\/\\/support\\.steampowered\\.com",
+				"^https?:\\/\\/privacy\\.vakmedianet\\.nl\\/.*?ref=",
+				"^https?:\\/\\/sso\\.serverplan\\.com\\/manage2fa\\/check\\?ref=",
+				"^https?:\\/\\/login\\.meijer\\.com\\/.*?\\?ref=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/(?:login_alerts|ajax|should_add_browser)/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/api\\.taiga\\.io",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gog\\.com\\/click\\.html",
+				"^https?:\\/\\/login\\.progressive\\.com",
+				"^https?:\\/\\/www\\.sephora\\.com\\/api\\/",
+				"^https?:\\/\\/www\\.contestgirl\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?agenciatributaria\\.gob\\.es",
+				"^https?:\\/\\/login\\.ingbank\\.pl",
+				"^wss?:\\/\\/(?:[a-z0-9-]+\\.)*?zoom\\.us",
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?onet\\.pl\\/[^?]*\\?.*?utm_campaign=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?stripe\\.com\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lichess\\.org\\/login.*?&?referrer=.*?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?microsoft\\.com\\/.*?research\\/redirect",
+				"^https?:\\/\\/like.co\\/api\\/like\\/likebutton\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/www\\.mma\\.go\\.kr",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtrack\\.cloud",
+				"^https?:\\/\\/cu\\.bankid\\.com",
+				"^https?:\\/\\/login\\.aliexpress\\.us",
+				"^https?:\\/\\/ieeexplore\\.ieee\\.org",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sendgb\\.com\\/upload\\/?.*?utm_source=",
+				"^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?irs\\.gov"
+			],
+			"rules": [
+				"utm(?:_[a-z_]*)?",
+				"mtm(?:_[a-z_]*)?",
+				"ga_[a-z_]+",
+				"yclid",
+				"_openstat",
+				"fb_action_(?:types|ids)",
+				"fb_(?:source|ref)",
+				"fbclid",
+				"action_(?:object|type|ref)_map",
+				"gs_l",
+				"mkt_tok",
+				"hmb_(?:campaign|medium|source)",
+				"gclid",
+				"srsltid",
+				"otm_[a-z_]*",
+				"cmpid",
+				"os_ehash",
+				"_ga",
+				"_gl",
+				"__twitter_impression",
+				"wt_?z?mc",
+				"wtrid",
+				"[a-z]?mc",
+				"dclid",
+				"Echobox",
+				"spm",
+				"vn(?:_[a-z]*)+",
+				"tracking_source",
+				"ceneo_spo",
+				"itm_(?:campaign|medium|source)",
+				"__hsfp",
+				"__hssc",
+				"__hstc",
+				"_hsenc",
+				"__s",
+				"hsCtaTracking",
+				"mc_(?:eid|cid|tc)",
+				"ml_subscriber",
+				"ml_subscriber_hash",
+				"msclkid",
+				"oly_anon_id",
+				"oly_enc_id",
+				"rb_clickid",
+				"s_cid",
+				"vero_conv",
+				"vero_id",
+				"wickedid",
+				"twclid"
+			]
+		},
+		{
+			"name": "gog.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:gog\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["track_click", "link_id"]
+		},
+		{
+			"name": "goodreads.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:goodreads\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["from_search", "from_srp", "qid", "rank", "ac"]
+		},
+		{
+			"name": "google",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:google(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/mail\\.google\\.com\\/mail\\/u\\/",
+				"^https?:\\/\\/accounts\\.google\\.com\\/o\\/oauth2\\/",
+				"^https?:\\/\\/accounts\\.google\\.com\\/signin\\/oauth\\/",
+				"^https?:\\/\\/(?:docs|accounts)\\.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/([a-z0-9-\\.])*(chat|drive)\\.google\\.com\\/videoplayback",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}(?:\\/upload)?\\/drive\\/",
+				"^https?:\\/\\/news\\.google\\.com.*\\?hl=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/s\\?tbm=map.*?gs_[a-z]*=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/(?:complete\\/search|setprefs|searchbyimage)",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/(?:appsactivity|aclk\\?)",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/safe[-]?browsing\\/([^&]+)"
+			],
+			"rules": [
+				"ved",
+				"bi[a-z]*",
+				"gfe_[a-z]*",
+				"ei",
+				"source",
+				"gs_[a-z]*",
+				"site",
+				"oq",
+				"esrc",
+				"uact",
+				"cd",
+				"cad",
+				"gws_[a-z]*",
+				"atyp",
+				"vet",
+				"_u",
+				"je",
+				"dcr",
+				"ie",
+				"sei",
+				"sa",
+				"dpr",
+				"btn[a-z]*",
+				"usg",
+				"cd",
+				"cad",
+				"uact",
+				"aqs",
+				"sourceid",
+				"sxsrf",
+				"rlz",
+				"i-would-rather-use-firefox",
+				"pcampaignid",
+				"sca_(?:esv|upv)",
+				"iflsig",
+				"fbs",
+				"ictx",
+				"cshid"
+			]
+		},
+		{
+			"name": "healio.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:healio\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ecp", "m_bt"]
+		},
+		{
+			"name": "hhdotru",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:hh\\.ru)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["vss", "t", "swnt", "grpos", "ptl", "stl", "exp", "plim"]
+		},
+		{
+			"name": "hs.fi",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:hs\\.fi)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["share"]
+		},
+		{
+			"name": "idealo.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:idealo\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"sid",
+				"src",
+				"siteId",
+				"lcb",
+				"leadOutUrl",
+				"offerListId",
+				"osId",
+				"cancelUrl",
+				"disc"
+			]
+		},
+		{
+			"name": "imdb.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:imdb\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ref_", "pf_rd_[a-z]*"]
+		},
+		{
+			"name": "indeed",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:indeed\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?indeed\\.com\\/rc\\/clk"
+			],
+			"rules": ["from", "alid", "[a-z]*tk"]
+		},
+		{
+			"name": "instagram",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:instagram\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["igshid", "igsh"]
+		},
+		{
+			"name": "iprima.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:iprima\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"sznclid",
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id"
+			]
+		},
+		{
+			"name": "kahoot.it",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:kahoot\\.it)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["refer_method"]
+		},
+		{
+			"name": "lazada",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:lazada\\.(com|co\\.th|co\\.id|com\\.my|com\\.ph|sg|vn))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"clickTrackInfo",
+				"abid",
+				"pvid",
+				"ad_src",
+				"spm",
+				"src",
+				"from",
+				"scm",
+				"pa",
+				"pid_pvid",
+				"did",
+				"mp",
+				"cid",
+				"impsrc",
+				"pos"
+			]
+		},
+		{
+			"name": "live.bilibili.com",
+			"urlPattern": "^https?://(?:live\\.bilibili\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["visit_id", "session_id", "broadcast_type", "is_room_feed"]
+		},
+		{
+			"name": "m.bilibili.com",
+			"urlPattern": "^https?://(?:m\\.bilibili\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["bbid", "ts"]
+		},
+		{
+			"name": "magento.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:magento\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["itm_campaign", "itm_medium", "itm_source", "itm_term"]
+		},
+		{
+			"name": "marketscreener.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:marketscreener\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?marketscreener\\.com\\/search\\/\\?"
+			],
+			"rules": [
+				"type_recherche",
+				"mots",
+				"noredirect",
+				"RewriteLast",
+				"lien",
+				"aComposeInputSearch",
+				"type_recherche_forum",
+				"add_mots",
+				"countview"
+			]
+		},
+		{
+			"name": "marketscreener.com search",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:marketscreener\\.com)(?::[0-9]+)?(?=[/?#]|$)/search/\\?",
+			"exceptions": [],
+			"rules": [
+				"type_recherche",
+				"noredirect",
+				"RewriteLast",
+				"lien",
+				"aComposeInputSearch",
+				"type_recherche_forum",
+				"countview"
+			]
+		},
+		{
+			"name": "medium.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:medium\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source"]
+		},
+		{
+			"name": "meetup.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:meetup\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["rv", "_xtd"]
+		},
+		{
+			"name": "mercadolibre",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:mercadoli[bv]re\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"DEAL_ID",
+				"L",
+				"S",
+				"T",
+				"V",
+				"pdp_filters",
+				"position",
+				"search_layout",
+				"tracking_id",
+				"type",
+				"c_[_a-zA-Z]+",
+				"me\\.[_a-zA-Z]+",
+				"reco_[_a-zA-Z]+",
+				"ad_click_id"
+			]
+		},
+		{
+			"name": "metro.co.uk",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:metro\\.co\\.uk)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ito"]
+		},
+		{
+			"name": "moosejaw.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:moosejaw\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"cm_lm",
+				"cm_mmc",
+				"webUserId",
+				"spMailingID",
+				"spUserID",
+				"spJobID",
+				"spReportId"
+			]
+		},
+		{
+			"name": "mozilla.org",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:mozilla\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": ["^https?:\\/\\/(?:[a-z0-9-]+\\.)*?mozilla.org\\/api"],
+			"rules": ["src", "platform", "redirect_source"]
+		},
+		{
+			"name": "mozillazine.org",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:mozillazine\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["sid"]
+		},
+		{
+			"name": "msn",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:msn\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["cvid", "ocid"]
+		},
+		{
+			"name": "net-parade.it",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:net\\-parade\\.it)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["pl"]
+		},
+		{
+			"name": "netflix",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:netflix\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["trackId", "tctx", "jb[a-z]*?"]
+		},
+		{
+			"name": "newsletter.lidl.com",
+			"urlPattern": "^https?://(?:newsletter\\.lidl(?:\\.[a-z]{2,}){1,})(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["x"]
+		},
+		{
+			"name": "newyorker.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:newyorker\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source", "bxid", "cndid", "esrc", "mbid"]
+		},
+		{
+			"name": "nikkei",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:nikkei\\.co(?:m|\\.jp))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["adid", "i_cid", "n_cid", "waad"]
+		},
+		{
+			"name": "nordwolle.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:nordwolle\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["_sc", "_sid", "_ss"]
+		},
+		{
+			"name": "norml.org",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:norml\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"link_id",
+				"can_id",
+				"source",
+				"email_referrer",
+				"email_subject"
+			]
+		},
+		{
+			"name": "nova.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:nova\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"sznclid",
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id"
+			]
+		},
+		{
+			"name": "novinky.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:novinky\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id",
+				"source",
+				"seq_no"
+			]
+		},
+		{
+			"name": "nypost.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:nypost\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["__twitter_impression"]
+		},
+		{
+			"name": "nytimes.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:nytimes\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["smid"]
+		},
+		{
+			"name": "office-partner.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:office\\-partner\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["sPartner", "campaign"]
+		},
+		{
+			"name": "onet.pl",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:onet\\.pl)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["srcc", "utm_v", "utm_medium", "utm_source"]
+		},
+		{
+			"name": "ozon.ru",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:ozon\\.ru)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["partner"]
+		},
+		{
+			"name": "prvnizpravy.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:prvnizpravy\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["xid"]
+		},
+		{
+			"name": "quizlet",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:quizlet\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["funnelUUID"]
+		},
+		{
+			"name": "readdc.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:readdc\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ref"]
+		},
+		{
+			"name": "realtor.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:realtor\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ex", "identityID", "MID", "RID"]
+		},
+		{
+			"name": "reddit",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:reddit\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"%24deep_link",
+				"\\$deep_link",
+				"correlation_id",
+				"ref_campaign",
+				"ref_source",
+				"%243p",
+				"rdt",
+				"\\$3p",
+				"%24original_url",
+				"\\$original_url",
+				"_branch_match_id",
+				"share_id"
+			]
+		},
+		{
+			"name": "redfin.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:redfin\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["riftinfo"]
+		},
+		{
+			"name": "respekt.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:respekt\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"sznclid",
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id"
+			]
+		},
+		{
+			"name": "reuters.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:reuters\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["taid"]
+		},
+		{
+			"name": "roblox.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:roblox\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["refPageId"]
+		},
+		{
+			"name": "seznamzpravy.cz",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:seznamzpravy\\.cz)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"dop_ab_variant",
+				"dop_source_zone_name",
+				"dop_req_id",
+				"dop_id",
+				"source",
+				"seq_no"
+			]
+		},
+		{
+			"name": "shopee",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:shopee\\.(com|co\\.th|tw))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["publish_id", "sp_atk", "xptdk"]
+		},
+		{
+			"name": "shutterstock.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)+shutterstock\\.com(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["src"]
+		},
+		{
+			"name": "snapchat.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:snapchat\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["sc_referrer", "sc_ua"]
+		},
+		{
+			"name": "sohu",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:sohu\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["pvid", "scm"]
+		},
+		{
+			"name": "space.bilibili.com",
+			"urlPattern": "^https?://(?:space\\.bilibili\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["spm_id_from"]
+		},
+		{
+			"name": "spotify.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:spotify\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["si"]
+		},
+		{
+			"name": "steampowered",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:steampowered\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["snr"]
+		},
+		{
+			"name": "support.mozilla.org",
+			"urlPattern": "^https?://(?:(?:support\\.)?mozilla\\.org)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["as"]
+		},
+		{
+			"name": "swp.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:swp\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["source"]
+		},
+		{
+			"name": "taobao.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:taobao\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"price",
+				"sourceType",
+				"suid",
+				"ut_sk",
+				"un",
+				"share_crt_v",
+				"sp_tk",
+				"cpp",
+				"shareurl",
+				"short_name",
+				"app",
+				"scm[_a-z-]*",
+				"pvid",
+				"algo_expid",
+				"algo_pvid",
+				"ns",
+				"abbucket",
+				"ali_refid",
+				"ali_trackid",
+				"acm",
+				"utparam",
+				"pos",
+				"abtest",
+				"trackInfo",
+				"utkn",
+				"scene",
+				"mytmenu",
+				"turing_bucket",
+				"lygClk",
+				"impid",
+				"bftTag",
+				"bftRwd",
+				"spm",
+				"_u"
+			]
+		},
+		{
+			"name": "tb.cn",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tb\\.cn)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["sm"]
+		},
+		{
+			"name": "tchibo.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tchibo\\.de)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["wbdcd"]
+		},
+		{
+			"name": "techcrunch",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:techcrunch\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"ncid",
+				"sr",
+				"sr_share",
+				"guccounter",
+				"guce_referrer",
+				"guce_referrer_sig"
+			]
+		},
+		{
+			"name": "teletrader.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:teletrader\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["internal"]
+		},
+		{
+			"name": "theguardian.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:theguardian\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["CMP"]
+		},
+		{
+			"name": "thetimes.co.uk",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:thetimes\\.co\\.uk)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["shareToken"]
+		},
+		{
+			"name": "thunderbird.net",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:thunderbird\\.net)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["src"]
+		},
+		{
+			"name": "tiktok.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tiktok\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"u_code",
+				"preview_pb",
+				"_d",
+				"_t",
+				"_r",
+				"timestamp",
+				"user_id",
+				"share_app_name",
+				"share_iid",
+				"source"
+			]
+		},
+		{
+			"name": "tmall.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tmall\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": [
+				"price",
+				"sourceType",
+				"suid",
+				"ut_sk",
+				"un",
+				"share_crt_v",
+				"sp_tk",
+				"cpp",
+				"shareurl",
+				"short_name",
+				"app",
+				"scm[_a-z-]*",
+				"pvid",
+				"algo_expid",
+				"algo_pvid",
+				"ns",
+				"abbucket",
+				"ali_refid",
+				"ali_trackid",
+				"acm",
+				"utparam",
+				"pos",
+				"abtest",
+				"trackInfo",
+				"user_number_id",
+				"utkn",
+				"scene",
+				"mytmenu",
+				"turing_bucket",
+				"lygClk",
+				"impid",
+				"bftTag",
+				"bftRwd",
+				"activity_id"
+			]
+		},
+		{
+			"name": "tokopedia.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tokopedia\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["src", "trkid", "whid"]
+		},
+		{
+			"name": "tweakers",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:tweakers\\.net)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["nb", "u"]
+		},
+		{
+			"name": "twitch",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:twitch\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["tt_medium", "tt_content"]
+		},
+		{
+			"name": "twitter",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:twitter\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": ["^https?:\\/\\/twitter.com\\/i\\/redirect"],
+			"rules": ["(?:ref_?)?src", "s", "cn", "ref_url", "t"]
+		},
+		{
+			"name": "vitamix.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:vitamix\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["_requestid", "cid", "dl", "di", "sd", "bi"]
+		},
+		{
+			"name": "vivaldi",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:vivaldi\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["pk_campaign", "pk_kwd"]
+		},
+		{
+			"name": "walmart.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:walmart\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["u1", "ath[a-z]*"]
+		},
+		{
+			"name": "weibo",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:weibo\\.(cn|com))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["weibo_id", "dt_dapp"]
+		},
+		{
+			"name": "wired.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:wired\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["intcid"]
+		},
+		{
+			"name": "wkorea.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:wkorea\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ddw", "ds_ch"]
+		},
+		{
+			"name": "woot.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:woot\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["ref_?"]
+		},
+		{
+			"name": "wps.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:wps\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["from"]
+		},
+		{
+			"name": "x",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:x\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": ["^https?:\\/\\/x.com\\/i\\/redirect"],
+			"rules": ["(?:ref_?)?src", "s", "cn", "ref_url", "t"]
+		},
+		{
+			"name": "xiaohongshu.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:xiaohongshu\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/web\\/v1\\/user\\/hover_card"
+			],
+			"rules": [
+				"xhsshare",
+				"author_share",
+				"type",
+				"xsec_source",
+				"share_from_user_hidden",
+				"app_version",
+				"ignoreEngage",
+				"app_platform",
+				"apptime",
+				"appuid",
+				"shareRedId",
+				"share_id",
+				"exSource",
+				"verifyUuid",
+				"verifyType",
+				"verifyBiz"
+			]
+		},
+		{
+			"name": "yandex",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:(?:yandex(?:\\.[a-z]{2,}){1,}|ya\\.ru))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["lr", "redircnt"]
+		},
+		{
+			"name": "yle.fi",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:yle\\.fi)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["origin"]
+		},
+		{
+			"name": "youku.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:youku\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["tpa"]
+		},
+		{
+			"name": "youtube",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:(youtube\\.com|youtu\\.be))(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtube\\.com\\/signin\\?.*?"
+			],
+			"rules": ["feature", "gclid", "kw", "si", "pp"]
+		},
+		{
+			"name": "zillow.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:zillow\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["rtoken"]
+		},
+		{
+			"name": "zoho.com",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?(?:zoho\\.com)(?::[0-9]+)?(?=[/?#]|$)",
+			"exceptions": [],
+			"rules": ["iref"]
+		}
+	],
+	"reviewedSource": {
+		"repository": "https://github.com/uBlockOrigin/uAssets",
+		"commit": "c07a29de87b10d2a6f23be4b1117479ec3cfc87b",
+		"license": "GPL-3.0",
+		"files": [
+			"filters/privacy.txt",
+			"filters/privacy-removeparam.txt",
+			"filters/annoyances-others.txt"
+		]
+	},
+	"parameterRules": [
+		{
+			"id": "click-identifiers-1",
+			"urlPattern": ".*",
+			"namePattern": "(?:gad_source|gad_campaignid|ttclid|pjclid|tgclid|cjevent|cjdata|fbadid|fb_comment_id|clckid|ymclid|ysclid|ym_tracking_id|hss_channel|sfmc_id)",
+			"action": "remove",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(?:cloudflare\\.com|prismic\\.io|tangerine\\.ca|gitlab\\.com)",
+				"^https?:\\/\\/myaccount.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/accounts.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gcsip\\.(?:com|nl)[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/[^/]+/[^/]+/[^/]+\\/-\\/refs\\/switch[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/bugtracker\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?battle\\.net\\/login",
+				"^https?:\\/\\/blizzard\\.com\\/oauth2",
+				"^https?:\\/\\/kreditkarten-banking\\.lbb\\.de",
+				"^https?:\\/\\/www\\.tinkoff\\.ru",
+				"^https?:\\/\\/www\\.cyberport\\.de\\/adscript\\.php",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?tweakers\\.net\\/ext\\/lt\\.dsp\\?.*?(?:%3F)?&?ref_?=.",
+				"^https?:\\/\\/git(lab)?\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/message-us\\?",
+				"^https?:\\/\\/authorization\\.td\\.com",
+				"^https?:\\/\\/support\\.steampowered\\.com",
+				"^https?:\\/\\/privacy\\.vakmedianet\\.nl\\/.*?ref=",
+				"^https?:\\/\\/sso\\.serverplan\\.com\\/manage2fa\\/check\\?ref=",
+				"^https?:\\/\\/login\\.meijer\\.com\\/.*?\\?ref=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/(?:login_alerts|ajax|should_add_browser)/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/api\\.taiga\\.io",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gog\\.com\\/click\\.html",
+				"^https?:\\/\\/login\\.progressive\\.com",
+				"^https?:\\/\\/www\\.sephora\\.com\\/api\\/",
+				"^https?:\\/\\/www\\.contestgirl\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?agenciatributaria\\.gob\\.es",
+				"^https?:\\/\\/login\\.ingbank\\.pl",
+				"^wss?:\\/\\/(?:[a-z0-9-]+\\.)*?zoom\\.us",
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?onet\\.pl\\/[^?]*\\?.*?utm_campaign=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?stripe\\.com\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lichess\\.org\\/login.*?&?referrer=.*?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?microsoft\\.com\\/.*?research\\/redirect",
+				"^https?:\\/\\/like.co\\/api\\/like\\/likebutton\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/www\\.mma\\.go\\.kr",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtrack\\.cloud",
+				"^https?:\\/\\/cu\\.bankid\\.com",
+				"^https?:\\/\\/login\\.aliexpress\\.us",
+				"^https?:\\/\\/ieeexplore\\.ieee\\.org",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sendgb\\.com\\/upload\\/?.*?utm_source=",
+				"^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?irs\\.gov"
+			]
+		},
+		{
+			"id": "click-identifiers-2",
+			"urlPattern": ".*",
+			"namePattern": "(?:sfmc_activityid|hsa_acc|hsa_ad|hsa_cam|hsa_grp|hsa_kw|hsa_la|hsa_mt|hsa_net|hsa_ol|hsa_src|hsa_tgt|hsa_ver|bsft_clkid|bsft_eid)",
+			"action": "remove",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(?:cloudflare\\.com|prismic\\.io|tangerine\\.ca|gitlab\\.com)",
+				"^https?:\\/\\/myaccount.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/accounts.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gcsip\\.(?:com|nl)[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/[^/]+/[^/]+/[^/]+\\/-\\/refs\\/switch[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/bugtracker\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?battle\\.net\\/login",
+				"^https?:\\/\\/blizzard\\.com\\/oauth2",
+				"^https?:\\/\\/kreditkarten-banking\\.lbb\\.de",
+				"^https?:\\/\\/www\\.tinkoff\\.ru",
+				"^https?:\\/\\/www\\.cyberport\\.de\\/adscript\\.php",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?tweakers\\.net\\/ext\\/lt\\.dsp\\?.*?(?:%3F)?&?ref_?=.",
+				"^https?:\\/\\/git(lab)?\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/message-us\\?",
+				"^https?:\\/\\/authorization\\.td\\.com",
+				"^https?:\\/\\/support\\.steampowered\\.com",
+				"^https?:\\/\\/privacy\\.vakmedianet\\.nl\\/.*?ref=",
+				"^https?:\\/\\/sso\\.serverplan\\.com\\/manage2fa\\/check\\?ref=",
+				"^https?:\\/\\/login\\.meijer\\.com\\/.*?\\?ref=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/(?:login_alerts|ajax|should_add_browser)/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/api\\.taiga\\.io",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gog\\.com\\/click\\.html",
+				"^https?:\\/\\/login\\.progressive\\.com",
+				"^https?:\\/\\/www\\.sephora\\.com\\/api\\/",
+				"^https?:\\/\\/www\\.contestgirl\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?agenciatributaria\\.gob\\.es",
+				"^https?:\\/\\/login\\.ingbank\\.pl",
+				"^wss?:\\/\\/(?:[a-z0-9-]+\\.)*?zoom\\.us",
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?onet\\.pl\\/[^?]*\\?.*?utm_campaign=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?stripe\\.com\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lichess\\.org\\/login.*?&?referrer=.*?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?microsoft\\.com\\/.*?research\\/redirect",
+				"^https?:\\/\\/like.co\\/api\\/like\\/likebutton\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/www\\.mma\\.go\\.kr",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtrack\\.cloud",
+				"^https?:\\/\\/cu\\.bankid\\.com",
+				"^https?:\\/\\/login\\.aliexpress\\.us",
+				"^https?:\\/\\/ieeexplore\\.ieee\\.org",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sendgb\\.com\\/upload\\/?.*?utm_source=",
+				"^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?irs\\.gov"
+			]
+		},
+		{
+			"id": "click-identifiers-3",
+			"urlPattern": ".*",
+			"namePattern": "(?:bsft_mid|bsft_uid|bsft_aaid|bsft_ek)",
+			"action": "remove",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(?:cloudflare\\.com|prismic\\.io|tangerine\\.ca|gitlab\\.com)",
+				"^https?:\\/\\/myaccount.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/accounts.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gcsip\\.(?:com|nl)[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/[^/]+/[^/]+/[^/]+\\/-\\/refs\\/switch[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/bugtracker\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?battle\\.net\\/login",
+				"^https?:\\/\\/blizzard\\.com\\/oauth2",
+				"^https?:\\/\\/kreditkarten-banking\\.lbb\\.de",
+				"^https?:\\/\\/www\\.tinkoff\\.ru",
+				"^https?:\\/\\/www\\.cyberport\\.de\\/adscript\\.php",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?tweakers\\.net\\/ext\\/lt\\.dsp\\?.*?(?:%3F)?&?ref_?=.",
+				"^https?:\\/\\/git(lab)?\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/message-us\\?",
+				"^https?:\\/\\/authorization\\.td\\.com",
+				"^https?:\\/\\/support\\.steampowered\\.com",
+				"^https?:\\/\\/privacy\\.vakmedianet\\.nl\\/.*?ref=",
+				"^https?:\\/\\/sso\\.serverplan\\.com\\/manage2fa\\/check\\?ref=",
+				"^https?:\\/\\/login\\.meijer\\.com\\/.*?\\?ref=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/(?:login_alerts|ajax|should_add_browser)/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/api\\.taiga\\.io",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gog\\.com\\/click\\.html",
+				"^https?:\\/\\/login\\.progressive\\.com",
+				"^https?:\\/\\/www\\.sephora\\.com\\/api\\/",
+				"^https?:\\/\\/www\\.contestgirl\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?agenciatributaria\\.gob\\.es",
+				"^https?:\\/\\/login\\.ingbank\\.pl",
+				"^wss?:\\/\\/(?:[a-z0-9-]+\\.)*?zoom\\.us",
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?onet\\.pl\\/[^?]*\\?.*?utm_campaign=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?stripe\\.com\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lichess\\.org\\/login.*?&?referrer=.*?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?microsoft\\.com\\/.*?research\\/redirect",
+				"^https?:\\/\\/like.co\\/api\\/like\\/likebutton\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/www\\.mma\\.go\\.kr",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtrack\\.cloud",
+				"^https?:\\/\\/cu\\.bankid\\.com",
+				"^https?:\\/\\/login\\.aliexpress\\.us",
+				"^https?:\\/\\/ieeexplore\\.ieee\\.org",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sendgb\\.com\\/upload\\/?.*?utm_source=",
+				"^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?irs\\.gov"
+			]
+		},
+		{
+			"id": "facebook-share",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*facebook\\.com(?=[/?#]|$)",
+			"namePattern": "(?:rdid|share_url)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "instagram-share",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*instagram\\.com(?=[/?#]|$)",
+			"namePattern": "ig_rid",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "reddit-share",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*reddit\\.com(?=[/?#]|$)",
+			"namePattern": "(?:ref|\\$web_only|web_only|deep_link)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "spotify-share",
+			"urlPattern": "^https?://open\\.spotify\\.com(?=[/?#]|$)",
+			"namePattern": "(?:pi|dlsi)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "tiktok-share",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*tiktok\\.com(?=[/?#]|$)",
+			"namePattern": "share_region",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "youtube-short-link",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*youtu\\.be(?=[/?#]|$)/[^/?#]+/?(?=[?#]|$)",
+			"namePattern": "is",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "youtube-live",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*youtube\\.com(?=[/?#]|$)/live/[^/?#]+/?(?=[?#]|$)",
+			"namePattern": "is",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "drip-value-condition",
+			"urlPattern": ".*",
+			"namePattern": "__s",
+			"action": "remove",
+			"exceptions": [
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(?:cloudflare\\.com|prismic\\.io|tangerine\\.ca|gitlab\\.com)",
+				"^https?:\\/\\/myaccount.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/accounts.google(?:\\.[a-z]{2,}){1,}",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gcsip\\.(?:com|nl)[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/[^/]+/[^/]+/[^/]+\\/-\\/refs\\/switch[^?]*\\?.*?&?ref_?=.",
+				"^https?:\\/\\/bugtracker\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?battle\\.net\\/login",
+				"^https?:\\/\\/blizzard\\.com\\/oauth2",
+				"^https?:\\/\\/kreditkarten-banking\\.lbb\\.de",
+				"^https?:\\/\\/www\\.tinkoff\\.ru",
+				"^https?:\\/\\/www\\.cyberport\\.de\\/adscript\\.php",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?tweakers\\.net\\/ext\\/lt\\.dsp\\?.*?(?:%3F)?&?ref_?=.",
+				"^https?:\\/\\/git(lab)?\\.[^/]*\\/[^?]+\\?.*?&?ref_?=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}\\/message-us\\?",
+				"^https?:\\/\\/authorization\\.td\\.com",
+				"^https?:\\/\\/support\\.steampowered\\.com",
+				"^https?:\\/\\/privacy\\.vakmedianet\\.nl\\/.*?ref=",
+				"^https?:\\/\\/sso\\.serverplan\\.com\\/manage2fa\\/check\\?ref=",
+				"^https?:\\/\\/login\\.meijer\\.com\\/.*?\\?ref=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/(?:login_alerts|ajax|should_add_browser)/",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com\\/groups\\/member_bio\\/bio_dialog\\/",
+				"^https?:\\/\\/api\\.taiga\\.io",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?gog\\.com\\/click\\.html",
+				"^https?:\\/\\/login\\.progressive\\.com",
+				"^https?:\\/\\/www\\.sephora\\.com\\/api\\/",
+				"^https?:\\/\\/www\\.contestgirl\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?agenciatributaria\\.gob\\.es",
+				"^https?:\\/\\/login\\.ingbank\\.pl",
+				"^wss?:\\/\\/(?:[a-z0-9-]+\\.)*?zoom\\.us",
+				"^https?:\\/\\/api\\.bilibili\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?onet\\.pl\\/[^?]*\\?.*?utm_campaign=.",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?stripe\\.com\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lichess\\.org\\/login.*?&?referrer=.*?",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?microsoft\\.com\\/.*?research\\/redirect",
+				"^https?:\\/\\/like.co\\/api\\/like\\/likebutton\\/[^?]+.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+				"^https?:\\/\\/www\\.mma\\.go\\.kr",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?youtrack\\.cloud",
+				"^https?:\\/\\/cu\\.bankid\\.com",
+				"^https?:\\/\\/login\\.aliexpress\\.us",
+				"^https?:\\/\\/ieeexplore\\.ieee\\.org",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sendgb\\.com\\/upload\\/?.*?utm_source=",
+				"^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source=",
+				"^https?:\\/\\/(?:[a-z0-9-]+\\.)*?irs\\.gov"
+			],
+			"valuePattern": "[A-Za-z0-9]{6,}"
+		},
+		{
+			"id": "drip-exception-univis.uni-erlangen.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*univis\\.uni\\-erlangen\\.de(?=[/?#]|$)",
+			"namePattern": "__s",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "drip-exception-univis.uni-bamberg.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*univis\\.uni\\-bamberg\\.de(?=[/?#]|$)",
+			"namePattern": "__s",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "drip-exception-univis.uni-luebeck.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*univis\\.uni\\-luebeck\\.de(?=[/?#]|$)",
+			"namePattern": "__s",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "drip-exception-univis.uni-kiel.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*univis\\.uni\\-kiel\\.de(?=[/?#]|$)",
+			"namePattern": "__s",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "drip-exception-univis.th-koeln.de",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*univis\\.th\\-koeln\\.de(?=[/?#]|$)",
+			"namePattern": "__s",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "plex-auth",
+			"urlPattern": "^https?://app\\.plex\\.tv(?=[/?#]|$)/auth-form(?=[/?#]|$)",
+			"namePattern": "utm_(?:source|content|medium)",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "reddit-email",
+			"urlPattern": "^https?://reddit\\.app\\.link(?=[/?#]|$)",
+			"namePattern": "utm_content",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "greenbuilding-login",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*greenbuildingadvisor\\.com(?=[/?#]|$)",
+			"namePattern": "oly_enc_id",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "bizrate-redirect",
+			"urlPattern": "^https?://rd\\.bizrate\\.com(?=[/?#]|$)",
+			"namePattern": "utm_(?:campaign|medium)",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "metabase-term",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*metabase\\.com(?=[/?#]|$)",
+			"namePattern": "utm_term",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "proofpoint-wrapper",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*urldefense\\.com(?=[/?#]|$)",
+			"namePattern": ".*",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "axs-tickets",
+			"urlPattern": "^https?://tix\\.axs\\.com(?=[/?#]|$)",
+			"namePattern": ".*",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "apple-product-fnode",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*apple\\.com(?::[0-9]+)?/(?:[a-z]{2}/)?shop/product/[^/?#]+",
+			"namePattern": "fnode",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-search-globalnav",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*apple\\.com(?::[0-9]+)?/(?:[a-z]{2}/)?search(?:[/?#]|$)",
+			"namePattern": "src",
+			"valuePattern": "(?:globalnav|aos)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-store-campaign",
+			"urlPattern": "^https?://(?:www\\.)?apple\\.com(?::[0-9]+)?/(?:[a-z]{2}/)?(?:shop|today)(?:[/?#]|$)",
+			"namePattern": "cid",
+			"valuePattern": "(?:aos|rem|gn)-[a-z0-9_-]+",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-support-campaign",
+			"urlPattern": "^https?://support\\.apple\\.com(?::[0-9]+)?(?=[/?#]|$)",
+			"namePattern": "cid",
+			"valuePattern": "(?:aos|rem|gn)-[a-z0-9_-]+",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-services-attribution",
+			"urlPattern": "^https?://(?:geo\\.)?(?:music|tv|podcasts|books|apps|itunes)\\.apple\\.com(?::[0-9]+)?(?=[/?#]|$)",
+			"namePattern": "(?:itscg|itsct|at|ct)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-appstore-provider-token",
+			"urlPattern": "^https?://(?:apps|itunes)\\.apple\\.com(?::[0-9]+)?(?=[/?#]|$)",
+			"namePattern": "pt",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "apple-preserve-app-selection",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*apple\\.com(?::[0-9]+)?(?=[/?#]|$)",
+			"namePattern": "app",
+			"action": "preserve",
+			"exceptions": []
+		},
+		{
+			"id": "youtube-video-embed-attribution",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*youtube\\.com(?::[0-9]+)?/(?:watch(?=[?#]|$)|(?:shorts|live|embed)/[^/?#]+/?(?=[?#]|$))",
+			"namePattern": "(?:embeds_referring_euri|embeds_referring_origin|source_ve_path)",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "twitter-status-context",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*(?:twitter\\.com|x\\.com)(?::[0-9]+)?/(?:[^/?#]+|i/web)/status/[0-9]+(?:/(?:photo|video)/[0-9]+)?/?(?=[?#]|$)",
+			"namePattern": "cxt",
+			"action": "remove",
+			"exceptions": []
+		},
+		{
+			"id": "reddit-post-referral-context",
+			"urlPattern": "^https?://(?:[a-z0-9-]+\\.)*reddit\\.com(?::[0-9]+)?/(?:r/[^/?#]+/|user/[^/?#]+/)?comments/[a-z0-9]+(?:/[^?#]*)?(?=[?#]|$)",
+			"namePattern": "(?:entry_point|target_user|post_index|post_fullname|_branch_referrer)",
+			"action": "remove",
+			"exceptions": []
+		}
+	]
+}

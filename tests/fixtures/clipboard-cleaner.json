@@ -1,0 +1,1890 @@
+[
+	{
+		"input": "file:///etc/passwd",
+		"expected": "file:///etc/passwd"
+	},
+	{
+		"input": "ftp://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com",
+		"expected": "ftp://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com"
+	},
+	{
+		"input": "ftp://example.com/file.txt",
+		"expected": "ftp://example.com/file.txt"
+	},
+	{
+		"input": "ftp://www.google.com/url?q=https%3A%2F%2Fexample.com%2Farticle",
+		"expected": "ftp://www.google.com/url?q=https%3A%2F%2Fexample.com%2Farticle"
+	},
+	{
+		"input": "http://",
+		"expected": "http://"
+	},
+	{
+		"input": "http://[::1]",
+		"expected": "http://[::1]"
+	},
+	{
+		"input": "http://example.com",
+		"expected": "http://example.com"
+	},
+	{
+		"input": "http://example.com\"}",
+		"expected": "http://example.com\"}"
+	},
+	{
+		"input": "http://example.com/ĺ́́́́́́́",
+		"expected": "http://example.com/ĺ́́́́́́́"
+	},
+	{
+		"input": "http://example.com/page?q=1",
+		"expected": "http://example.com/page?q=1"
+	},
+	{
+		"input": "http://example.com/page?utm_source=x&q=1",
+		"expected": "http://example.com/page?q=1"
+	},
+	{
+		"input": "http://user:pass@example.com:8080/path?q=1#frag",
+		"expected": "http://user:pass@example.com:8080/path?q=1#frag"
+	},
+	{
+		"input": "https://",
+		"expected": "https://"
+	},
+	{
+		"input": "https://WWW.APPLE.COM:443/today/event/spotlight-apple-intelligence",
+		"expected": "https://WWW.APPLE.COM:443/today/event/spotlight-apple-intelligence"
+	},
+	{
+		"input": "https://WWW.APPLE.COM:443/us/search/polishing-cloth",
+		"expected": "https://WWW.APPLE.COM:443/us/search/polishing-cloth"
+	},
+	{
+		"input": "https://accounts.google.com/o/oauth2/auth?client_id=demo&source=required&utm_source=required",
+		"expected": "https://accounts.google.com/o/oauth2/auth?client_id=demo&source=required&utm_source=required"
+	},
+	{
+		"input": "https://accounts.google.com/o/oauth2/auth?client_id=keep&gad_source=1&__s=abcdef",
+		"expected": "https://accounts.google.com/o/oauth2/auth?client_id=keep&gad_source=1&__s=abcdef"
+	},
+	{
+		"input": "https://accounts.google.com/o/oauth2/auth?client_id=keep&utm_source=email",
+		"expected": "https://accounts.google.com/o/oauth2/auth?client_id=keep&utm_source=email"
+	},
+	{
+		"input": "https://accounts.google.com/o/oauth2/auth?utm_source=keep&client_id=keep",
+		"expected": "https://accounts.google.com/o/oauth2/auth?utm_source=keep&client_id=keep"
+	},
+	{
+		"input": "https://aliexpress.example/item/123456.html?paymentToken=keep",
+		"expected": "https://aliexpress.example/item/123456.html?paymentToken=keep"
+	},
+	{
+		"input": "https://aliexpressgroup.com/wholesale?ws_ab_test=abc",
+		"expected": "https://aliexpressgroup.com/wholesale?ws_ab_test=abc"
+	},
+	{
+		"input": "https://amazon-reviews.example.com/?qid=12345",
+		"expected": "https://amazon-reviews.example.com/?qid=12345"
+	},
+	{
+		"input": "https://amazon.example/dp/B08XYZ1234?checkoutToken=keep",
+		"expected": "https://amazon.example/dp/B08XYZ1234?checkoutToken=keep"
+	},
+	{
+		"input": "https://app.plex.tv.example.com/auth-form/",
+		"expected": "https://app.plex.tv.example.com/auth-form/"
+	},
+	{
+		"input": "https://app.plex.tv.example.com/auth-form/?utm_source=remove",
+		"expected": "https://app.plex.tv.example.com/auth-form/"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form-other",
+		"expected": "https://app.plex.tv/auth-form-other"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form-other?utm_source=remove",
+		"expected": "https://app.plex.tv/auth-form-other"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form/?utm_source=café&next=%2F",
+		"expected": "https://app.plex.tv/auth-form/?utm_source=café&next=%2F"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form/?utm_source=keep&clientID=keep",
+		"expected": "https://app.plex.tv/auth-form/?utm_source=keep&clientID=keep"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form/?utm_source=keep&fbclid=remove&id=42",
+		"expected": "https://app.plex.tv/auth-form/?utm_source=keep&id=42"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form/?utm_source=keep&id=42",
+		"expected": "https://app.plex.tv/auth-form/?utm_source=keep&id=42"
+	},
+	{
+		"input": "https://app.plex.tv/auth-form/?utm_source=plex&utm_content=login&utm_medium=web&clientID=keep",
+		"expected": "https://app.plex.tv/auth-form/?utm_source=plex&utm_content=login&utm_medium=web&clientID=keep"
+	},
+	{
+		"input": "https://app.plex.tv:443/auth-form/?utm_source=plex&utm_content=login&utm_medium=web",
+		"expected": "https://app.plex.tv:443/auth-form/?utm_source=plex&utm_content=login&utm_medium=web"
+	},
+	{
+		"input": "https://apple.com/search/polishing-cloth",
+		"expected": "https://apple.com/search/polishing-cloth"
+	},
+	{
+		"input": "https://apple.com/uk/shop/buy-iphone",
+		"expected": "https://apple.com/uk/shop/buy-iphone"
+	},
+	{
+		"input": "https://apps.apple.com.example.com/app/id123?at=x&ct=x&pt=x&itscg=1&itsct=x",
+		"expected": "https://apps.apple.com.example.com/app/id123?at=x&ct=x&pt=x&itscg=1&itsct=x"
+	},
+	{
+		"input": "https://bing.com.example.com/ck/a?u=a1aHR0cHM6Ly9leGFtcGxlLmNvbQ",
+		"expected": "https://bing.com.example.com/ck/a?u=a1aHR0cHM6Ly9leGFtcGxlLmNvbQ"
+	},
+	{
+		"input": "https://click.linksynergy.com/deeplink?murl=",
+		"expected": "https://click.linksynergy.com/deeplink?murl="
+	},
+	{
+		"input": "https://click.redditmail.com.example.com/CL0/https%3A%2F%2Fexample.com/1/abcd/",
+		"expected": "https://click.redditmail.com.example.com/CL0/https%3A%2F%2Fexample.com/1/abcd/"
+	},
+	{
+		"input": "https://click.redditmail.com/CL0/",
+		"expected": "https://click.redditmail.com/CL0/"
+	},
+	{
+		"input": "https://click.redditmail.com/CL0/https%3A%2F%2Fexample.com/nope/abcd/",
+		"expected": "https://click.redditmail.com/CL0/https%3A%2F%2Fexample.com/nope/abcd/"
+	},
+	{
+		"input": "https://click.redditmail.com/other/https%3A%2F%2Fexample.com/1/abcd/",
+		"expected": "https://click.redditmail.com/other/https%3A%2F%2Fexample.com/1/abcd/"
+	},
+	{
+		"input": "https://developer.apple.com/documentation?at=keep&ct=keep&pt=keep&cid=aos-us-test",
+		"expected": "https://developer.apple.com/documentation?at=keep&ct=keep&pt=keep&cid=aos-us-test"
+	},
+	{
+		"input": "https://docs.google.com/document/d/123?source=required",
+		"expected": "https://docs.google.com/document/d/123?source=required"
+	},
+	{
+		"input": "https://duckduckgo.com.example.com/l/?uddg=https%3A%2F%2Fexample.com",
+		"expected": "https://duckduckgo.com.example.com/l/?uddg=https%3A%2F%2Fexample.com"
+	},
+	{
+		"input": "https://duckduckgo.com/l/?uddg=",
+		"expected": "https://duckduckgo.com/l/?uddg="
+	},
+	{
+		"input": "https://duckduckgo.com/later?uddg=https%3A%2F%2Fexample.com",
+		"expected": "https://duckduckgo.com/later?uddg=https%3A%2F%2Fexample.com"
+	},
+	{
+		"input": "https://evil-aliexpress.com/wholesale?ws_ab_test=abc",
+		"expected": "https://evil-aliexpress.com/wholesale?ws_ab_test=abc"
+	},
+	{
+		"input": "https://example.co.in/page?source=required",
+		"expected": "https://example.co.in/page?source=required"
+	},
+	{
+		"input": "https://example.co.th/page?from=required&publish_id=123",
+		"expected": "https://example.co.th/page?from=required&publish_id=123"
+	},
+	{
+		"input": "https://example.co.uk/page?source=required&search_type=custom",
+		"expected": "https://example.co.uk/page?source=required&search_type=custom"
+	},
+	{
+		"input": "https://example.com",
+		"expected": "https://example.com"
+	},
+	{
+		"input": "https://example.com.au/page?source=required",
+		"expected": "https://example.com.au/page?source=required"
+	},
+	{
+		"input": "https://example.com.my/page?from=required&pos=2",
+		"expected": "https://example.com.my/page?from=required&pos=2"
+	},
+	{
+		"input": "https://example.com/",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/%",
+		"expected": "https://example.com/%"
+	},
+	{
+		"input": "https://example.com/%25%25%25%25%25%25%25%25",
+		"expected": "https://example.com/%25%25%25%25%25%25%25%25"
+	},
+	{
+		"input": "https://example.com/%zz",
+		"expected": "https://example.com/%zz"
+	},
+	{
+		"input": "https://example.com/?",
+		"expected": "https://example.com/?"
+	},
+	{
+		"input": "https://example.com/?%75tm_source=test&keep=%252F",
+		"expected": "https://example.com/?keep=%252F"
+	},
+	{
+		"input": "https://example.com/?&&#fragment",
+		"expected": "https://example.com/?&&#fragment"
+	},
+	{
+		"input": "https://example.com/?&&&",
+		"expected": "https://example.com/?&&&"
+	},
+	{
+		"input": "https://example.com/?=novalue",
+		"expected": "https://example.com/?=novalue"
+	},
+	{
+		"input": "https://example.com/??q=1",
+		"expected": "https://example.com/??q=1"
+	},
+	{
+		"input": "https://example.com/?__s=1&__s=abcd-ef&id=42",
+		"expected": "https://example.com/?__s=1&__s=abcd-ef&id=42"
+	},
+	{
+		"input": "https://example.com/?__s=1&__s=abcdef&__s=abcd-ef&id=42",
+		"expected": "https://example.com/?__s=1&__s=abcd-ef&id=42"
+	},
+	{
+		"input": "https://example.com/?a=1&&b=2&",
+		"expected": "https://example.com/?a=1&&b=2&"
+	},
+	{
+		"input": "https://example.com/?a=1&&utm_source=test&b=2&",
+		"expected": "https://example.com/?a=1&&b=2&"
+	},
+	{
+		"input": "https://example.com/?a=1&a=2&a=3",
+		"expected": "https://example.com/?a=1&a=2&a=3"
+	},
+	{
+		"input": "https://example.com/?a=1&b=2&c=3",
+		"expected": "https://example.com/?a=1&b=2&c=3"
+	},
+	{
+		"input": "https://example.com/?a=1&utm_source=x&b=2&fbclid=y&c=3",
+		"expected": "https://example.com/?a=1&b=2&c=3"
+	},
+	{
+		"input": "https://example.com/?a=one+two&a=one%20two&a=one%2btwo&literal=x=y",
+		"expected": "https://example.com/?a=one+two&a=one%20two&a=one%2btwo&literal=x=y"
+	},
+	{
+		"input": "https://example.com/?fbclid=abc123",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?gbraid=abc",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?gclid=abc123",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?gclsrc=aw",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?igshid=abc123",
+		"expected": "https://example.com/?igshid=abc123"
+	},
+	{
+		"input": "https://example.com/?keep=%252F",
+		"expected": "https://example.com/?keep=%252F"
+	},
+	{
+		"input": "https://example.com/?keep=%FF&other=%zz",
+		"expected": "https://example.com/?keep=%FF&other=%zz"
+	},
+	{
+		"input": "https://example.com/?mc_cid=abc&mc_eid=def",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?msclkid=abc123",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?next=%2Fprivate%3Fx%3D1&x=%41#part%23two",
+		"expected": "https://example.com/?next=%2Fprivate%3Fx%3D1&x=%41#part%23two"
+	},
+	{
+		"input": "https://example.com/?next=%2Fprivate%3Fx%3D1&x=%41&utm_source=test#part%23two",
+		"expected": "https://example.com/?next=%2Fprivate%3Fx%3D1&x=%41#part%23two"
+	},
+	{
+		"input": "https://example.com/?q=café&__s=%2561bcdef&__s=abc%2Ddef&keep=%41",
+		"expected": "https://example.com/?q=café&__s=%2561bcdef&__s=abc%2Ddef&keep=%41"
+	},
+	{
+		"input": "https://example.com/?q=café&__s=%61bcdef&__s=%2561bcdef&__s=abc%2Ddef&keep=%41",
+		"expected": "https://example.com/?q=café&__s=%2561bcdef&__s=abc%2Ddef&keep=%41"
+	},
+	{
+		"input": "https://example.com/?q=café&next=%2F&flag&empty=#part%23two",
+		"expected": "https://example.com/?q=café&next=%2F&flag&empty=#part%23two"
+	},
+	{
+		"input": "https://example.com/?q=café&next=%2Fprivate%3Fx%3D1&x=%41",
+		"expected": "https://example.com/?q=café&next=%2Fprivate%3Fx%3D1&x=%41"
+	},
+	{
+		"input": "https://example.com/?q=café&next=%2Fprivate%3Fx%3D1&x=%41&utm_source=test",
+		"expected": "https://example.com/?q=café&next=%2Fprivate%3Fx%3D1&x=%41"
+	},
+	{
+		"input": "https://example.com/?rdid=x&share_url=y&ig_rid=z&ref=keep&$web_only=true&pi=a&dlsi=b&share_region=US&is=keep",
+		"expected": "https://example.com/?rdid=x&share_url=y&ig_rid=z&ref=keep&$web_only=true&pi=a&dlsi=b&share_region=US&is=keep"
+	},
+	{
+		"input": "https://example.com/?token=a%26b%3Dc&plus=a%2Bb#frag%23ment",
+		"expected": "https://example.com/?token=a%26b%3Dc&plus=a%2Bb#frag%23ment"
+	},
+	{
+		"input": "https://example.com/?url=https%3A%2F%2Fdestination.example",
+		"expected": "https://example.com/?url=https%3A%2F%2Fdestination.example"
+	},
+	{
+		"input": "https://example.com/?utm_content=remove&oly_enc_id=remove",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?utm_source&keep=%FF&other=%zz",
+		"expected": "https://example.com/?keep=%FF&other=%zz"
+	},
+	{
+		"input": "https://example.com/?utm_source=test&a=one+two&a=one%20two&a=one%2btwo&literal=x=y",
+		"expected": "https://example.com/?a=one+two&a=one%20two&a=one%2btwo&literal=x=y"
+	},
+	{
+		"input": "https://example.com/?utm_source=test&note=",
+		"expected": "https://example.com/?note="
+	},
+	{
+		"input": "https://example.com/?ved=abc",
+		"expected": "https://example.com/?ved=abc"
+	},
+	{
+		"input": "https://example.com/?wbraid=abc",
+		"expected": "https://example.com/"
+	},
+	{
+		"input": "https://example.com/?́keep=a&́flag&other=́value#́section?utm_medium=keep",
+		"expected": "https://example.com/?́keep=a&́flag&other=́value#́section?utm_medium=keep"
+	},
+	{
+		"input": "https://example.com/?́keep=a&́flag&other=́value&utm_source=test#́section?utm_medium=keep",
+		"expected": "https://example.com/?́keep=a&́flag&other=́value#́section?utm_medium=keep"
+	},
+	{
+		"input": "https://example.com/article",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article#comments",
+		"expected": "https://example.com/article#comments"
+	},
+	{
+		"input": "https://example.com/article?UTM_Source=twitter&Utm_Campaign=spring",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?id=42",
+		"expected": "https://example.com/article?id=42"
+	},
+	{
+		"input": "https://example.com/article?id=42#section",
+		"expected": "https://example.com/article?id=42#section"
+	},
+	{
+		"input": "https://example.com/article?id=42&utm_source=email#section",
+		"expected": "https://example.com/article?id=42#section"
+	},
+	{
+		"input": "https://example.com/article?id=42&utm_source=facebook",
+		"expected": "https://example.com/article?id=42"
+	},
+	{
+		"input": "https://example.com/article?ref=summer#comments",
+		"expected": "https://example.com/article?ref=summer#comments"
+	},
+	{
+		"input": "https://example.com/article?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?utm_source=businesswire",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?utm_source=facebook&utm_medium=share",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?utm_source=share",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?utm_source=twitter",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/article?utm_source=twitter&utm_medium=social&utm_campaign=launch&gclid=abc123&fbclid=xyz789&msclkid=qrs456",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://example.com/auth/callback?code=keep",
+		"expected": "https://example.com/auth/callback?code=keep"
+	},
+	{
+		"input": "https://example.com/auth/callback?code=keep&utm_source=email",
+		"expected": "https://example.com/auth/callback?code=keep"
+	},
+	{
+		"input": "https://example.com/book?dsource=mostpopular",
+		"expected": "https://example.com/book?dsource=mostpopular"
+	},
+	{
+		"input": "https://example.com/checkout?cart=keep",
+		"expected": "https://example.com/checkout?cart=keep"
+	},
+	{
+		"input": "https://example.com/checkout?cart=keep&utm_source=email",
+		"expected": "https://example.com/checkout?cart=keep"
+	},
+	{
+		"input": "https://example.com/final?utm_source=x",
+		"expected": "https://example.com/final"
+	},
+	{
+		"input": "https://example.com/login?sessionToken=keep",
+		"expected": "https://example.com/login?sessionToken=keep"
+	},
+	{
+		"input": "https://example.com/login?sessionToken=keep&utm_source=email",
+		"expected": "https://example.com/login?sessionToken=keep"
+	},
+	{
+		"input": "https://example.com/p/abc/?psln=keep",
+		"expected": "https://example.com/p/abc/?psln=keep"
+	},
+	{
+		"input": "https://example.com/page",
+		"expected": "https://example.com/page"
+	},
+	{
+		"input": "https://example.com/page#section-2",
+		"expected": "https://example.com/page#section-2"
+	},
+	{
+		"input": "https://example.com/page?from=search#profileId-2763032",
+		"expected": "https://example.com/page?from=search#profileId-2763032"
+	},
+	{
+		"input": "https://example.com/page?q=1",
+		"expected": "https://example.com/page?q=1"
+	},
+	{
+		"input": "https://example.com/page?q=1#section",
+		"expected": "https://example.com/page?q=1#section"
+	},
+	{
+		"input": "https://example.com/page?si=some-session-id",
+		"expected": "https://example.com/page?si=some-session-id"
+	},
+	{
+		"input": "https://example.com/page?utm_source=google",
+		"expected": "https://example.com/page"
+	},
+	{
+		"input": "https://example.com/page?utm_source=x&q=1",
+		"expected": "https://example.com/page?q=1"
+	},
+	{
+		"input": "https://example.com/page?utm_source=x&q=1#section",
+		"expected": "https://example.com/page?q=1#section"
+	},
+	{
+		"input": "https://example.com/page?utm_source=x&utm_medium=y",
+		"expected": "https://example.com/page"
+	},
+	{
+		"input": "https://example.com/path#part?utm_source=keep",
+		"expected": "https://example.com/path#part?utm_source=keep"
+	},
+	{
+		"input": "https://example.com/payment?paymentToken=keep",
+		"expected": "https://example.com/payment?paymentToken=keep"
+	},
+	{
+		"input": "https://example.com/payment?paymentToken=keep&utm_source=email",
+		"expected": "https://example.com/payment?paymentToken=keep"
+	},
+	{
+		"input": "https://example.com/private?token=keep",
+		"expected": "https://example.com/private?token=keep"
+	},
+	{
+		"input": "https://example.com/products?category=shoes&sort=price_asc&page=2",
+		"expected": "https://example.com/products?category=shoes&sort=price_asc&page=2"
+	},
+	{
+		"input": "https://example.com/reel/abc/?dlrf=keep",
+		"expected": "https://example.com/reel/abc/?dlrf=keep"
+	},
+	{
+		"input": "https://example.com/reel/abc/?mdxt=keep",
+		"expected": "https://example.com/reel/abc/?mdxt=keep"
+	},
+	{
+		"input": "https://example.com/search?q=a%26b",
+		"expected": "https://example.com/search?q=a%26b"
+	},
+	{
+		"input": "https://example.com/search?q=keep",
+		"expected": "https://example.com/search?q=keep"
+	},
+	{
+		"input": "https://example.com/search?q=swift&page=2",
+		"expected": "https://example.com/search?q=swift&page=2"
+	},
+	{
+		"input": "https://example.com/search?q=swift&utm_source=google&page=2",
+		"expected": "https://example.com/search?q=swift&page=2"
+	},
+	{
+		"input": "https://example.com/shop/item?cid=aos-us-test&itscg=1&itsct=x&at=x&ct=x&pt=x&app=messages",
+		"expected": "https://example.com/shop/item?cid=aos-us-test&itscg=1&itsct=x&at=x&ct=x&pt=x&app=messages"
+	},
+	{
+		"input": "https://example.com/shop/product/item?fnode=keep",
+		"expected": "https://example.com/shop/product/item?fnode=keep"
+	},
+	{
+		"input": "https://example.com/shorts/h_isSAjpKU0?is=value",
+		"expected": "https://example.com/shorts/h_isSAjpKU0?is=value"
+	},
+	{
+		"input": "https://example.com/us/search/polishing-cloth?src=globalnav",
+		"expected": "https://example.com/us/search/polishing-cloth?src=globalnav"
+	},
+	{
+		"input": "https://example.com/video?v=abc123&t=42&id=99",
+		"expected": "https://example.com/video?v=abc123&t=42&id=99"
+	},
+	{
+		"input": "https://example.com/watch?v=abc&source_ve_path=keep&cxt=keep&entry_point=keep",
+		"expected": "https://example.com/watch?v=abc&source_ve_path=keep&cxt=keep&entry_point=keep"
+	},
+	{
+		"input": "https://example.com/​‌path",
+		"expected": "https://example.com/​‌path"
+	},
+	{
+		"input": "https://facebook.com.example.com/?rdid=x&share_url=y",
+		"expected": "https://facebook.com.example.com/?rdid=x&share_url=y"
+	},
+	{
+		"input": "https://github.com/helv-io/hearth",
+		"expected": "https://github.com/helv-io/hearth"
+	},
+	{
+		"input": "https://github.com/helv-io/hearth?utm_source=chatgpt.com",
+		"expected": "https://github.com/helv-io/hearth"
+	},
+	{
+		"input": "https://github.com/owner/repo",
+		"expected": "https://github.com/owner/repo"
+	},
+	{
+		"input": "https://github.com/owner/repo?fbclid=required",
+		"expected": "https://github.com/owner/repo?fbclid=required"
+	},
+	{
+		"input": "https://github.com/owner/repo?gad_source=required",
+		"expected": "https://github.com/owner/repo?gad_source=required"
+	},
+	{
+		"input": "https://github.com/owner/repo?utm_custom=keep&utm_source_extra=keep&fbclid=keep&gad_source=keep&ref=main&tab=readme-ov-file",
+		"expected": "https://github.com/owner/repo?utm_custom=keep&utm_source_extra=keep&fbclid=keep&gad_source=keep&ref=main&tab=readme-ov-file"
+	},
+	{
+		"input": "https://gitlab.com/owner/repo?utm_source=keep",
+		"expected": "https://gitlab.com/owner/repo?utm_source=keep"
+	},
+	{
+		"input": "https://go.redirectingat.com/?url=",
+		"expected": "https://go.redirectingat.com/?url="
+	},
+	{
+		"input": "https://go.skimresources.com/?url=",
+		"expected": "https://go.skimresources.com/?url="
+	},
+	{
+		"input": "https://greenbuildingadvisor.com/login?oly_enc_id=required",
+		"expected": "https://greenbuildingadvisor.com/login?oly_enc_id=required"
+	},
+	{
+		"input": "https://href.li/?https://example.com/article#comments",
+		"expected": "https://example.com/article#comments"
+	},
+	{
+		"input": "https://href.li/?https://example.com/article?utm_source=share&fbclid=hrefli",
+		"expected": "https://example.com/article"
+	},
+	{
+		"input": "https://href.li/?https://example.com/search?q=a%26b",
+		"expected": "https://example.com/search?q=a%26b"
+	},
+	{
+		"input": "https://href.li/?javascript:alert(1)",
+		"expected": "https://href.li/?javascript:alert(1)"
+	},
+	{
+		"input": "https://index.html/?test=required",
+		"expected": "https://index.html/?test=required"
+	},
+	{
+		"input": "https://instagram.com.example.com/p/abc/?psln=keep",
+		"expected": "https://instagram.com.example.com/p/abc/?psln=keep"
+	},
+	{
+		"input": "https://instagram.com.example.com/reel/abc/?dlrf=keep",
+		"expected": "https://instagram.com.example.com/reel/abc/?dlrf=keep"
+	},
+	{
+		"input": "https://instagram.com/p/abc/",
+		"expected": "https://instagram.com/p/abc/"
+	},
+	{
+		"input": "https://instagram.com/p/abc/?igshid=abc123",
+		"expected": "https://instagram.com/p/abc/"
+	},
+	{
+		"input": "https://instagram.com/p/abc/?psln_extra=keep&custom=keep",
+		"expected": "https://instagram.com/p/abc/?psln_extra=keep&custom=keep"
+	},
+	{
+		"input": "https://instagram.com/reel/abc/?dlrf_extra=keep&custom=keep",
+		"expected": "https://instagram.com/reel/abc/?dlrf_extra=keep&custom=keep"
+	},
+	{
+		"input": "https://instagram.com/reel/abc/?igshid=a&igsh=b&ig_rid=c&dlrf=d&psln=e&rpxt=f&obrf=g&vrfl=h&cplk=i&mdxt=j&igsi=k&si=l&stkn=m&utm_source=ig_web_copy_link&utm_medium=copy_link&utm_content=share&fbclid=n&img_index=2",
+		"expected": "https://instagram.com/reel/abc/?img_index=2"
+	},
+	{
+		"input": "https://instagram.com/reel/abc/?img_index=2",
+		"expected": "https://instagram.com/reel/abc/?img_index=2"
+	},
+	{
+		"input": "https://instagram.com/reel/abc/?next=%2fwatch%3Fx%3D1&tag=a&tag=b#part%23two",
+		"expected": "https://instagram.com/reel/abc/?next=%2fwatch%3Fx%3D1&tag=a&tag=b#part%23two"
+	},
+	{
+		"input": "https://instagramXcom/p/abc/?psln=keep",
+		"expected": "https://instagramXcom/p/abc/?psln=keep"
+	},
+	{
+		"input": "https://instagramXcom/reel/abc/?dlrf=keep",
+		"expected": "https://instagramXcom/reel/abc/?dlrf=keep"
+	},
+	{
+		"input": "https://kkinstagram.com.example.com/reel/abc/?mdxt=keep",
+		"expected": "https://kkinstagram.com.example.com/reel/abc/?mdxt=keep"
+	},
+	{
+		"input": "https://kkinstagram.com/p/abc/?psln=keep",
+		"expected": "https://kkinstagram.com/p/abc/?psln=keep"
+	},
+	{
+		"input": "https://kkinstagram.com/reel/abc/?mdxt_extra=keep&custom=keep",
+		"expected": "https://kkinstagram.com/reel/abc/?mdxt_extra=keep&custom=keep"
+	},
+	{
+		"input": "https://kkinstagram.com/reel/abc/?rpxt=keep&obrf=keep&vrfl=keep&cplk=keep&igsi=keep&si=keep&stkn=keep",
+		"expected": "https://kkinstagram.com/reel/abc/?rpxt=keep&obrf=keep&vrfl=keep&cplk=keep&igsi=keep&si=keep&stkn=keep"
+	},
+	{
+		"input": "https://kkinstagramXcom/reel/abc/?mdxt=keep",
+		"expected": "https://kkinstagramXcom/reel/abc/?mdxt=keep"
+	},
+	{
+		"input": "https://l.facebook.com/l.php?u=notarealurl&h=abc",
+		"expected": "https://l.facebook.com/l.php?u=notarealurl&h=abc"
+	},
+	{
+		"input": "https://l.instagram.com/?u=",
+		"expected": "https://l.instagram.com/?u="
+	},
+	{
+		"input": "https://l.instagram.com/?u=file%3A%2F%2F%2Ftmp%2Fexample",
+		"expected": "https://l.instagram.com/?u=file%3A%2F%2F%2Ftmp%2Fexample"
+	},
+	{
+		"input": "https://l.instagram.com/?u=https%253A%252F%252Fexample.com",
+		"expected": "https://l.instagram.com/?u=https%253A%252F%252Fexample.com"
+	},
+	{
+		"input": "https://l.instagram.com/?u=https%3A%2F%2Fexample.com&u=https%3A%2F%2Fother.example",
+		"expected": "https://l.instagram.com/?u=https%3A%2F%2Fexample.com&u=https%3A%2F%2Fother.example"
+	},
+	{
+		"input": "https://l.instagram.com/?u=javascript%3Aalert(1)",
+		"expected": "https://l.instagram.com/?u=javascript%3Aalert(1)"
+	},
+	{
+		"input": "https://l.instagram.com/other?u=https%3A%2F%2Fexample.com",
+		"expected": "https://l.instagram.com/other?u=https%3A%2F%2Fexample.com"
+	},
+	{
+		"input": "https://l.threads.com/?u=",
+		"expected": "https://l.threads.com/?u="
+	},
+	{
+		"input": "https://l.threads.net/?u=",
+		"expected": "https://l.threads.net/?u="
+	},
+	{
+		"input": "https://lazada.sg/item",
+		"expected": "https://lazada.sg/item"
+	},
+	{
+		"input": "https://lazada.sg/item?from=share",
+		"expected": "https://lazada.sg/item"
+	},
+	{
+		"input": "https://makerworld.com/de/models/1234567-mein-modell",
+		"expected": "https://makerworld.com/de/models/1234567-mein-modell"
+	},
+	{
+		"input": "https://makerworld.com/de/models/1234567-mein-modell?from=search&foo=bar#section",
+		"expected": "https://makerworld.com/de/models/1234567-mein-modell"
+	},
+	{
+		"input": "https://makerworld.com/en/models/1085885-climbing-plant-clip",
+		"expected": "https://makerworld.com/en/models/1085885-climbing-plant-clip"
+	},
+	{
+		"input": "https://makerworld.com/en/models/1085885-climbing-plant-clip?from=search#profileId-2763032",
+		"expected": "https://makerworld.com/en/models/1085885-climbing-plant-clip"
+	},
+	{
+		"input": "https://makerworld.com/en/models?sort=trending#grid",
+		"expected": "https://makerworld.com/en/models?sort=trending#grid"
+	},
+	{
+		"input": "https://makerworld.com/en/search?keyword=clip&from=explore#top",
+		"expected": "https://makerworld.com/en/search?keyword=clip&from=explore#top"
+	},
+	{
+		"input": "https://makerworld.com/models/1085885",
+		"expected": "https://makerworld.com/models/1085885"
+	},
+	{
+		"input": "https://makerworld.com/models/1085885?from=search#x",
+		"expected": "https://makerworld.com/models/1085885"
+	},
+	{
+		"input": "https://metabase.com/?utm_term=required",
+		"expected": "https://metabase.com/?utm_term=required"
+	},
+	{
+		"input": "https://music.apple.com/subscribe?pt=keep&src=aos",
+		"expected": "https://music.apple.com/subscribe?pt=keep&src=aos"
+	},
+	{
+		"input": "https://newsletter.lidl.de.example123.com/?x=required",
+		"expected": "https://newsletter.lidl.de.example123.com/?x=required"
+	},
+	{
+		"input": "https://newsletter.lidl.de/?id=1",
+		"expected": "https://newsletter.lidl.de/?id=1"
+	},
+	{
+		"input": "https://newsletter.lidl.de/?x=share&id=1",
+		"expected": "https://newsletter.lidl.de/?id=1"
+	},
+	{
+		"input": "https://notairbnb.com/page?source=required",
+		"expected": "https://notairbnb.com/page?source=required"
+	},
+	{
+		"input": "https://notapple.com/shop/item?cid=aos-us-test",
+		"expected": "https://notapple.com/shop/item?cid=aos-us-test"
+	},
+	{
+		"input": "https://notapple.com/shop/product/item?fnode=keep",
+		"expected": "https://notapple.com/shop/product/item?fnode=keep"
+	},
+	{
+		"input": "https://notapple.com/us/search/polishing-cloth?src=globalnav",
+		"expected": "https://notapple.com/us/search/polishing-cloth?src=globalnav"
+	},
+	{
+		"input": "https://notinstagram.com/?ig_rid=x",
+		"expected": "https://notinstagram.com/?ig_rid=x"
+	},
+	{
+		"input": "https://notinstagram.com/p/abc/?psln=keep",
+		"expected": "https://notinstagram.com/p/abc/?psln=keep"
+	},
+	{
+		"input": "https://notinstagram.com/reel/abc/?dlrf=keep",
+		"expected": "https://notinstagram.com/reel/abc/?dlrf=keep"
+	},
+	{
+		"input": "https://notkkinstagram.com/reel/abc/?mdxt=keep",
+		"expected": "https://notkkinstagram.com/reel/abc/?mdxt=keep"
+	},
+	{
+		"input": "https://notreddit.com/comments/abc?target_user=keep",
+		"expected": "https://notreddit.com/comments/abc?target_user=keep"
+	},
+	{
+		"input": "https://nottwitter.com/user/status/123?cxt=keep",
+		"expected": "https://nottwitter.com/user/status/123?cxt=keep"
+	},
+	{
+		"input": "https://notyoutube.com/embed/abc?embeds_referring_euri=keep",
+		"expected": "https://notyoutube.com/embed/abc?embeds_referring_euri=keep"
+	},
+	{
+		"input": "https://notyoutube.com/shorts/h_isSAjpKU0?is=value",
+		"expected": "https://notyoutube.com/shorts/h_isSAjpKU0?is=value"
+	},
+	{
+		"input": "https://notyoutube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://notyoutube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=1"
+	},
+	{
+		"input": "https://notyoutube.com/watch?v=g-sgw9bPV4A&list=FLexampleFavorites&index=15",
+		"expected": "https://notyoutube.com/watch?v=g-sgw9bPV4A&list=FLexampleFavorites&index=15"
+	},
+	{
+		"input": "https://open.spotify.com/track/abc?pi=x&dlsi=y&t=42",
+		"expected": "https://open.spotify.com/track/abc?t=42"
+	},
+	{
+		"input": "https://open.spotify.com/track/abc?t=42",
+		"expected": "https://open.spotify.com/track/abc?t=42"
+	},
+	{
+		"input": "https://play.google.com/store/apps/details?id=com.example.app",
+		"expected": "https://play.google.com/store/apps/details?id=com.example.app"
+	},
+	{
+		"input": "https://play.google.com/store/apps/details?id=com.example.app&utm_source=share",
+		"expected": "https://play.google.com/store/apps/details?id=com.example.app"
+	},
+	{
+		"input": "https://rd.bizrate.com/rd?utm_campaign=required&utm_medium=required",
+		"expected": "https://rd.bizrate.com/rd?utm_campaign=required&utm_medium=required"
+	},
+	{
+		"input": "https://reddit.app.link/?utm_content=keep",
+		"expected": "https://reddit.app.link/?utm_content=keep"
+	},
+	{
+		"input": "https://reddit.app.link/?utm_content=keep&utm_source=remove",
+		"expected": "https://reddit.app.link/?utm_content=keep"
+	},
+	{
+		"input": "https://reddit.app.link/example?utm_content=reply&id=42",
+		"expected": "https://reddit.app.link/example?utm_content=reply&id=42"
+	},
+	{
+		"input": "https://reddit.app.link/opaque?utm_content=comment_id&_branch_referrer=keep",
+		"expected": "https://reddit.app.link/opaque?utm_content=comment_id&_branch_referrer=keep"
+	},
+	{
+		"input": "https://reddit.com.example.com/comments/abc?entry_point=keep",
+		"expected": "https://reddit.com.example.com/comments/abc?entry_point=keep"
+	},
+	{
+		"input": "https://reddit.com/api/info?post_fullname=keep&target_user=keep",
+		"expected": "https://reddit.com/api/info?post_fullname=keep&target_user=keep"
+	},
+	{
+		"input": "https://reddit.com/comments/?entry_point=keep",
+		"expected": "https://reddit.com/comments/?entry_point=keep"
+	},
+	{
+		"input": "https://reddit.com/comments/abc123?",
+		"expected": "https://reddit.com/comments/abc123?"
+	},
+	{
+		"input": "https://reddit.com/comments/abc?entry_point_extra=keep&_branch_referrer_extra=keep",
+		"expected": "https://reddit.com/comments/abc?entry_point_extra=keep&_branch_referrer_extra=keep"
+	},
+	{
+		"input": "https://reddit.com/r/swift/?entry_point=keep",
+		"expected": "https://reddit.com/r/swift/?entry_point=keep"
+	},
+	{
+		"input": "https://reddit.com/r/swift/comments/abc123/?",
+		"expected": "https://reddit.com/r/swift/comments/abc123/?"
+	},
+	{
+		"input": "https://reddit.com/r/swift/s/opaque?entry_point=keep",
+		"expected": "https://reddit.com/r/swift/s/opaque?entry_point=keep"
+	},
+	{
+		"input": "https://reddit.com/search?post_fullname=keep&post_index=keep",
+		"expected": "https://reddit.com/search?post_fullname=keep&post_index=keep"
+	},
+	{
+		"input": "https://shop.example.com/products/wireless-mouse?id=8842&category=electronics",
+		"expected": "https://shop.example.com/products/wireless-mouse?id=8842&category=electronics"
+	},
+	{
+		"input": "https://shop.example.com/products/wireless-mouse?id=8842&utm_source=newsletter&utm_medium=email&category=electronics",
+		"expected": "https://shop.example.com/products/wireless-mouse?id=8842&category=electronics"
+	},
+	{
+		"input": "https://shopee.co.th/item",
+		"expected": "https://shopee.co.th/item"
+	},
+	{
+		"input": "https://shopee.co.th/item?publish_id=share",
+		"expected": "https://shopee.co.th/item"
+	},
+	{
+		"input": "https://spotify.com/track/abc?pi=x&dlsi=y",
+		"expected": "https://spotify.com/track/abc?pi=x&dlsi=y"
+	},
+	{
+		"input": "https://support.apple.com/",
+		"expected": "https://support.apple.com/"
+	},
+	{
+		"input": "https://test.clearurls.xyz/other?test=required",
+		"expected": "https://test.clearurls.xyz/other?test=required"
+	},
+	{
+		"input": "https://tix.axs.com/?utm_source=required&gad_source=required",
+		"expected": "https://tix.axs.com/?utm_source=required&gad_source=required"
+	},
+	{
+		"input": "https://twitter.com/i/redirect?url=https%3A%2F%2Fexample.com&s=20&t=signature&cxt=keep",
+		"expected": "https://twitter.com/i/redirect?url=https%3A%2F%2Fexample.com&s=20&t=signature&cxt=keep"
+	},
+	{
+		"input": "https://twitter.com/someuser/status/1234567890123456789",
+		"expected": "https://twitter.com/someuser/status/1234567890123456789"
+	},
+	{
+		"input": "https://twitter.com/someuser/status/1234567890123456789?s=20&t=abcDEF123",
+		"expected": "https://twitter.com/someuser/status/1234567890123456789"
+	},
+	{
+		"input": "https://twitterXcom/page?ref_src=required",
+		"expected": "https://twitterXcom/page?ref_src=required"
+	},
+	{
+		"input": "https://univis.uni-kiel.de.example.com/",
+		"expected": "https://univis.uni-kiel.de.example.com/"
+	},
+	{
+		"input": "https://univis.uni-kiel.de.example.com/?__s=abcdef",
+		"expected": "https://univis.uni-kiel.de.example.com/"
+	},
+	{
+		"input": "https://urldefense.com/v3/__https://example.com/?utm_source=required&fbclid=required&gad_source=required",
+		"expected": "https://urldefense.com/v3/__https://example.com/?utm_source=required&fbclid=required&gad_source=required"
+	},
+	{
+		"input": "https://user:pass@app.plex.tv/auth-form/?utm_source=plex",
+		"expected": "https://user:pass@app.plex.tv/auth-form/?utm_source=plex"
+	},
+	{
+		"input": "https://user:pass@www.amazon.com/s?keywords=swift+book",
+		"expected": "https://user:pass@www.amazon.com/s?keywords=swift+book"
+	},
+	{
+		"input": "https://weatherkit.apple.com/alert?lang=en&party=abc&ids=1",
+		"expected": "https://weatherkit.apple.com/alert?lang=en&party=abc&ids=1"
+	},
+	{
+		"input": "https://weatherkit.apple.com/alert?lang=en&party=abc&ids=1&utm_source=share",
+		"expected": "https://weatherkit.apple.com/alert?lang=en&party=abc&ids=1"
+	},
+	{
+		"input": "https://weibo.cn/post",
+		"expected": "https://weibo.cn/post"
+	},
+	{
+		"input": "https://weibo.cn/post?weibo_id=share",
+		"expected": "https://weibo.cn/post"
+	},
+	{
+		"input": "https://weibo.com/post",
+		"expected": "https://weibo.com/post"
+	},
+	{
+		"input": "https://weibo.com/post?weibo_id=share",
+		"expected": "https://weibo.com/post"
+	},
+	{
+		"input": "https://www.airbnb.co.uk/rooms/123",
+		"expected": "https://www.airbnb.co.uk/rooms/123"
+	},
+	{
+		"input": "https://www.airbnb.co.uk/rooms/123?source=share",
+		"expected": "https://www.airbnb.co.uk/rooms/123"
+	},
+	{
+		"input": "https://www.airbnb.com.example.com/page?source=required",
+		"expected": "https://www.airbnb.com.example.com/page?source=required"
+	},
+	{
+		"input": "https://www.airbnb.com/rooms/123?federated_search_id=share&id=123",
+		"expected": "https://www.airbnb.com/rooms/123?id=123"
+	},
+	{
+		"input": "https://www.airbnb.com/rooms/123?id=123",
+		"expected": "https://www.airbnb.com/rooms/123?id=123"
+	},
+	{
+		"input": "https://www.aliexpress.com/p/payment?paymentToken=keep",
+		"expected": "https://www.aliexpress.com/p/payment?paymentToken=keep"
+	},
+	{
+		"input": "https://www.aliexpress.com/p/payment?paymentToken=keep&utm_source=email",
+		"expected": "https://www.aliexpress.com/p/payment?paymentToken=keep"
+	},
+	{
+		"input": "https://www.aliexpress.com/wholesale?SearchText=widget",
+		"expected": "https://www.aliexpress.com/wholesale?SearchText=widget"
+	},
+	{
+		"input": "https://www.aliexpress.com/wholesale?SearchText=widget&scm=1.2.3",
+		"expected": "https://www.aliexpress.com/wholesale?SearchText=widget"
+	},
+	{
+		"input": "https://www.aliexpress.com/wholesale?q=widget",
+		"expected": "https://www.aliexpress.com/wholesale?q=widget"
+	},
+	{
+		"input": "https://www.aliexpress.com/wholesale?ws_ab_test=abc&q=widget",
+		"expected": "https://www.aliexpress.com/wholesale?q=widget"
+	},
+	{
+		"input": "https://www.aliexpress.us/item/3256812635547747.html",
+		"expected": "https://www.aliexpress.us/item/3256812635547747.html"
+	},
+	{
+		"input": "https://www.aliexpress.us/item/3256812635547747.html?sourceType=561&pvid=aa64d73d-d596-4c09-bb29-925c4817b3ff&pdp_ext_f=%7B%22ship_from%22:%22CN%22,%22sku_id%22:%2212000059455532136%22%7D&scm=1007.28480.478283.0&scm-url=1007.28480.478283.0&scm_id=1007.28480.478283.0&aecmd=true&gatewayAdapt=glo2usa",
+		"expected": "https://www.aliexpress.us/item/3256812635547747.html"
+	},
+	{
+		"input": "https://www.aliexpress.us/wholesale?q=widget",
+		"expected": "https://www.aliexpress.us/wholesale?q=widget"
+	},
+	{
+		"input": "https://www.aliexpress.us/wholesale?ws_ab_test=abc&q=widget",
+		"expected": "https://www.aliexpress.us/wholesale?q=widget"
+	},
+	{
+		"input": "https://www.amazon.co.uk/dp/B08XYZ1234",
+		"expected": "https://www.amazon.co.uk/dp/B08XYZ1234"
+	},
+	{
+		"input": "https://www.amazon.co.uk/gp/product/B08XYZ1234?psc=1&th=1",
+		"expected": "https://www.amazon.co.uk/dp/B08XYZ1234"
+	},
+	{
+		"input": "https://www.amazon.com/Anker-Charger-Fast-Charging-Adapter/dp/B08XYZ1234/ref=sr_1_3?crid=ABC&keywords=charger&qid=1699999999&sprefix=charger&sr=8-3",
+		"expected": "https://www.amazon.com/dp/B08XYZ1234"
+	},
+	{
+		"input": "https://www.amazon.com/dp/B08XYZ1234",
+		"expected": "https://www.amazon.com/dp/B08XYZ1234"
+	},
+	{
+		"input": "https://www.amazon.com/gp/cart/view.html?cartToken=keep",
+		"expected": "https://www.amazon.com/gp/cart/view.html?cartToken=keep"
+	},
+	{
+		"input": "https://www.amazon.com/gp/cart/view.html?cartToken=keep&utm_source=email",
+		"expected": "https://www.amazon.com/gp/cart/view.html?cartToken=keep"
+	},
+	{
+		"input": "https://www.amazon.com/s?k=charger",
+		"expected": "https://www.amazon.com/s?k=charger"
+	},
+	{
+		"input": "https://www.amazon.com/s?k=charger&utm_source=newsletter",
+		"expected": "https://www.amazon.com/s?k=charger"
+	},
+	{
+		"input": "https://www.amazon.com/s?k=running-shoes",
+		"expected": "https://www.amazon.com/s?k=running-shoes"
+	},
+	{
+		"input": "https://www.amazon.com/s?k=running-shoes&ref=sr_pg_1&linkCode=ll2&ascsubtag=xyz789",
+		"expected": "https://www.amazon.com/s?k=running-shoes"
+	},
+	{
+		"input": "https://www.amazon.com/s?keywords=swift+book",
+		"expected": "https://www.amazon.com/s?keywords=swift+book"
+	},
+	{
+		"input": "https://www.amazon.com/s?keywords=swift+book#results",
+		"expected": "https://www.amazon.com/s?keywords=swift+book#results"
+	},
+	{
+		"input": "https://www.amazon.com/s?keywords=swift+book&qid=share&utm_source=share#results",
+		"expected": "https://www.amazon.com/s?keywords=swift+book#results"
+	},
+	{
+		"input": "https://www.amazon.com:443/s?keywords=swift+book",
+		"expected": "https://www.amazon.com:443/s?keywords=swift+book"
+	},
+	{
+		"input": "https://www.amazon.us/s?k=widget",
+		"expected": "https://www.amazon.us/s?k=widget"
+	},
+	{
+		"input": "https://www.amazon.us/s?k=widget&qid=12345",
+		"expected": "https://www.amazon.us/s?k=widget"
+	},
+	{
+		"input": "https://www.apple.com.example.com/shop/item?cid=aos-us-test",
+		"expected": "https://www.apple.com.example.com/shop/item?cid=aos-us-test"
+	},
+	{
+		"input": "https://www.apple.com.example.com/shop/product/item?fnode=keep",
+		"expected": "https://www.apple.com.example.com/shop/product/item?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com.example.com/us/search/polishing-cloth?src=globalnav",
+		"expected": "https://www.apple.com.example.com/us/search/polishing-cloth?src=globalnav"
+	},
+	{
+		"input": "https://www.apple.com/account?cid=aos-us-test",
+		"expected": "https://www.apple.com/account?cid=aos-us-test"
+	},
+	{
+		"input": "https://www.apple.com/shop/accessories/all?fnode=keep",
+		"expected": "https://www.apple.com/shop/accessories/all?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com/shop/buy-iphone",
+		"expected": "https://www.apple.com/shop/buy-iphone"
+	},
+	{
+		"input": "https://www.apple.com/shop/item?at=keep&ct=keep&pt=keep&itscg=keep&itsct=keep",
+		"expected": "https://www.apple.com/shop/item?at=keep&ct=keep&pt=keep&itscg=keep&itsct=keep"
+	},
+	{
+		"input": "https://www.apple.com/shop/item?cid=unknown&afid=keep&fs=keep",
+		"expected": "https://www.apple.com/shop/item?cid=unknown&afid=keep&fs=keep"
+	},
+	{
+		"input": "https://www.apple.com/shop/product/?fnode=keep",
+		"expected": "https://www.apple.com/shop/product/?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com/shop/product/mlh74am/a/polishing-cloth",
+		"expected": "https://www.apple.com/shop/product/mlh74am/a/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/shop/productivity/item?fnode=keep",
+		"expected": "https://www.apple.com/shop/productivity/item?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com/shop/search?fnode=keep",
+		"expected": "https://www.apple.com/shop/search?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com/shopping?cid=aos-us-test",
+		"expected": "https://www.apple.com/shopping?cid=aos-us-test"
+	},
+	{
+		"input": "https://www.apple.com/support?fnode=keep",
+		"expected": "https://www.apple.com/support?fnode=keep"
+	},
+	{
+		"input": "https://www.apple.com/uk/search/polishing-cloth",
+		"expected": "https://www.apple.com/uk/search/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/uk/shop/product/mlh74am/a/polishing-cloth",
+		"expected": "https://www.apple.com/uk/shop/product/mlh74am/a/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/uk/shop/product/mlh74am/a/polishing-cloth?fnode=nav",
+		"expected": "https://www.apple.com/uk/shop/product/mlh74am/a/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/us/search/cloth?src=aos-extra&cid=keep",
+		"expected": "https://www.apple.com/us/search/cloth?src=aos-extra&cid=keep"
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth",
+		"expected": "https://www.apple.com/us/search/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth?src=",
+		"expected": "https://www.apple.com/us/search/polishing-cloth?src="
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth?src=globalnav",
+		"expected": "https://www.apple.com/us/search/polishing-cloth"
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth?src=globalnavigation",
+		"expected": "https://www.apple.com/us/search/polishing-cloth?src=globalnavigation"
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth?src=other",
+		"expected": "https://www.apple.com/us/search/polishing-cloth?src=other"
+	},
+	{
+		"input": "https://www.apple.com/us/search/polishing-cloth?src_extra=globalnav",
+		"expected": "https://www.apple.com/us/search/polishing-cloth?src_extra=globalnav"
+	},
+	{
+		"input": "https://www.apple.com/us/searching/polishing-cloth?src=globalnav",
+		"expected": "https://www.apple.com/us/searching/polishing-cloth?src=globalnav"
+	},
+	{
+		"input": "https://www.apple.com/us/shop/product/item?src=globalnav",
+		"expected": "https://www.apple.com/us/shop/product/item?src=globalnav"
+	},
+	{
+		"input": "https://www.apple.com/us/support?src=globalnav",
+		"expected": "https://www.apple.com/us/support?src=globalnav"
+	},
+	{
+		"input": "https://www.bestbuy.com/site/6084400.p",
+		"expected": "https://www.bestbuy.com/site/6084400.p"
+	},
+	{
+		"input": "https://www.bestbuy.com/site/6084400.p?skuId=6084400",
+		"expected": "https://www.bestbuy.com/site/6084400.p"
+	},
+	{
+		"input": "https://www.bestbuy.com/site/apple-airpods-pro/6084400.p?skuId=6084400&ref=212&loc=1",
+		"expected": "https://www.bestbuy.com/site/6084400.p"
+	},
+	{
+		"input": "https://www.bestbuy.com/site/searchpage.jsp?st=airpods",
+		"expected": "https://www.bestbuy.com/site/searchpage.jsp?st=airpods"
+	},
+	{
+		"input": "https://www.bestbuy.com/site/searchpage.jsp?st=airpods&utm_source=email",
+		"expected": "https://www.bestbuy.com/site/searchpage.jsp?st=airpods"
+	},
+	{
+		"input": "https://www.bing.com/ck/a?u=a1%%%%",
+		"expected": "https://www.bing.com/ck/a?u=a1%%%%"
+	},
+	{
+		"input": "https://www.bing.com/ck/a?u=a1ZmlsZTovLy90bXAvZXhhbXBsZQ",
+		"expected": "https://www.bing.com/ck/a?u=a1ZmlsZTovLy90bXAvZXhhbXBsZQ"
+	},
+	{
+		"input": "https://www.bing.com/ck/another?u=a1aHR0cHM6Ly9leGFtcGxlLmNvbQ",
+		"expected": "https://www.bing.com/ck/another?u=a1aHR0cHM6Ly9leGFtcGxlLmNvbQ"
+	},
+	{
+		"input": "https://www.ebay.com/itm/123456789012",
+		"expected": "https://www.ebay.com/itm/123456789012"
+	},
+	{
+		"input": "https://www.ebay.com/itm/123456789012?_trkparms=ao%3A1%7Camid%3A1&_trksid=p2349624.c101224&hash=item1c2d3e4f5g",
+		"expected": "https://www.ebay.com/itm/123456789012"
+	},
+	{
+		"input": "https://www.ebay.us/itm/123456",
+		"expected": "https://www.ebay.us/itm/123456"
+	},
+	{
+		"input": "https://www.ebay.us/itm/123456?_trksid=abc&hash=item123",
+		"expected": "https://www.ebay.us/itm/123456"
+	},
+	{
+		"input": "https://www.example.com/path/to/page",
+		"expected": "https://www.example.com/path/to/page"
+	},
+	{
+		"input": "https://www.facebook.com/share/p/123/?id=42",
+		"expected": "https://www.facebook.com/share/p/123/?id=42"
+	},
+	{
+		"input": "https://www.facebook.com/share/p/123/?rdid=x&share_url=y&id=42",
+		"expected": "https://www.facebook.com/share/p/123/?id=42"
+	},
+	{
+		"input": "https://www.facebook.com/someuser/posts/123456",
+		"expected": "https://www.facebook.com/someuser/posts/123456"
+	},
+	{
+		"input": "https://www.facebook.com/story.php?story_fbid=1&id=2",
+		"expected": "https://www.facebook.com/story.php?story_fbid=1&id=2"
+	},
+	{
+		"input": "https://www.facebook.com/story.php?story_fbid=1&id=2&ref=share",
+		"expected": "https://www.facebook.com/story.php?story_fbid=1&id=2"
+	},
+	{
+		"input": "https://www.google.com/search?q=best-laptops-2024",
+		"expected": "https://www.google.com/search?q=best-laptops-2024"
+	},
+	{
+		"input": "https://www.google.com/search?q=best-laptops-2024&ei=abc123XYZ&ved=2ahUKEwj0i8jGqL6AAxUJAAAAABQAAAAQ&gs_lcp=Cgdnd3Mtd2l6EAM",
+		"expected": "https://www.google.com/search?q=best-laptops-2024"
+	},
+	{
+		"input": "https://www.google.com/search?q=keep",
+		"expected": "https://www.google.com/search?q=keep"
+	},
+	{
+		"input": "https://www.google.com/search?q=swift",
+		"expected": "https://www.google.com/search?q=swift"
+	},
+	{
+		"input": "https://www.google.com/search?q=swift&ved=abc",
+		"expected": "https://www.google.com/search?q=swift"
+	},
+	{
+		"input": "https://www.google.com/search?q=swift&ved=abc&gs_lcp=xyz",
+		"expected": "https://www.google.com/search?q=swift"
+	},
+	{
+		"input": "https://www.google.com/search?q=swift+programming",
+		"expected": "https://www.google.com/search?q=swift+programming"
+	},
+	{
+		"input": "https://www.google.com/search?q=swift-concurrency",
+		"expected": "https://www.google.com/search?q=swift-concurrency"
+	},
+	{
+		"input": "https://www.google.com/url?q=",
+		"expected": "https://www.google.com/url?q="
+	},
+	{
+		"input": "https://www.google.com/url?q=&sa=t",
+		"expected": "https://www.google.com/url?q="
+	},
+	{
+		"input": "https://www.greenbuildingadvisor.com/login?oly_enc_id=required",
+		"expected": "https://www.greenbuildingadvisor.com/login?oly_enc_id=required"
+	},
+	{
+		"input": "https://www.instagram.com/p/ABC/?id=42",
+		"expected": "https://www.instagram.com/p/ABC/?id=42"
+	},
+	{
+		"input": "https://www.instagram.com/p/ABC/?ig_rid=x&id=42",
+		"expected": "https://www.instagram.com/p/ABC/?id=42"
+	},
+	{
+		"input": "https://www.instagram.com/p/Dez0wJLkqFS/",
+		"expected": "https://www.instagram.com/p/Dez0wJLkqFS/"
+	},
+	{
+		"input": "https://www.instagram.com/p/Dez0wJLkqFS/?psln=MXhvMmhocTYxeHpoMQ==",
+		"expected": "https://www.instagram.com/p/Dez0wJLkqFS/"
+	},
+	{
+		"input": "https://www.instagram.com/p/abc/?id=42",
+		"expected": "https://www.instagram.com/p/abc/?id=42"
+	},
+	{
+		"input": "https://www.instagram.com/p/abc/?psln=share&dlrf=share&id=42",
+		"expected": "https://www.instagram.com/p/abc/?id=42"
+	},
+	{
+		"input": "https://www.instagram.com/reel/Cxyz123AbCd/",
+		"expected": "https://www.instagram.com/reel/Cxyz123AbCd/"
+	},
+	{
+		"input": "https://www.instagram.com/reel/Cxyz123AbCd/?igsh=abc123XYZ",
+		"expected": "https://www.instagram.com/reel/Cxyz123AbCd/"
+	},
+	{
+		"input": "https://www.instagram.com/reel/Dd27vP1NOKp/",
+		"expected": "https://www.instagram.com/reel/Dd27vP1NOKp/"
+	},
+	{
+		"input": "https://www.instagram.com/reel/Dd27vP1NOKp/?dlrf=aTlxbHBnOXhucGlq",
+		"expected": "https://www.instagram.com/reel/Dd27vP1NOKp/"
+	},
+	{
+		"input": "https://www.instagram.com/reel/De1nYcvFGaP/",
+		"expected": "https://www.instagram.com/reel/De1nYcvFGaP/"
+	},
+	{
+		"input": "https://www.instagram.com/reel/De1nYcvFGaP/?rpxt=Y2xlMnp5MzkwaTZ0",
+		"expected": "https://www.instagram.com/reel/De1nYcvFGaP/"
+	},
+	{
+		"input": "https://www.kkinstagram.com/reel/Dd0RB2qN-_w/",
+		"expected": "https://www.kkinstagram.com/reel/Dd0RB2qN-_w/"
+	},
+	{
+		"input": "https://www.kkinstagram.com/reel/Dd0RB2qN-_w/?mdxt=MW9pYzFvbnkzbDlhbA==",
+		"expected": "https://www.kkinstagram.com/reel/Dd0RB2qN-_w/"
+	},
+	{
+		"input": "https://www.lenovo.com/us/en/p/example?bundleId=123",
+		"expected": "https://www.lenovo.com/us/en/p/example?bundleId=123"
+	},
+	{
+		"input": "https://www.lenovo.com/us/en/p/example?bundleId=123&utm_source=share",
+		"expected": "https://www.lenovo.com/us/en/p/example?bundleId=123"
+	},
+	{
+		"input": "https://www.lidl.de/?x=required",
+		"expected": "https://www.lidl.de/?x=required"
+	},
+	{
+		"input": "https://www.linkedin.com/?next=/learning&u=123",
+		"expected": "https://www.linkedin.com/?next=/learning&u=123"
+	},
+	{
+		"input": "https://www.linkedin.com/learning-other?u=123",
+		"expected": "https://www.linkedin.com/learning-other?u=123"
+	},
+	{
+		"input": "https://www.linkedin.com/learning/course",
+		"expected": "https://www.linkedin.com/learning/course"
+	},
+	{
+		"input": "https://www.linkedin.com/learning/course?u=123",
+		"expected": "https://www.linkedin.com/learning/course"
+	},
+	{
+		"input": "https://www.linkedin.com/profile?u=123",
+		"expected": "https://www.linkedin.com/profile?u=123"
+	},
+	{
+		"input": "https://www.linkedin.com/redir/redirect-other?url=https%3A%2F%2Fexample.com",
+		"expected": "https://www.linkedin.com/redir/redirect-other?url=https%3A%2F%2Fexample.com"
+	},
+	{
+		"input": "https://www.linkedin.com/redir/redirect?url=",
+		"expected": "https://www.linkedin.com/redir/redirect?url="
+	},
+	{
+		"input": "https://www.macys.com/shop/product/example?ID=10920481",
+		"expected": "https://www.macys.com/shop/product/example?ID=10920481"
+	},
+	{
+		"input": "https://www.macys.com/shop/product/example?ID=10920481&utm_source=share",
+		"expected": "https://www.macys.com/shop/product/example?ID=10920481"
+	},
+	{
+		"input": "https://www.marketscreener.com/search/?mots=apple",
+		"expected": "https://www.marketscreener.com/search/?mots=apple"
+	},
+	{
+		"input": "https://www.marketscreener.com/search/?mots=apple&add_mots=pear",
+		"expected": "https://www.marketscreener.com/search/?mots=apple&add_mots=pear"
+	},
+	{
+		"input": "https://www.marketscreener.com/search/?mots=apple&noredirect=share",
+		"expected": "https://www.marketscreener.com/search/?mots=apple"
+	},
+	{
+		"input": "https://www.mercadolibre.com/item",
+		"expected": "https://www.mercadolibre.com/item"
+	},
+	{
+		"input": "https://www.mercadolibre.com/item?tracking_id=share",
+		"expected": "https://www.mercadolibre.com/item"
+	},
+	{
+		"input": "https://www.mercadolivre.com/item",
+		"expected": "https://www.mercadolivre.com/item"
+	},
+	{
+		"input": "https://www.mercadolivre.com/item?tracking_id=share",
+		"expected": "https://www.mercadolivre.com/item"
+	},
+	{
+		"input": "https://www.nikkei.co.jp/article/123",
+		"expected": "https://www.nikkei.co.jp/article/123"
+	},
+	{
+		"input": "https://www.nikkei.co.jp/article/123?i_cid=share",
+		"expected": "https://www.nikkei.co.jp/article/123"
+	},
+	{
+		"input": "https://www.nikkei.com/article/123",
+		"expected": "https://www.nikkei.com/article/123"
+	},
+	{
+		"input": "https://www.nikkei.com/article/123?i_cid=share",
+		"expected": "https://www.nikkei.com/article/123"
+	},
+	{
+		"input": "https://www.reddit.com/media?url=https%3A%2F%2Fexample.com%2Fimage.jpg",
+		"expected": "https://www.reddit.com/media?url=https%3A%2F%2Fexample.com%2Fimage.jpg"
+	},
+	{
+		"input": "https://www.reddit.com/media?url=https%3A%2F%2Fexample.com%2Fimage.jpg&rdt=123",
+		"expected": "https://www.reddit.com/media?url=https%3A%2F%2Fexample.com%2Fimage.jpg"
+	},
+	{
+		"input": "https://www.reddit.com/r/apple/comments/1abcde2/interesting_post/?context=3",
+		"expected": "https://www.reddit.com/r/apple/comments/1abcde2/interesting_post/?context=3"
+	},
+	{
+		"input": "https://www.reddit.com/r/apple/comments/1abcde2/interesting_post/?utm_source=share&utm_medium=ios_app&context=3&rdt=12345",
+		"expected": "https://www.reddit.com/r/apple/comments/1abcde2/interesting_post/?context=3"
+	},
+	{
+		"input": "https://www.reddit.com/r/swift/comments/abc/?id=42",
+		"expected": "https://www.reddit.com/r/swift/comments/abc/?id=42"
+	},
+	{
+		"input": "https://www.reddit.com/r/swift/comments/abc/?ref=share&%24web_only=true&id=42",
+		"expected": "https://www.reddit.com/r/swift/comments/abc/?id=42"
+	},
+	{
+		"input": "https://www.tiktok.com/@example/video/123?id=42",
+		"expected": "https://www.tiktok.com/@example/video/123?id=42"
+	},
+	{
+		"input": "https://www.tiktok.com/@example/video/123?share_region=US&id=42",
+		"expected": "https://www.tiktok.com/@example/video/123?id=42"
+	},
+	{
+		"input": "https://www.tiktok.com/@someuser/video/7123456789012345678",
+		"expected": "https://www.tiktok.com/@someuser/video/7123456789012345678"
+	},
+	{
+		"input": "https://www.tiktok.com/@someuser/video/7123456789012345678?_t=abc123&_r=1&share_app_name=copy&user_id=99887766",
+		"expected": "https://www.tiktok.com/@someuser/video/7123456789012345678"
+	},
+	{
+		"input": "https://www.walmart.com/ip/609174330",
+		"expected": "https://www.walmart.com/ip/609174330"
+	},
+	{
+		"input": "https://www.walmart.com/ip/609174330?classType=REGULAR",
+		"expected": "https://www.walmart.com/ip/609174330"
+	},
+	{
+		"input": "https://www.walmart.com/ip/Apple-AirPods-Pro/609174330?classType=REGULAR&athAsset=abc&athena=xyz",
+		"expected": "https://www.walmart.com/ip/609174330"
+	},
+	{
+		"input": "https://www.walmart.com/search?q=airpods",
+		"expected": "https://www.walmart.com/search?q=airpods"
+	},
+	{
+		"input": "https://www.walmart.com/search?q=airpods&utm_source=email",
+		"expected": "https://www.walmart.com/search?q=airpods"
+	},
+	{
+		"input": "https://www.webtoons.com/en/example/viewer?title_no=1&episode_no=2",
+		"expected": "https://www.webtoons.com/en/example/viewer?title_no=1&episode_no=2"
+	},
+	{
+		"input": "https://www.webtoons.com/en/example/viewer?title_no=1&episode_no=2&utm_source=share",
+		"expected": "https://www.webtoons.com/en/example/viewer?title_no=1&episode_no=2"
+	},
+	{
+		"input": "https://www.xiaohongshu.com/explore/abc?xsec_token=token",
+		"expected": "https://www.xiaohongshu.com/explore/abc?xsec_token=token"
+	},
+	{
+		"input": "https://www.xiaohongshu.com/explore/abc?xsec_token=token&xsec_source=share",
+		"expected": "https://www.xiaohongshu.com/explore/abc?xsec_token=token"
+	},
+	{
+		"input": "https://www.youtube.com/live/abc123?is=x&t=42",
+		"expected": "https://www.youtube.com/live/abc123?t=42"
+	},
+	{
+		"input": "https://www.youtube.com/live/abc123?t=42",
+		"expected": "https://www.youtube.com/live/abc123?t=42"
+	},
+	{
+		"input": "https://www.youtube.com/playlist?list=FLexampleFavorites&index=15",
+		"expected": "https://www.youtube.com/playlist?list=FLexampleFavorites&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/playlist?list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://www.youtube.com/playlist?list=RDA7lLHJ6yfH0&start_radio=1"
+	},
+	{
+		"input": "https://www.youtube.com/watch?list=FLexampleFavorites&index=15",
+		"expected": "https://www.youtube.com/watch?list=FLexampleFavorites&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/watch?list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://www.youtube.com/watch?list=RDA7lLHJ6yfH0&start_radio=1"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=&list=FLexampleFavorites&index=15",
+		"expected": "https://www.youtube.com/watch?v=&list=FLexampleFavorites&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=&list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://www.youtube.com/watch?v=&list=RDA7lLHJ6yfH0&start_radio=1"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=A7lLHJ6yfH0",
+		"expected": "https://www.youtube.com/watch?v=A7lLHJ6yfH0"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=PL123&start_radio=1",
+		"expected": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=PL123&start_radio=1"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0",
+		"expected": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=0",
+		"expected": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=0"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://www.youtube.com/watch?v=A7lLHJ6yfH0"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+		"expected": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=AbCdEfGhIjKlMnOp",
+		"expected": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=eMuYxfL6zYc",
+		"expected": "https://www.youtube.com/watch?v=eMuYxfL6zYc"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=eMuYxfL6zYc&list=PL123&index=4&t=42",
+		"expected": "https://www.youtube.com/watch?v=eMuYxfL6zYc&list=PL123&index=4&t=42"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=eMuYxfL6zYc&si=0-8wqsHsdslkcwYN",
+		"expected": "https://www.youtube.com/watch?v=eMuYxfL6zYc"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A&index=15",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=FL&index=15",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=FL&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=FLexampleFavorites&index=15",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=PL123&index=15",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=PL123&index=15"
+	},
+	{
+		"input": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=RD123&index=15",
+		"expected": "https://www.youtube.com/watch?v=g-sgw9bPV4A&list=RD123&index=15"
+	},
+	{
+		"input": "https://x.com.example.com/user/status/123?cxt=keep",
+		"expected": "https://x.com.example.com/user/status/123?cxt=keep"
+	},
+	{
+		"input": "https://x.com/i/redirect?url=https%3A%2F%2Fexample.com&s=20&t=signature&cxt=keep",
+		"expected": "https://x.com/i/redirect?url=https%3A%2F%2Fexample.com&s=20&t=signature&cxt=keep"
+	},
+	{
+		"input": "https://x.com/search?q=test&cxt=keep",
+		"expected": "https://x.com/search?q=test&cxt=keep"
+	},
+	{
+		"input": "https://x.com/user/status/123?",
+		"expected": "https://x.com/user/status/123?"
+	},
+	{
+		"input": "https://x.com/user/status/123?cxt_extra=keep",
+		"expected": "https://x.com/user/status/123?cxt_extra=keep"
+	},
+	{
+		"input": "https://x.com/user/status/not-a-post?cxt=keep",
+		"expected": "https://x.com/user/status/not-a-post?cxt=keep"
+	},
+	{
+		"input": "https://x.com/user?cxt=keep",
+		"expected": "https://x.com/user?cxt=keep"
+	},
+	{
+		"input": "https://xn--e1aybc.xn--p1ai/page",
+		"expected": "https://xn--e1aybc.xn--p1ai/page"
+	},
+	{
+		"input": "https://ya.ru/?text=hello",
+		"expected": "https://ya.ru/?text=hello"
+	},
+	{
+		"input": "https://ya.ru/?text=hello&lr=123",
+		"expected": "https://ya.ru/?text=hello"
+	},
+	{
+		"input": "https://youtu.be/abc123?is=x&t=42",
+		"expected": "https://youtu.be/abc123?t=42"
+	},
+	{
+		"input": "https://youtu.be/abc123?t=42",
+		"expected": "https://youtu.be/abc123?t=42"
+	},
+	{
+		"input": "https://youtu.be/eMuYxfL6zYc",
+		"expected": "https://youtu.be/eMuYxfL6zYc"
+	},
+	{
+		"input": "https://youtu.be/eMuYxfL6zYc?si=0-8wqsHsdslkcwYN",
+		"expected": "https://youtu.be/eMuYxfL6zYc"
+	},
+	{
+		"input": "https://youtu.be/eMuYxfL6zYc?si=0-8wqsHsdslkcwYN&t=42",
+		"expected": "https://youtu.be/eMuYxfL6zYc?t=42"
+	},
+	{
+		"input": "https://youtu.be/eMuYxfL6zYc?t=42",
+		"expected": "https://youtu.be/eMuYxfL6zYc?t=42"
+	},
+	{
+		"input": "https://youtu.be/video",
+		"expected": "https://youtu.be/video"
+	},
+	{
+		"input": "https://youtube.com.example.com/live/abc?is=keep",
+		"expected": "https://youtube.com.example.com/live/abc?is=keep"
+	},
+	{
+		"input": "https://youtube.com.example.com/shorts/h_isSAjpKU0?is=value",
+		"expected": "https://youtube.com.example.com/shorts/h_isSAjpKU0?is=value"
+	},
+	{
+		"input": "https://youtube.com.example.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=1",
+		"expected": "https://youtube.com.example.com/watch?v=A7lLHJ6yfH0&list=RDA7lLHJ6yfH0&start_radio=1"
+	},
+	{
+		"input": "https://youtube.com.example.com/watch?v=abc&source_ve_path=keep",
+		"expected": "https://youtube.com.example.com/watch?v=abc&source_ve_path=keep"
+	},
+	{
+		"input": "https://youtube.com.example.com/watch?v=g-sgw9bPV4A&list=FLexampleFavorites&index=15",
+		"expected": "https://youtube.com.example.com/watch?v=g-sgw9bPV4A&list=FLexampleFavorites&index=15"
+	},
+	{
+		"input": "https://youtube.com/@user?source_ve_path=keep",
+		"expected": "https://youtube.com/@user?source_ve_path=keep"
+	},
+	{
+		"input": "https://youtube.com/live/?is=keep",
+		"expected": "https://youtube.com/live/?is=keep"
+	},
+	{
+		"input": "https://youtube.com/live/abc/other?is=keep",
+		"expected": "https://youtube.com/live/abc/other?is=keep"
+	},
+	{
+		"input": "https://youtube.com/redirect?q=https%3A%2F%2Fexample.com&source_ve_path=keep",
+		"expected": "https://youtube.com/redirect?q=https%3A%2F%2Fexample.com&source_ve_path=keep"
+	},
+	{
+		"input": "https://youtube.com/shorts/?is=value",
+		"expected": "https://youtube.com/shorts/?is=value"
+	},
+	{
+		"input": "https://youtube.com/shorts/?source_ve_path=keep&is=keep",
+		"expected": "https://youtube.com/shorts/?source_ve_path=keep&is=keep"
+	},
+	{
+		"input": "https://youtube.com/shorts/abc//?is=keep",
+		"expected": "https://youtube.com/shorts/abc//?is=keep"
+	},
+	{
+		"input": "https://youtube.com/shorts/abc/extra?source_ve_path=keep&is=keep",
+		"expected": "https://youtube.com/shorts/abc/extra?source_ve_path=keep&is=keep"
+	},
+	{
+		"input": "https://youtube.com/shorts/h_isSAjpKU0",
+		"expected": "https://youtube.com/shorts/h_isSAjpKU0"
+	},
+	{
+		"input": "https://youtube.com/shorts/h_isSAjpKU0/other?is=value",
+		"expected": "https://youtube.com/shorts/h_isSAjpKU0/other?is=value"
+	},
+	{
+		"input": "https://youtube.com/shorts/h_isSAjpKU0?is=DKp3rCKWT2W9d6Zr",
+		"expected": "https://youtube.com/shorts/h_isSAjpKU0"
+	},
+	{
+		"input": "https://youtube.com/signin?si=required&feature=required",
+		"expected": "https://youtube.com/signin?si=required&feature=required"
+	},
+	{
+		"input": "https://youtube.com/signin?source_ve_path=keep",
+		"expected": "https://youtube.com/signin?source_ve_path=keep"
+	},
+	{
+		"input": "https://youtube.com/watch?v=abc&is=keep&source_ve_path_extra=keep",
+		"expected": "https://youtube.com/watch?v=abc&is=keep&source_ve_path_extra=keep"
+	},
+	{
+		"input": "https://youtube.com/watch?v=abc&list=RDabc&start_radio=%31&t=%34%32&note=café&next=%2F&si=share#part%23two",
+		"expected": "https://youtube.com/watch?v=abc&t=%34%32&note=café&next=%2F#part%23two"
+	},
+	{
+		"input": "https://youtube.com/watch?v=abc&t=%34%32&note=café&next=%2F#part%23two",
+		"expected": "https://youtube.com/watch?v=abc&t=%34%32&note=café&next=%2F#part%23two"
+	},
+	{
+		"input": "https://youtube.com/watch?v=abc123&",
+		"expected": "https://youtube.com/watch?v=abc123&"
+	},
+	{
+		"input": "https://youtube.com/watch?v=abc123&is=keep",
+		"expected": "https://youtube.com/watch?v=abc123&is=keep"
+	},
+	{
+		"input": "https://youtube.com/watch?v=h_isSAjpKU0&is=value",
+		"expected": "https://youtube.com/watch?v=h_isSAjpKU0&is=value"
+	},
+	{
+		"input": "https://youtube.com/watchlist?source_ve_path=keep",
+		"expected": "https://youtube.com/watchlist?source_ve_path=keep"
+	},
+	{
+		"input": "https://z-lib.gd/book/wrmdOZlaPv/the-odyssey.html",
+		"expected": "https://z-lib.gd/book/wrmdOZlaPv/the-odyssey.html"
+	},
+	{
+		"input": "https://z-lib.gd/book/wrmdOZlaPv/the-odyssey.html?dsource=mostpopular",
+		"expected": "https://z-lib.gd/book/wrmdOZlaPv/the-odyssey.html"
+	}
+]
