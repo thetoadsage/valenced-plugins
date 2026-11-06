@@ -8,6 +8,8 @@ import { withName, withProps } from '@valenced/modules/finders/filters'
 import { instead } from '@valenced/patcher'
 import { lookupGeneratedIconComponent } from '@valenced/utils/discord'
 import { createElement } from 'react'
+import { ScrollView } from 'react-native'
+import { archive } from './archive'
 import {
 	clearChannelLogs,
 	getLog,
@@ -16,6 +18,7 @@ import {
 	toggleHighlight,
 } from './logger'
 import type { FC, ReactElement, ReactNode } from 'react'
+import type { ArchivedMessage } from './archive'
 import type { MessageRecord } from './logger'
 
 const { ActionSheet, ActionSheetRow } = Design
@@ -310,6 +313,75 @@ export function openMessageHistory(message: MessageRecord) {
 			title="Message history"
 			content={versions.join('\n\n')}
 			actions={<Design.AlertActionButton variant="primary" text="Done" />}
+		/>,
+	)
+}
+
+export function confirmClearHistory(clear: () => void) {
+	const account = archive?.view().account
+	AlertActionCreators.openAlert(
+		'thetoadsage-clear-history',
+		<Design.AlertModal
+			title="Clear this account’s history?"
+			content="This permanently removes saved edits and deletions from this iPhone, including the recovery copy."
+			actions={
+				<>
+					<Design.AlertActionButton text="Cancel" variant="secondary" />
+					<Design.AlertActionButton
+						text="Clear history"
+						variant="primary"
+						onPress={() => {
+							if (account && archive?.view().account === account) clear()
+						}}
+					/>
+				</>
+			}
+		/>,
+	)
+}
+
+export function openArchiveHistory(entry: ArchivedMessage) {
+	const account = archive?.view().account
+	const versions = entry.edits.map(
+		(edit, index) => `Previous version ${index + 1}\n${edit.content}`,
+	)
+	versions.push(
+		`${entry.deleted ? 'Deleted message' : 'Latest captured version'}\n${entry.message.content}`,
+	)
+	const attachments = entry.message.attachments.map(a =>
+		[a.filename || a.id, a.url].filter(Boolean).join('\n'),
+	)
+	if (attachments.length)
+		versions.push(`Attachments (links may expire)\n${attachments.join('\n\n')}`)
+	AlertActionCreators.openAlert(
+		'thetoadsage-saved-history',
+		<Design.AlertModal
+			title="Saved message history"
+			content={
+				<ScrollView style={{ maxHeight: 320 }}>
+					<Design.Text selectable variant="text-md/normal">
+						{[
+							`Author: ${entry.message.author.global_name || entry.message.author.username || entry.message.author.id} (${entry.message.author.id})`,
+							`Channel: ${entry.channelName} (${entry.channelId})`,
+							`Saved: ${new Date(entry.savedAt).toLocaleString()}`,
+							...versions,
+						].join('\n\n')}
+					</Design.Text>
+				</ScrollView>
+			}
+			actions={
+				<>
+					<Design.AlertActionButton text="Done" variant="primary" />
+					<Design.AlertActionButton
+						text="Remove saved entry"
+						variant="secondary"
+						onPress={() => {
+							if (account && archive?.view().account === account)
+								archive.remove(entry.id)
+						}}
+					/>
+				</>
+			}
 		/>,
 	)
 }

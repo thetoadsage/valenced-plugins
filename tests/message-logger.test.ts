@@ -20,7 +20,24 @@ function message(id = 'm1', content = 'Original text', extra: any = {}) {
 	}
 }
 
-function harness(t: any, settings: any = {}) {
+function harness(t: any, settings: any = {}, config: any = {}) {
+	const disk: Map<string, string> = config.disk ?? new Map()
+	let account = config.account ?? 'self'
+	const hookState: any[] = []
+	let hookIndex = 0
+	let failWrites = false
+	const fs = {
+		exists: async (path: string) => disk.has(path),
+		readFile: async (path: string) => {
+			if (!disk.has(path)) throw Error('Missing')
+			return disk.get(path)!
+		},
+		writeFile: async (path: string, value: string) => {
+			if (failWrites) throw Error('Disk full')
+			disk.set(path, value)
+		},
+	}
+
 	const records = new Map<string, any>()
 	const listeners = new Map<string, Set<any>>()
 	const cleanups: any[] = []
@@ -101,7 +118,7 @@ function harness(t: any, settings: any = {}) {
 					MessageStore: {
 						getMessage: (_: string, id: string) => records.get(id),
 					},
-					AuthenticationStore: { getId: () => 'self' },
+					AuthenticationStore: { getId: () => account },
 					ChannelStore: { getChannel: (id: string) => channels.get(id) },
 					ThemeStore: { theme: 'dark' },
 				},
@@ -120,7 +137,9 @@ function harness(t: any, settings: any = {}) {
 				},
 			},
 		},
+		plugins: { constants: { pluginStorageDirFor: () => '/plugin-data' } },
 		modules: {
+			native: { fs },
 			finders: {
 				filters: {
 					withName: (name: string) => ({ name }),
@@ -161,17 +180,28 @@ function harness(t: any, settings: any = {}) {
 		react: {
 			React: {
 				createElement: jsx,
-				useState: (value: any) => [value, () => {}],
+				useState: (value: any) => {
+					const index = hookIndex++
+					if (!(index in hookState)) hookState[index] = value
+					return [
+						hookState[index],
+						(next: any) => {
+							hookState[index] =
+								typeof next === 'function' ? next(hookState[index]) : next
+						},
+					]
+				},
+				useEffect: () => {},
 			},
 			ReactJSXRuntime: { jsx, jsxs: jsx },
-			ReactNative: { ScrollView: component, processColor: () => 0xffed4245 },
+			ReactNative: {
+				ScrollView: component,
+				AppState: { addEventListener: () => ({ remove() {} }) },
+				processColor: () => 0xffed4245,
+			},
 		},
 	}
-	Object.defineProperty(api.modules, 'native', {
-		get() {
-			throw new Error('Native API must not be used')
-		},
-	})
+
 	const options = new Function('valenced', 'plugin', `return ${code}`)(
 		api,
 		(options: any) => options,
@@ -181,7 +211,7 @@ function harness(t: any, settings: any = {}) {
 		use() {
 			return this.cache
 		},
-		set(values: any) {
+		async set(values: any) {
 			Object.assign(this.cache, values)
 		},
 	}
@@ -195,11 +225,11 @@ function harness(t: any, settings: any = {}) {
 	const stop = () => {
 		if (stopped) return
 		stopped = true
-		for (const cleanup of cleanups) cleanup()
+		for (const cleanup of [...cleanups].reverse()) cleanup()
 	}
 	t.after(() => {
 		stop()
-		assert.deepEqual(errors, [])
+		if (!config.allowErrors) assert.deepEqual(errors, [])
 	})
 	const row = (id = 'm1') =>
 		new RowManager().generate({ message: records.get(id) })
@@ -226,7 +256,37 @@ function harness(t: any, settings: any = {}) {
 		}
 		return actions
 	}
+	const settle = async () => {
+		for (let i = 0; i < 80; i++) await Promise.resolve()
+	}
+	const saved = (id = account) =>
+		JSON.parse(disk.get(`/plugin-data/archive-${id}.json`) ?? '{"entries":[]}')
+			.entries
+	const ui = () => {
+		hookIndex = 0
+		const tree = options.SettingsComponent({ api: { jsonStorage: storage } })
+		const nodes: any[] = []
+		const walk = (node: any) => {
+			if (!node) return
+			if (Array.isArray(node)) return node.forEach(walk)
+			nodes.push(node)
+			walk(node.props?.children)
+		}
+		walk(tree)
+		return nodes
+	}
 	return {
+		disk,
+		saved,
+		settle,
+		ui,
+		errors,
+		setAccount: (value: string) => {
+			account = value
+		},
+		failWrites: (value: boolean) => {
+			failWrites = value
+		},
 		records,
 		channels,
 		dispatch,
@@ -240,7 +300,7 @@ function harness(t: any, settings: any = {}) {
 	}
 }
 
-test('retains a deleted message and labels it without native methods', t => {
+test('retains a deleted message and labels it', t => {
 	const h = harness(t)
 	h.records.set('m1', message())
 	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
@@ -470,3 +530,283 @@ for (const type of ['LOGOUT', 'LOGIN_SUCCESS']) {
 		assert.equal(h.text(), 'New account')
 	})
 }
+
+test('archive survives stop/restart and opens history without Discord cache', async t => {
+	const h = harness(t)
+	h.records.set(
+		'm1',
+		message('m1', 'Original', { author: { id: 'other', username: 'Alice' } }),
+	)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Updated' },
+	})
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	h.stop()
+	await h.settle()
+	const reopened = harness(t, {}, { disk: h.disk })
+	await reopened.settle()
+	assert.equal(reopened.records.size, 0)
+	const entry = reopened.saved()[0]
+	assert.equal(entry.message.content, 'Updated')
+	assert.equal(entry.edits[0].content, 'Original')
+	assert.equal(entry.deleted, true)
+	reopened
+		.ui()
+		.find(n => n.props?.label === 'Deleted · Alice')
+		.props.onPress()
+	assert.match(
+		reopened.alerts[0].props.content.props.children.props.children,
+		/Original/,
+	)
+	assert.match(
+		reopened.alerts[0].props.content.props.children.props.children,
+		/Updated/,
+	)
+})
+
+test('queues events received during startup, and merges later-session edits', async t => {
+	const h = harness(t)
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Second' },
+	})
+	await h.settle()
+	h.stop()
+	const next = harness(t, {}, { disk: h.disk })
+	next.records.set('m1', message('m1', 'Second'))
+	next.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Third' },
+	})
+	await next.settle()
+	assert.deepEqual(
+		next.saved()[0].edits.map((e: any) => e.content),
+		['Original text', 'Second'],
+	)
+})
+
+test('isolates account archives and preserves them on logout and rapid switches', async t => {
+	const h = harness(t)
+	h.records.set('m1', message())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	h.dispatch({ type: 'LOGOUT' })
+	h.setAccount('second')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	assert.equal(h.saved('self').length, 1)
+	assert.equal(h.saved().length, 0)
+	assert.ok(!h.ui().some(n => n.props?.label?.startsWith('Deleted ·')))
+	h.dispatch({ type: 'LOGOUT' })
+	h.setAccount('self')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	assert.equal(h.saved().length, 1)
+})
+
+test('count retention and explicit clear remove durable history and recovery copy', async t => {
+	const h = harness(t, { maxMessages: 2 })
+	for (const id of ['a', 'b', 'c']) {
+		h.records.set(id, message(id))
+		h.dispatch({ type: 'MESSAGE_DELETE', id, channelId: 'c1' })
+	}
+	await h.settle()
+	assert.equal(h.saved().length, 2)
+	h.ui()
+		.find(n => n.props?.text === 'Clear saved history for this account')
+		.props.onPress()
+	const alert = h.alerts.at(-1)
+	alert.props.actions.props.children
+		.find((n: any) => n.props.text === 'Clear history')
+		.props.onPress()
+	await h.settle()
+	assert.equal(h.saved().length, 0)
+	assert.equal(
+		JSON.parse(h.disk.get('/plugin-data/archive-self.json.bak')!).entries
+			.length,
+		0,
+	)
+})
+
+test('retention prunes old entries on reopen and enforces UTF-8 storage bound', async t => {
+	const h = harness(t, { maxStorageMiB: 1 })
+	for (let i = 0; i < 20; i++) {
+		const id = String(i)
+		h.records.set(id, message(id, '😀'.repeat(16000)))
+		h.dispatch({ type: 'MESSAGE_DELETE', id, channelId: 'c1' })
+	}
+	await h.settle()
+	assert.ok(
+		Buffer.byteLength(h.disk.get('/plugin-data/archive-self.json')!) <=
+			1024 * 1024,
+	)
+	assert.ok(h.saved().length < 20)
+	const data = JSON.parse(h.disk.get('/plugin-data/archive-self.json')!)
+	data.entries[0].savedAt = Date.now() - 40 * 86400000
+	h.disk.set('/plugin-data/archive-self.json', JSON.stringify(data))
+	h.stop()
+	const next = harness(t, {}, { disk: h.disk })
+	await next.settle()
+	assert.ok(
+		next.saved().every((e: any) => Date.now() - e.savedAt < 30 * 86400000),
+	)
+})
+
+test('recovers damaged primary from backup and preserves unreadable files', async t => {
+	const h = harness(t)
+	h.records.set('m1', message())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	h.stop()
+	h.disk.set('/plugin-data/archive-self.json', 'broken')
+	const next = harness(t, {}, { disk: h.disk })
+	await next.settle()
+	assert.equal(next.saved().length, 1)
+	next.stop()
+	h.disk.set('/plugin-data/archive-self.json', 'broken')
+	h.disk.set('/plugin-data/archive-self.json.bak', 'also broken')
+	const damaged = harness(t, {}, { disk: h.disk, allowErrors: true })
+	await damaged.settle()
+	assert.match(damaged.errors[0], /preserved/)
+	assert.equal(h.disk.get('/plugin-data/archive-self.json'), 'broken')
+})
+
+test('reports failed writes and retries without dropping earlier edits', async t => {
+	const h = harness(t, {}, { allowErrors: true })
+	await h.settle()
+	h.failWrites(true)
+	h.records.set('m1', message())
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Second' },
+	})
+	await h.settle()
+	assert.match(h.errors.at(-1)!, /Disk full/)
+	h.failWrites(false)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Third' },
+	})
+	await h.settle()
+	assert.equal(h.saved()[0].message.content, 'Third')
+	assert.equal(h.saved()[0].edits.length, 2)
+})
+
+test('history search covers old versions, author, channel, date and status', async t => {
+	const h = harness(t)
+	h.records.set(
+		'm1',
+		message('m1', 'Unique original', {
+			author: { id: 'other', username: 'Alice' },
+		}),
+	)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm1', channel_id: 'c1', content: 'Changed' },
+	})
+	h.records.set(
+		'm2',
+		message('m2', 'Deleted content', {
+			author: { id: 'bob', username: 'Bob' },
+		}),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm2', channelId: 'c1' })
+	await h.settle()
+	const search = (text: string) =>
+		h
+			.ui()
+			.find(n => n.props?.label === 'Search saved history')
+			.props.onChange(text)
+	const rows = () =>
+		h.ui().filter(n => /^(Deleted|Edited) ·/.test(n.props?.label ?? ''))
+	search('unique Alice c1')
+	assert.equal(rows().length, 1)
+	search('not present')
+	assert.equal(rows().length, 0)
+	search(new Date().toISOString().slice(0, 10))
+	assert.equal(rows().length, 2)
+	search('')
+	h.ui()
+		.find(n => n.props?.text === 'Show: All')
+		.props.onPress()
+	assert.equal(rows().length, 1)
+	assert.match(rows()[0].props.label, /Bob/)
+})
+
+test('retention drafts allow typing, validate ranges and apply only on request', async t => {
+	const h = harness(t)
+	await h.settle()
+	const field = () =>
+		h.ui().find(n => n.props?.label === 'Maximum saved messages (1–10000)')
+	field().props.onChange('')
+	assert.equal(field().props.value, '')
+	assert.equal(h.storage.cache.maxMessages, 1000)
+	await h
+		.ui()
+		.find(n => n.props?.text === 'Apply retention limits now')
+		.props.onPress()
+	assert.ok(
+		h
+			.ui()
+			.some(
+				n => n.props?.label === 'Enter whole numbers within the ranges shown.',
+			),
+	)
+	field().props.onChange('25')
+	await h
+		.ui()
+		.find(n => n.props?.text === 'Apply retention limits now')
+		.props.onPress()
+	assert.equal(h.storage.cache.maxMessages, 25)
+})
+
+test('archives only allowlisted fields and preserves attachment metadata', async t => {
+	const h = harness(t)
+	h.records.set(
+		'm1',
+		message('m1', 'File', {
+			nonce: 'secret',
+			token: 'do not store',
+			renderState: {},
+			author: { id: 'other', username: 'Alice', email: 'private' },
+			attachments: [
+				{
+					id: 'a',
+					filename: 'file.png',
+					url: 'https://cdn.discordapp.com/a',
+					unknown: 'secret',
+				},
+			],
+		}),
+	)
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	const raw = h.disk.get('/plugin-data/archive-self.json')!
+	assert.ok(!/secret|private|renderState/.test(raw))
+	assert.equal(h.saved()[0].message.attachments[0].filename, 'file.png')
+})
+
+test('wrong-account archive is rejected and can be explicitly cleared', async t => {
+	const disk = new Map([
+		[
+			'/plugin-data/archive-self.json',
+			JSON.stringify({ version: 1, account: 'someone-else', entries: [] }),
+		],
+	])
+	const h = harness(t, {}, { disk, allowErrors: true })
+	await h.settle()
+	assert.match(h.errors[0], /preserved/)
+	h.ui()
+		.find(n => n.props?.text === 'Clear saved history for this account')
+		.props.onPress()
+	h.alerts[0].props.actions.props.children
+		.find((n: any) => n.props.text === 'Clear history')
+		.props.onPress()
+	await h.settle()
+	assert.equal(
+		JSON.parse(disk.get('/plugin-data/archive-self.json')!).account,
+		'self',
+	)
+})

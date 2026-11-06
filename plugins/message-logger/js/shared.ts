@@ -1,4 +1,7 @@
 export interface Settings {
+	retentionDays: number
+	maxMessages: number
+	maxStorageMiB: number
 	logDeletes: boolean
 	logEdits: boolean
 	logDeletedAttachments: boolean
@@ -11,6 +14,9 @@ export interface Settings {
 }
 
 export const DefaultSettings: Settings = {
+	retentionDays: 30,
+	maxMessages: 1000,
+	maxStorageMiB: 5,
 	logDeletes: true,
 	logEdits: true,
 	logDeletedAttachments: true,

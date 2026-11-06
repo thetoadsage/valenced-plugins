@@ -12,7 +12,7 @@ https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/index.js
 
 Install **Toad URL Cleaner** or **Message Logger for iOS** from Browse and enable it. Disable the corresponding original community plugin first to prevent overlapping hooks.
 
-You can also import the plugin ZIP from a GitHub Actions artifact through Valenced's file installer. This is a plugin ZIP, not an IPA. Your Discord app does not need rebuilding.
+Plugin ZIPs are also available as build artifacts. Some iOS builds hide the file installer, so use the repository's Browse screen when available. These are plugin ZIPs, not IPAs; Discord does not need rebuilding.
 
 ## Toad URL Cleaner
 
@@ -47,18 +47,24 @@ Adapted from Valenced Community Plugins' mobile Message Logger, with Vencord Mes
 - Retains deleted messages and removed attachments already present in Discord's cache.
 - Shows earlier text versions inline and in a long-press message history alert.
 - Marks retained messages with a `[Deleted]` label and a critical text color.
-- Clears one message's history, a channel's history, or the whole session's history.
+- Saves deleted text, attachment metadata, and edit history in separate archives for each Discord account.
+- Searches saved text, previous versions, authors, channels, and dates, with deleted/edited filters. Saved history opens even when Discord no longer has the message cached.
+- Removes one saved entry, a channel's history, or all saved history for the current account.
 - Includes toggles for deletions, edits, removed attachments and inline history.
 - Can ignore bots, your own messages, user IDs, channel/category IDs and server IDs.
-- Clears in-memory history on logout/login and restores retained cache entries when disabled.
+- Clears live session state on account changes and restores retained cache entries when disabled. Saved archives remain on disk across logout, disable, and app restarts.
 
-Open the plugin's settings for options and the current session log list. Long-press a logged message for **View message history**, **Toggle Deleted Highlight**, or **Remove History**. Long-press a channel to clear its log.
+Open the plugin's settings for **Saved history**, search, and retention controls. The default limits are **30 days**, **1,000 messages**, and **5 MiB per account archive**, plus a recovery copy of up to the same size. At most 50 previous versions are kept per message. Edit the limits and tap **Apply retention limits now** to save them; lowering limits permanently removes excess history. Retention is enforced when loading, opening history, saving, or applying limits. Results display 50 at a time with **Show more messages**. Search matches all entered words across content, author names/IDs, channel names/IDs, and saved dates (including `YYYY-MM-DD`).
+
+History files use Valenced's plugin storage directory and atomic native writes, with serialized batches and a validated recovery copy. Read/write errors appear in settings and plugin errors; unreadable files are preserved until explicitly cleared. Settings use the standard JSON Storage API. See Valenced's [storage](https://valenced.app/docs/plugin-development/api-reference/storage/), [native filesystem](https://valenced.app/docs/plugin-development/api-reference/native/), and [lifecycle](https://valenced.app/docs/plugin-development/api-reference/lifecycles/) documentation.
+
+ Long-press a logged message for **View message history**, **Toggle Deleted Highlight**, or **Remove History**. Long-press a channel to clear its log.
 
 ## Message Logger compatibility and limits
 
 The initial target is Discord **352.0** with Valenced **1.3.0** on iOS. The manifest accepts Discord 352.x. The plugin is experimental: local integration tests and builds do not establish physical-device compatibility. Its private Discord UI hooks still need iPhone testing.
 
-Logs are temporary and remain in memory. Reloading Discord discards them. It cannot recover messages deleted before the plugin received them, or fetch messages your account cannot access. Retained attachment links can expire or stop working. Attachments and avatars are not dimmed by Android-native hooks. Desktop CSS overlays and desktop collapsed-message styling are not included.
+Saved history persists locally as unencrypted JSON in Discord’s app sandbox. It has no iCloud sync or export feature. Removing the plugin or Discord can remove its storage. Writes begin on logged changes, with an additional flush on backgrounding/stop; abruptly terminating the app before a write finishes can lose the newest changes. Restarted history is available in settings; restoring messages into their original chat positions is deferred. It cannot recover messages deleted before the plugin received them, or fetch messages your account cannot access. Only attachment names, IDs, and links are saved; attachment files are not downloaded. Links can expire or stop working. The recovery copy is local and does not protect against app deletion or loss of the device. Attachments and avatars are not dimmed by Android-native hooks. Desktop CSS overlays and desktop collapsed-message styling are not included.
 
 ## Build
 

@@ -1,8 +1,11 @@
+import { Stores } from '@valenced/discord/flux'
 import { getModules } from '@valenced/modules/finders'
 import { withName } from '@valenced/modules/finders/filters'
 import { instead } from '@valenced/patcher'
 import { getErrorStack } from '@valenced/utils/error'
+import { AppState } from 'react-native'
 import { patchChannelActionSheet, patchMessageActionSheet } from './actionsheet'
+import { MessageArchive, setArchive } from './archive'
 import { interceptMessages, resetLogs } from './logger'
 import { styleRow } from './rows'
 import SettingsComponent from './settings'
@@ -18,10 +21,26 @@ export default plugin<{ jsonStorage: Settings }>({
 			...(storage.cache as Partial<Settings> | undefined),
 		})
 
+		const history = new MessageArchive(settings, error =>
+			plugin.reportError(error),
+		)
+		setArchive(history)
+		const accountId = () =>
+			(Stores.AuthenticationStore as unknown as { getId(): string }).getId()
+		history.switchAccount(accountId())
+
+		const appState = AppState.addEventListener('change', state => {
+			if (state !== 'active') void history.flush()
+		})
+		cleanup(() => {
+			appState.remove()
+			setArchive(undefined)
+		})
 		cleanup(
 			...interceptMessages(settings),
 			() => {
-				resetLogs()
+				resetLogs(true)
+				return history.flush()
 			},
 			patchMessageActionSheet(e =>
 				plugin.reportError(

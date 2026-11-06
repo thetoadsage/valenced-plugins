@@ -1,11 +1,14 @@
 // Adapted from Palm’s Valenced Message Logger and Vencord MessageLogger. GPL-3.0.
 import { Dispatcher } from '@valenced/discord/common/flux'
 import { onFluxEventDispatched, Stores } from '@valenced/discord/flux'
+import { archive, snapshot } from './archive'
 import type { DiscordModules } from '@valenced/discord/types'
 import type { Settings } from './shared'
 
 export interface Attachment {
 	id: string
+	filename?: string
+	url?: string
 }
 
 export interface MessageRecord {
@@ -14,7 +17,7 @@ export interface MessageRecord {
 	content: string
 	state: string
 	flags: number
-	author: { id: string; bot?: boolean }
+	author: { id: string; bot?: boolean; username?: string; global_name?: string }
 	attachments: Attachment[]
 	nonce?: string
 	timestamp?: string
@@ -123,6 +126,7 @@ function keepDeleted(channelId: string, id: string, settings: Settings) {
 	if (!shouldLog(record, settings)) return false
 
 	logOf(record).deleted = true
+	saveRecord(record)
 	changed.add(id)
 	return true
 }
@@ -161,11 +165,16 @@ export function toggleHighlight(record: MessageRecord, guildId?: string) {
 }
 
 /** Forgets the message's log, really deleting it if it was deleted. */
-export function removeLog(record: MessageRecord, guildId?: string) {
+export function removeLog(
+	record: MessageRecord,
+	guildId?: string,
+	preserveArchive = false,
+) {
 	const log = logs.get(record.id)
 	if (!log) return
 
 	logs.delete(record.id)
+	if (!preserveArchive) archive?.remove(record.id)
 	changed.add(record.id)
 	bypassed.add(record.id)
 
@@ -200,6 +209,7 @@ export function hasChannelLogs(channelId: string) {
 }
 
 export function clearChannelLogs(channelId: string, guildId?: string) {
+	archive?.clearChannel(channelId)
 	for (const [id, log] of logs) {
 		if (log.channelId !== channelId) continue
 
@@ -211,9 +221,19 @@ export function clearChannelLogs(channelId: string, guildId?: string) {
 
 export function interceptMessages(settings: () => Settings) {
 	return [
-		...['LOGOUT', 'LOGIN_SUCCESS'].map(type =>
+		...['LOGOUT', 'LOGIN_SUCCESS', 'CONNECTION_OPEN'].map(type =>
 			onFluxEventDispatched(type, payload => {
+				if (
+					type === 'CONNECTION_OPEN' &&
+					archive?.view().account === AuthenticationStore().getId()
+				)
+					return payload
 				logs.clear()
+				archive?.switchAccount()
+				if (type !== 'LOGOUT')
+					Promise.resolve().then(() =>
+						archive?.switchAccount(AuthenticationStore().getId()),
+					)
 				changed.clear()
 				bypassed.clear()
 				return payload
@@ -285,6 +305,7 @@ export function interceptMessages(settings: () => Settings) {
 				update.content !== record.content
 			) {
 				logOf(record).edits.push(record)
+				logOf(record).edits = logOf(record).edits.slice(-50)
 				changed.add(record.id)
 			}
 
@@ -295,16 +316,34 @@ export function interceptMessages(settings: () => Settings) {
 			)
 				keepRemovedAttachments(record, update)
 
+			if (
+				logs.has(record.id) &&
+				(update.content !== undefined || update.attachments !== undefined)
+			)
+				saveRecord({ ...snapshot(record), ...update, author: record.author })
 			return payload
 		}),
 	]
 }
 
-export function resetLogs() {
+function saveRecord(record: MessageRecord) {
+	const log = logs.get(record.id)
+	if (!log) return
+	const channel = (
+		Stores.ChannelStore as DiscordModules.Flux.Store<{
+			getChannel(id: string): { name?: string } | undefined
+		}>
+	).getChannel(record.channel_id)
+	archive?.save(record, log, channel?.name ?? record.channel_id)
+}
+
+export function resetLogs(preserveArchive = false) {
+	if (!preserveArchive) archive?.clear()
+
 	// Restore retained records before unpatching the dispatch interceptors.
 	for (const [id, log] of [...logs]) {
 		const record = MessageStore().getMessage(log.channelId, id)
-		if (record) removeLog(record)
+		if (record) removeLog(record, undefined, preserveArchive)
 	}
 	logs.clear()
 	changed.clear()
