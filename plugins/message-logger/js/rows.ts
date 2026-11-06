@@ -41,12 +41,19 @@ export function styleRow(
 	if (!log) return
 	const prefix: ContentNode[] = []
 	if (log.ghostPing) prefix.push(text('[Ghost ping] '))
-	if (log.deleted && log.highlighted) prefix.push(text('[Deleted] '))
-	if (log.removedAttachments.size && log.highlighted)
+	if (log.restored) prefix.push(text('[Saved deletion] '))
+	else if (log.deleted && log.highlighted) prefix.push(text('[Deleted] '))
+	if (log.restored && log.archivedAttachmentCount)
+		prefix.push(
+			text(
+				`[${log.archivedAttachmentCount} archived attachment(s); view message history]\n`,
+			),
+		)
+	if (!log.restored && log.removedAttachments.size && log.highlighted)
 		prefix.push(
 			text(`[${log.removedAttachments.size} removed attachment(s) retained]\n`),
 		)
-	if (inlineEdits)
+	if (inlineEdits && !log.restored)
 		for (const edit of log.edits) {
 			prefix.push(text('[Previous version] '))
 			prefix.push(

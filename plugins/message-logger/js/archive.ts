@@ -347,6 +347,15 @@ export class MessageArchive {
 		}
 		await Promise.all([...this.contexts.values()].map(ctx => ctx.task))
 	}
+	accountId() {
+		return this.current?.account
+	}
+	channelEntries(channel: string) {
+		const ctx = this.current
+		return ctx?.loaded && !ctx.blocked
+			? [...ctx.entries.values()].filter(e => e.channelId === channel)
+			: []
+	}
 	stopDownloads() {
 		for (const ctx of this.contexts.values()) ctx.media.pause()
 	}

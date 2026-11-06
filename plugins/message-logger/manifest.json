@@ -2,13 +2,13 @@
 	"format": 1,
 	"id": "thetoadsage.message-logger",
 	"name": "Message Logger for iOS",
-	"description": "Persistent message history with edit comparisons, ghost-ping labels, optional saved attachments, search, and retention limits. JavaScript-only adaptation for Valenced.",
+	"description": "Persistent searchable history with optional in-chat restoration, edit comparisons, ghost-ping labels, and saved attachments. JavaScript-only adaptation for Valenced.",
 	"author": "thetoadsage",
 	"contributors": [
 		"Palm (https://github.com/PalmDevs \"Original Valenced Message Logger\")",
 		"Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
 	],
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"dependencies": {
 		"valenced.api": {
 			"version": ">=1 <2"

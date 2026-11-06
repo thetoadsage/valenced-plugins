@@ -297,6 +297,15 @@ function MessageActions({
 export function openMessageHistory(message: MessageRecord) {
 	const log = getLog(message.id)
 	if (!log) return
+	if (log.restored) {
+		const entry = archive
+			?.channelEntries(message.channel_id)
+			.find(e => e.id === message.id)
+		if (entry) {
+			openArchiveHistory(entry)
+			return
+		}
+	}
 	const entry: ArchivedMessage = {
 		id: message.id,
 		channelId: message.channel_id,

@@ -7,6 +7,7 @@ import { AppState } from 'react-native'
 import { patchChannelActionSheet, patchMessageActionSheet } from './actionsheet'
 import { MessageArchive, setArchive } from './archive'
 import { interceptMessages, resetLogs } from './logger'
+import { restoreSavedDeletions } from './restore'
 import { styleRow } from './rows'
 import SettingsComponent from './settings'
 import { DefaultSettings } from './shared'
@@ -81,6 +82,10 @@ export default plugin<{ jsonStorage: Settings }>({
 				{ max: 1 },
 			),
 		)
+		const restoration = restoreSavedDeletions(settings, error =>
+			plugin.reportError(error),
+		)
+		cleanup(restoration.stop, storage.subscribe(restoration.refresh))
 	},
 	SettingsComponent,
 })

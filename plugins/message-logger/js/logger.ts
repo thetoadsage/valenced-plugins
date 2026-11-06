@@ -3,6 +3,7 @@ import { Dispatcher } from '@valenced/discord/common/flux'
 import { onFluxEventDispatched, Stores } from '@valenced/discord/flux'
 import { archive, snapshot } from './archive'
 import type { DiscordModules } from '@valenced/discord/types'
+import type { ArchivedMessage } from './archive'
 import type { Settings } from './shared'
 
 export interface Attachment {
@@ -29,6 +30,8 @@ export interface MessageRecord {
 }
 
 export interface Log {
+	restored?: boolean
+	archivedAttachmentCount?: number
 	channelId: string
 	deleted: boolean
 	/** Whether deleted text and attachments are styled */
@@ -107,7 +110,7 @@ function ignored(list: string, id?: string | null) {
 	return !!id && list.split(/[\s,]+/).includes(id)
 }
 
-function shouldLog(record: MessageRecord, settings: Settings) {
+export function shouldLog(record: MessageRecord, settings: Settings) {
 	if (settings.ignoreBots && record.author.bot) return false
 	if (settings.ignoreSelf && record.author.id === AuthenticationStore().getId())
 		return false
@@ -354,7 +357,7 @@ export function interceptMessages(settings: () => Settings) {
 
 function saveRecord(record: MessageRecord) {
 	const log = logs.get(record.id)
-	if (!log) return
+	if (!log || log.restored) return
 	log.capturedAt = Date.now()
 	const channel = (
 		Stores.ChannelStore as DiscordModules.Flux.Store<{
@@ -379,4 +382,26 @@ export function resetLogs(preserveArchive = false) {
 
 export function getSessionLogs() {
 	return [...logs].map(([id, log]) => ({ id, ...log }))
+}
+
+export function forgetRestoredLog(id: string) {
+	if (logs.get(id)?.restored) {
+		logs.delete(id)
+		changed.add(id)
+	}
+}
+export function hydrateRestoredLog(entry: ArchivedMessage) {
+	logs.set(entry.id, {
+		channelId: entry.channelId,
+		deleted: true,
+		restored: true,
+		highlighted: true,
+		edits: entry.edits,
+		editTimes: entry.edits.map(m => m.capturedAt ?? 0),
+		capturedAt: entry.savedAt,
+		ghostPing: entry.ghostPing,
+		removedAttachments: new Set(entry.removedAttachments),
+		archivedAttachmentCount: entry.message.attachments.length,
+	})
+	changed.add(entry.id)
 }

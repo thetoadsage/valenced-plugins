@@ -140,7 +140,95 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 			props: { children: [] },
 		}),
 	}
+	const events: any[] = []
+	const converted: any[] = []
+	const factory = {
+		createMessageRecord: (raw: any) => {
+			converted.push(raw)
+			if (config.failFactory && raw.author?.username === 'Saved user')
+				throw Error('Unsupported native record')
+			return {
+				...raw,
+				author: { ...raw.author },
+				timestamp: new Date(raw.timestamp ?? '2026-11-06T00:00:00Z'),
+				nativeRecord: true,
+			}
+		},
+		updateMessageRecord() {},
+	}
+	const collections = new Map<string, NativeCollection>()
+	class NativeCollection {
+		static getOrCreate(channel: string): NativeCollection {
+			if (!collections.has(channel))
+				collections.set(channel, new NativeCollection(channel))
+			return collections.get(channel)!
+		}
+		static commit(value: NativeCollection) {
+			collections.set(value.channelId, value)
+			for (const [id, m] of records)
+				if (m.channel_id === value.channelId) records.delete(id)
+			for (const m of value.toArray()) records.set(m.id, m)
+		}
+		ready = false
+		cached = false
+		hasMoreBefore = true
+		hasMoreAfter = true
+		array: any[] = []
+		channelId: string
+		constructor(channelId: string) {
+			this.channelId = channelId
+		}
+		toArray() {
+			return this.array
+		}
+		reset(messages: any[]) {
+			const copy = Object.assign(new NativeCollection(this.channelId), this)
+			copy.array = messages
+			assert.ok(
+				messages.every(m => m.nativeRecord),
+				'Chat collections need native records',
+			)
+			return copy
+		}
+		loadComplete(options: any) {
+			const incoming = options.newMessages.map((m: any) =>
+				factory.createMessageRecord(m),
+			)
+			const merge = options.isBefore || options.isAfter
+			const map = new Map((merge ? this.array : []).map(m => [m.id, m]))
+			for (const m of incoming) map.set(m.id, m)
+			const next = this.reset(
+				[...map.values()].sort(
+					(a, b) =>
+						a.id.length - b.id.length ||
+						(a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+				),
+			)
+			next.ready = true
+			next.cached = options.cached ?? false
+			if (!options.isAfter) next.hasMoreBefore = options.hasMoreBefore ?? false
+			if (!options.isBefore) next.hasMoreAfter = options.hasMoreAfter ?? false
+			return next
+		}
+		addCachedMessages(messages: any[], _stale?: boolean) {
+			const map = new Map(this.array.map(m => [m.id, m]))
+			for (const m of messages) map.set(m.id, factory.createMessageRecord(m))
+			const next = this.reset(
+				[...map.values()].sort(
+					(a, b) =>
+						a.id.length - b.id.length ||
+						(a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+				),
+			)
+			next.cached = true
+			return next
+		}
+	}
+	const subscriptionSet = new Set<() => void>()
+	let emitted = 0
+
 	const dispatch = (input: any) => {
+		events.push(input)
 		let payload = input
 		for (const listener of listeners.get(input.type) ?? []) {
 			payload = listener(payload)
@@ -148,6 +236,22 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		}
 		const data = payload.message
 		switch (payload.type) {
+			case 'LOAD_MESSAGES_SUCCESS':
+				NativeCollection.commit(
+					NativeCollection.getOrCreate(payload.channelId).loadComplete({
+						...payload,
+						newMessages: payload.messages,
+					}),
+				)
+				break
+			case 'LOCAL_MESSAGES_LOADED':
+				NativeCollection.commit(
+					NativeCollection.getOrCreate(payload.channelId).addCachedMessages(
+						payload.messages,
+						payload.stale,
+					),
+				)
+				break
 			case 'MESSAGE_CREATE':
 				if (data.nonce) records.delete(data.nonce)
 				records.set(data.id, data)
@@ -158,6 +262,8 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 				break
 			case 'MESSAGE_DELETE':
 				records.delete(payload.id)
+				for (const col of collections.values())
+					col.array = col.array.filter(m => m.id !== payload.id)
 				break
 			case 'MESSAGE_DELETE_BULK':
 				for (const id of payload.ids) records.delete(id)
@@ -195,8 +301,12 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 				Stores: {
 					MessageStore: {
 						getMessage: (_: string, id: string) => records.get(id),
+						emitChange: () => {
+							emitted++
+						},
 					},
 					AuthenticationStore: { getId: () => account },
+					SelectedChannelStore: { getChannelId: () => config.selectedChannel },
 					ChannelStore: { getChannel: (id: string) => channels.get(id) },
 					ThemeStore: { theme: 'dark' },
 				},
@@ -225,6 +335,14 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 				},
 				getModules: (filter: any, cb: any, options: any = {}) => {
 					let active = true
+					if (filter.props?.includes('flatMapChannelMessages'))
+						pending.push(
+							() =>
+								active &&
+								cb({ default: NativeCollection, flatMapChannelMessages() {} }),
+						)
+					if (filter.props?.includes('createMessageRecord'))
+						pending.push(() => active && cb(factory))
 					if (filter.name === 'RowManager')
 						pending.push(() => {
 							if (!active) return
@@ -298,6 +416,11 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		},
 		async set(values: any) {
 			Object.assign(this.cache, values)
+			for (const fn of subscriptionSet) fn()
+		},
+		subscribe(fn: () => void) {
+			subscriptionSet.add(fn)
+			return () => subscriptionSet.delete(fn)
 		},
 	}
 	options.start({
@@ -361,6 +484,11 @@ function harness(t: any, settings: any = {}, config: any = {}) {
 		return nodes
 	}
 	return {
+		events,
+		converted,
+		collections,
+		NativeCollection,
+		emitted: () => emitted,
 		disk,
 		saved,
 		settle,
@@ -1231,4 +1359,367 @@ test('removed attachments are downloaded and failed URLs retry only on request o
 		JSON.parse(h.disk.get('/plugin-data/media-self.json')!).files.length,
 		1,
 	)
+})
+
+const restoredId = (offset: number) =>
+	String(1460000000000000000n + BigInt(offset))
+function restoreRecord(
+	offset: number,
+	content = `Server ${offset}`,
+	extra: any = {},
+) {
+	return message(restoredId(offset), content, {
+		author: { id: '2000000000000000001' },
+		...extra,
+	})
+}
+function restoreFixture(offset: number, extra: any = {}) {
+	const m = restoreRecord(offset, `Saved ${offset}`)
+	return {
+		id: m.id,
+		channelId: 'c1',
+		channelName: 'general',
+		savedAt: Date.now(),
+		deleted: true,
+		message: m,
+		edits: [],
+		removedAttachments: [],
+		...extra,
+	}
+}
+function restoreDisk(entries: any[]) {
+	return new Map([
+		[
+			'/plugin-data/archive-self.json',
+			JSON.stringify({ version: 1, account: 'self', entries }),
+		],
+	])
+}
+function loadChannel(h: any, offsets: number[], extra: any = {}) {
+	const payload = {
+		type: 'LOAD_MESSAGES_SUCCESS',
+		channelId: 'c1',
+		messages: offsets.map(n => restoreRecord(n)),
+		hasMoreBefore: true,
+		hasMoreAfter: true,
+		...extra,
+	}
+	h.dispatch(payload)
+	return payload
+}
+const collectionIds = (h: any) =>
+	h.collections
+		.get('c1')
+		?.toArray()
+		.map((m: any) => m.id)
+
+test('restoration is opt-in and does not alter original load event payloads', async t => {
+	const h = harness(t, {}, { disk: restoreDisk([restoreFixture(3)]) })
+	await h.settle()
+	const payload = loadChannel(h, [5, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [restoredId(1), restoredId(5)])
+	assert.deepEqual(
+		payload.messages.map(m => m.id),
+		[restoredId(5), restoredId(1)],
+	)
+	assert.deepEqual(
+		h.events.map(e => e.type),
+		['LOAD_MESSAGES_SUCCESS'],
+	)
+})
+
+test('startup race restores exact snowflake positions with native records and a permanent saved label', async t => {
+	const entry = restoreFixture(3, { ghostPing: true })
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([entry, restoreFixture(0), restoreFixture(7)]) },
+	)
+	const payload = loadChannel(h, [5, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [
+		restoredId(1),
+		restoredId(3),
+		restoredId(5),
+	])
+	assert.match(
+		h.text(restoredId(3)),
+		/^\[Ghost ping\] \[Saved deletion\] Saved 3$/,
+	)
+	assert.ok(h.records.get(restoredId(3)).nativeRecord)
+	assert.equal(
+		h.records.get(restoredId(3)).timestamp.toISOString(),
+		new Date(Number(BigInt(entry.id) >> 22n) + 1420070400000).toISOString(),
+	)
+	assert.equal(
+		h.saved().find((e: any) => e.id === entry.id).savedAt,
+		entry.savedAt,
+	)
+	assert.deepEqual(
+		payload.messages.map(m => m.id),
+		[restoredId(5), restoredId(1)],
+	)
+	assert.deepEqual(
+		h.events.map(e => e.type),
+		['LOAD_MESSAGES_SUCCESS'],
+	)
+	const count = h.emitted()
+	await h.settle()
+	assert.equal(
+		h.emitted(),
+		count,
+		'Stable collections must not enter an emit/reconcile loop',
+	)
+})
+
+test('pagination preserves boundaries, order and deduplication across repeated loads', async t => {
+	const entries = [0, 2, 4, 6, 8].map(n => restoreFixture(n))
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk(entries) },
+	)
+	await h.settle()
+	loadChannel(h, [7, 5], { hasMoreAfter: false })
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [5, 6, 7, 8].map(restoredId))
+	loadChannel(h, [5, 3, 1], {
+		isBefore: true,
+		hasMoreBefore: true,
+		hasMoreAfter: true,
+	})
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 2, 3, 4, 5, 6, 7, 8].map(restoredId))
+	loadChannel(h, [5, 3, 1], {
+		isBefore: true,
+		hasMoreBefore: true,
+		hasMoreAfter: true,
+	})
+	await h.settle()
+	assert.equal(new Set(collectionIds(h)).size, collectionIds(h).length)
+	loadChannel(h, [1], { isBefore: true, hasMoreBefore: false })
+	await h.settle()
+	assert.deepEqual(
+		collectionIds(h),
+		[0, 1, 2, 3, 4, 5, 6, 7, 8].map(restoredId),
+	)
+	assert.equal(h.collections.get('c1').hasMoreBefore, false)
+	assert.equal(h.collections.get('c1').hasMoreAfter, false)
+})
+
+test('cached history is restored conservatively before a network page is available', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([0, 3, 7].map(n => restoreFixture(n))) },
+	)
+	h.dispatch({
+		type: 'LOCAL_MESSAGES_LOADED',
+		channelId: 'c1',
+		messages: [restoreRecord(5), restoreRecord(1)],
+	})
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 3, 5].map(restoredId))
+	assert.equal(h.collections.get('c1').ready, false)
+	assert.equal(h.collections.get('c1').cached, true)
+})
+
+test('toggle hides only restored rows, retains archives and restores cached channels without reloading', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	const original = h.records.get(restoredId(1))
+	await h.storage.set({ restoreDeletions: false })
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 5].map(restoredId))
+	assert.strictEqual(h.records.get(restoredId(1)), original)
+	assert.equal(h.saved().length, 1)
+	await h.storage.set({ restoreDeletions: true })
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 3, 5].map(restoredId))
+	h.stop()
+	assert.deepEqual(collectionIds(h), [1, 5].map(restoredId))
+	assert.equal(h.saved().length, 1)
+})
+
+test('authoritative server messages win over archive collisions without a false deletion label', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	loadChannel(h, [5, 3, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 3, 5].map(restoredId))
+	assert.equal(h.text(restoredId(3)), 'Server 3')
+	assert.equal(h.saved()[0].message.content, 'Saved 3')
+})
+
+test('restored rows use archive history for attachments and edits; removing archive entry hides the row', async t => {
+	const entry = restoreFixture(3)
+	entry.message.attachments = [
+		{ id: 'a', filename: 'image.png', url: attachmentURL },
+	]
+	entry.edits = [restoreRecord(3, 'Earlier version')]
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([entry]) },
+	)
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	assert.deepEqual(h.records.get(restoredId(3)).attachments, [])
+	assert.match(h.text(restoredId(3)), /archived attachment/)
+	assert.ok(!h.text(restoredId(3)).includes('Previous version'))
+	h.menu(restoredId(3))
+		.find((n: any) => n.label === 'View message history')
+		.onPress()
+	assert.match(renderText(h.alerts.at(-1).props.content), /Earlier version/)
+	assert.match(renderText(h.alerts.at(-1).props.content), /image.png/)
+	h.alerts
+		.at(-1)
+		.props.actions.props.children.find(
+			(n: any) => n.props.text === 'Remove saved entry',
+		)
+		.props.onPress()
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 5].map(restoredId))
+	assert.equal(h.saved().length, 0)
+})
+
+test('restoration respects updated ignores, channel separation, expiration and malformed IDs', async t => {
+	const entries = [
+		restoreFixture(3),
+		restoreFixture(2, {
+			channelId: 'c2',
+			message: restoreRecord(2, 'Elsewhere', { channel_id: 'c2' }),
+		}),
+		restoreFixture(4, { savedAt: Date.now() - 40 * 86400000 }),
+		restoreFixture(6, { id: 'invalid', message: message('invalid') }),
+	]
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk(entries) },
+	)
+	await h.settle()
+	loadChannel(h, [7, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 3, 7].map(restoredId))
+	await h.storage.set({ ignoreChannels: 'category' })
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 7].map(restoredId))
+	assert.ok(h.saved().some((e: any) => e.id === restoredId(3)))
+})
+
+test('unknown empty pages restore nothing; a completely loaded empty channel can show saved deletions', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	await h.settle()
+	loadChannel(h, [])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [])
+	loadChannel(h, [], { hasMoreBefore: false, hasMoreAfter: false })
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [restoredId(3)])
+})
+
+test('unsupported record conversion leaves native history untouched and reports the problem', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{
+			disk: restoreDisk([restoreFixture(3)]),
+			failFactory: true,
+			allowErrors: true,
+		},
+	)
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 5].map(restoredId))
+	assert.match(h.errors[0], /Unsupported native record/)
+})
+
+test('restored rich-message metadata is displayed as safe text and account archives stay separate', async t => {
+	const entry = restoreFixture(3)
+	entry.message.flags = 8192
+	const disk = restoreDisk([entry])
+	disk.set(
+		'/plugin-data/archive-second.json',
+		JSON.stringify({
+			version: 1,
+			account: 'second',
+			entries: [restoreFixture(4)],
+		}),
+	)
+	const h = harness(t, { restoreDeletions: true }, { disk })
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	assert.equal(h.records.get(restoredId(3)).flags, 0)
+	h.dispatch({ type: 'LOGOUT' })
+	// Discord clears its own message caches on logout, independently of the plugin.
+	h.collections.clear()
+	h.records.clear()
+	h.setAccount('second')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	loadChannel(h, [5, 1])
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 4, 5].map(restoredId))
+	assert.equal(h.saved('self')[0].id, restoredId(3))
+})
+
+test('reopening a ready cached channel hydrates it after archive load without another fetch', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	const col = new h.NativeCollection('c1')
+	// A cached collection can predate plugin discovery or a settings change.
+	h.NativeCollection.commit(
+		col.loadComplete({
+			newMessages: [restoreRecord(5), restoreRecord(1)],
+			hasMoreBefore: true,
+			hasMoreAfter: true,
+		}),
+	)
+	h.NativeCollection.getOrCreate('c1')
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [1, 3, 5].map(restoredId))
+	assert.deepEqual(h.events, [])
+})
+
+test('startup cache copies of saved deletions get labeled until a fresh server batch supersedes them', async t => {
+	const h = harness(
+		t,
+		{ restoreDeletions: true },
+		{ disk: restoreDisk([restoreFixture(3)]) },
+	)
+	h.dispatch({
+		type: 'LOCAL_MESSAGES_LOADED',
+		channelId: 'c1',
+		messages: [restoreRecord(3, 'Stale cache content')],
+	})
+	await h.settle()
+	assert.deepEqual(collectionIds(h), [restoredId(3)])
+	assert.match(h.text(restoredId(3)), /^\[Saved deletion\] Saved 3$/)
+	loadChannel(h, [3], { hasMoreBefore: false, hasMoreAfter: false })
+	await h.settle()
+	assert.equal(h.text(restoredId(3)), 'Server 3')
 })

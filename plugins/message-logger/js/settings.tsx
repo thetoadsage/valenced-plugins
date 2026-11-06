@@ -28,6 +28,7 @@ export default function SettingsComponent({
 	const ignoreSelf = setting('ignoreSelf')
 	const ignoreBots = setting('ignoreBots')
 	const inlineEdits = setting('inlineEdits')
+	const restoreDeletions = setting('restoreDeletions')
 	const logDeletedAttachments = setting('logDeletedAttachments')
 	const ignoredUsers = setting('ignoreUsers')
 	const ignoredChannels = setting('ignoreChannels')
@@ -131,6 +132,13 @@ export default function SettingsComponent({
 						/>
 					</TableRowGroup>
 					<TableRowGroup title="Display">
+						<TableSwitchRow
+							label="Show saved deletions in chat"
+							subLabel="Restore saved text into loaded channel history. Rows are labeled Saved deletion. Open message history for previous versions and saved files. Off by default; turning it off hides restored rows without deleting the archive."
+							value={restoreDeletions}
+							onValueChange={value => storage.set({ restoreDeletions: value })}
+						/>
+
 						<TableSwitchRow
 							label="Retain removed attachments"
 							value={logDeletedAttachments}

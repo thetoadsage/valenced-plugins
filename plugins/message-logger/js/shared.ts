@@ -1,4 +1,5 @@
 export interface Settings {
+	restoreDeletions: boolean
 	saveAttachments: boolean
 	maxAttachmentMiB: number
 	maxMediaMiB: number
@@ -17,6 +18,7 @@ export interface Settings {
 }
 
 export const DefaultSettings: Settings = {
+	restoreDeletions: false,
 	saveAttachments: false,
 	maxAttachmentMiB: 5,
 	maxMediaMiB: 25,
