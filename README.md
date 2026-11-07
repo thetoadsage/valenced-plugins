@@ -4,12 +4,12 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 | Plugin | What it does |
 | --- | --- |
-| [Message Logger for iOS](#message-logger-for-ios) | Saves deleted messages, edit history, and optionally attachments. |
-| [Toad URL Cleaner](#toad-url-cleaner) | Removes tracking from links copied, sent, or edited in Discord. |
-| [No Reply Mention](#no-reply-mention) | Turns off the automatic ping when replying. |
-| [Silent Message Toggle](#silent-message-toggle) | Sends messages without notifications using a chat button. |
-| [Hide Chat Buttons](#hide-chat-buttons) | Hides selected buttons from the chat bar. |
-| [Read All Notifications (Toad)](#read-all-notifications-toad) | Marks unread server channels as read from the server list. |
+| [Message Logger for iOS (toad)](#message-logger-for-ios-toad) | Saves deleted messages, edit history, and optionally attachments. |
+| [URL Cleaner (toad)](#url-cleaner-toad) | Removes tracking from links copied, sent, or edited in Discord. |
+| [No Reply Mention (toad)](#no-reply-mention-toad) | Turns off the automatic ping when replying. |
+| [Silent Message Toggle (toad)](#silent-message-toggle-toad) | Sends messages without notifications using a chat button. |
+| [Hide Chat Buttons (toad)](#hide-chat-buttons-toad) | Hides selected buttons from the chat bar. |
+| [Read All Notifications (toad)](#read-all-notifications-toad) | Marks unread server channels as read from the server list. |
 
 ## Install
 
@@ -25,7 +25,7 @@ Disable any equivalent community plugin first to avoid overlapping hooks. Plugin
 
 These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention, Silent Message Toggle, Hide Chat Buttons and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
 
-## Message Logger for iOS
+## Message Logger for iOS (toad)
 
 Keeps a searchable, per-account history of messages and attachments the plugin has seen. It can:
 
@@ -55,7 +55,7 @@ With document sharing enabled in the installed IPA, browse to **Files → On My 
 
 There is no iCloud sync or automatic backup. Removing Discord or the plugin can remove its storage, and a force-close before a write finishes can lose recent changes. Retention and clear actions delete saved files; copy anything you want to keep outside the logger folder. Attachment links can expire, and interrupted downloads may need to be retried.
 
-## Toad URL Cleaner
+## URL Cleaner (toad)
 
 Cleans tracking parameters and supported redirects from links copied, sent, or edited **inside Discord**. Each action has its own switch and is enabled by default. Received messages and the system clipboard are unaffected.
 
@@ -63,21 +63,21 @@ Cleans tracking parameters and supported redirects from links copied, sent, or e
 
 Disable the community **Clear URLs** plugin before enabling this one. Rules are bundled locally; URLs and messages are not stored or sent to a server. Opaque shorteners such as `t.co` and `bit.ly` are not resolved. Unusually formatted links and oversized inputs may pass through unchanged.
 
-## No Reply Mention
+## No Reply Mention (toad)
 
 Turns off the automatic mention when you reply. You can still use Discord's reply toggle to enable a ping for an individual reply. This does **not** silence a manually typed `@username` mention.
 
 In settings, add comma- or space-separated user and role IDs to control exceptions. By default, only listed users and roles are pinged. Turn off **Only mention listed users and roles** to ping everyone except those listed. Role matching depends on Discord having the member's roles cached. Check the reply mention indicator before sending, especially when role data may be unavailable.
 
-## Silent Message Toggle
+## Silent Message Toggle (toad)
 
 Tap the bell in the chat bar to add Discord's `@silent` prefix to the next message. The toggle turns off after sending by default. Settings can keep it enabled after sending or when changing channels. Silent messages suppress notifications, but mentions remain visible in Discord.
 
-## Hide Chat Buttons
+## Hide Chat Buttons (toad)
 
 Choose independently whether to hide the plus, gift, emoji, or voice-message microphone in the chat bar. All four remain visible by default. Hiding the plus also hides its attachment and actions menu. Optionally keep the remaining action buttons visible while typing. The Silent Message Toggle bell is unaffected. Reload Discord after changing these settings or disabling the plugin. Disable the community Better Chat Buttons plugin to avoid overlapping hooks.
 
-## Read All Notifications (Toad)
+## Read All Notifications (toad)
 
 Tap the checkmark below Direct Messages to mark unread server channels and joined threads as read. Disable the community **Read All Notifications** plugin and restart Discord before testing this version. This version bundles its checkmark image and still needs an iPhone check.
 

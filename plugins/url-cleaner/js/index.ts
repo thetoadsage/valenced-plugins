@@ -19,7 +19,7 @@ export default plugin<{ jsonStorage: Settings }>({
 	start({ cleanup, jsonStorage: storage, plugin }) {
 		if (!rulesLoaded)
 			plugin.reportError(
-				'URL cleaning rules could not be loaded. Disable and reinstall Toad URL Cleaner.',
+				'URL cleaning rules could not be loaded. Disable and reinstall URL Cleaner (toad).',
 			)
 		const settings = () => ({ ...DefaultSettings, ...storage.cache })
 		function clean(value: unknown): unknown {

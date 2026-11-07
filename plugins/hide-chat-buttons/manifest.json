@@ -1,10 +1,10 @@
 {
 	"format": 1,
 	"id": "thetoadsage.hide-chat-buttons",
-	"name": "Hide Chat Buttons",
+	"name": "Hide Chat Buttons (toad)",
 	"description": "Choose which buttons to hide from the chat bar.",
 	"author": "thetoadsage",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"dependencies": {
 		"valenced.api": { "version": ">=1 <2" },
 		"discord": { "version": ">=352.0 <353.0" }

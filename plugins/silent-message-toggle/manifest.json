@@ -1,14 +1,14 @@
 {
 	"format": 1,
 	"id": "thetoadsage.silent-message-toggle",
-	"name": "Silent Message Toggle",
+	"name": "Silent Message Toggle (toad)",
 	"description": "Adds a chat button for sending messages without notifications.",
 	"author": "thetoadsage",
 	"contributors": [
 		"Vencord contributors (https://github.com/Vendicated/Vencord/tree/main/src/plugins/silentMessageToggle \"Original plugin\")",
 		"Valenced Community Plugins contributors (https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/silent-typing \"Mobile chat button reference\")"
 	],
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"dependencies": {
 		"valenced.api": { "version": ">=1 <2" },
 		"discord": { "version": ">=352.0 <353.0" }

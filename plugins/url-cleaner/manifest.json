@@ -1,13 +1,13 @@
 {
 	"format": 1,
 	"id": "thetoadsage.url-cleaner",
-	"name": "Toad URL Cleaner",
+	"name": "URL Cleaner (toad)",
 	"description": "Cleans tracking, embedded redirects, and optional product-link clutter using Clipboard Cleaner rules.",
 	"author": "thetoadsage",
 	"contributors": [
 		"hakuxyz and nexpid (https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/clear-urls \"Valenced integration reference\")"
 	],
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"dependencies": {
 		"valenced.api": {
 			"version": ">=1 <2"

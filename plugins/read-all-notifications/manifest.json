@@ -1,11 +1,11 @@
 {
 	"format": 1,
 	"id": "thetoadsage.read-all-notifications",
-	"name": "Read All Notifications (Toad)",
+	"name": "Read All Notifications (toad)",
 	"description": "Mark unread server channels as read with a button under your DMs in the server list.",
 	"author": "NexzaDev (https://github.com/NexzaDev \"GitHub\")",
 	"contributors": ["kemo (https://github.com/kem0x \"GitHub\")"],
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"dependencies": {
 		"valenced.api": {
 			"version": ">=1 <2"
