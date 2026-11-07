@@ -13,6 +13,7 @@ function harness() {
 	const plus = { type: () => 'plus' as any }
 	const mic = { type: () => 'mic' as any }
 	const right = { type: () => original as any }
+	const send = { type: (tree: any) => tree }
 	const modules: Record<string, any> = {
 		'modules/chat_input/native/action_buttons/ChatInputActions.tsx': {
 			default: plus,
@@ -23,6 +24,9 @@ function harness() {
 		'modules/chat_input/native/action_buttons/ChatInputRightActions.tsx': {
 			default: right,
 		},
+		'modules/chat_input/native/accessories/ChatInputSendButton.tsx': {
+			default: send,
+		},
 	}
 	const api = {
 		discord: {
@@ -30,6 +34,7 @@ function harness() {
 			utils: {
 				modules: {
 					finders: {
+						lookupModuleWithImportedPath: (path: string) => [modules[path]],
 						getModuleWithImportedPath: (
 							path: string,
 							callback: (module: any) => void,
@@ -76,6 +81,7 @@ function harness() {
 	return {
 		plus,
 		mic,
+		send,
 		right,
 		original,
 		storage,
@@ -104,6 +110,22 @@ test('each setting hides only its selected button and disabling restores the ori
 	assert.equal(h.plus.type(), 'plus')
 	assert.equal(h.mic.type(), 'mic')
 	assert.equal(h.right.type(), h.original)
+})
+
+test('removes the microphone slot while retaining the send button', () => {
+	const h = harness()
+	const voiceSlot = { props: { sendVoiceMessageEnabled: true } }
+	const sendSlot = { props: { sendVoiceMessageEnabled: false } }
+	const otherSlot = { props: {} }
+	const oldVoiceSlot = { props: { children: { type: h.mic, props: {} } } }
+	assert.equal(h.send.type(voiceSlot), voiceSlot)
+	h.storage.cache.hideMic = true
+	assert.equal(h.send.type(voiceSlot), null)
+	assert.equal(h.send.type(oldVoiceSlot), null)
+	assert.equal(h.send.type(sendSlot), sendSlot)
+	assert.equal(h.send.type(otherSlot), otherSlot)
+	h.stop()
+	assert.equal(h.send.type(voiceSlot), voiceSlot)
 })
 
 test('preserves a preceding silent-message button and leaves unexpected trees alone', () => {

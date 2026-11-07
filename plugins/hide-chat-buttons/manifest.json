@@ -4,7 +4,7 @@
 	"name": "Hide Chat Buttons",
 	"description": "Choose which buttons to hide from the chat bar.",
 	"author": "thetoadsage",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"dependencies": {
 		"valenced.api": { "version": ">=1 <2" },
 		"discord": { "version": ">=352.0 <353.0" }

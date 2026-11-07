@@ -1,4 +1,7 @@
-import { getModuleWithImportedPath } from '@valenced/discord/utils/modules/finders'
+import {
+	getModuleWithImportedPath,
+	lookupModuleWithImportedPath,
+} from '@valenced/discord/utils/modules/finders'
 import { after } from '@valenced/patcher'
 import { cloneElement, isValidElement } from 'react'
 import SettingsComponent from './settings'
@@ -8,7 +11,9 @@ import type { ReactElement, ReactNode } from 'react'
 import type { Settings } from './shared'
 
 type MemoModule = { default: { type: (...args: never[]) => ReactNode } }
-type ActionProps = { children?: ReactNode }
+type ActionProps = { children?: ReactNode; sendVoiceMessageEnabled?: boolean }
+const VoiceButtonPath =
+	'modules/voice_messages/native/components/VoiceMessageButton.tsx'
 let storage: JsonStorage<Settings>
 
 export default plugin<{ jsonStorage: Settings }>({
@@ -20,10 +25,7 @@ export default plugin<{ jsonStorage: Settings }>({
 				'modules/chat_input/native/action_buttons/ChatInputActions.tsx',
 				'hidePlus',
 			],
-			[
-				'modules/voice_messages/native/components/VoiceMessageButton.tsx',
-				'hideMic',
-			],
+			[VoiceButtonPath, 'hideMic'],
 		] as const) {
 			cleanup(
 				getModuleWithImportedPath<MemoModule>(path, module => {
@@ -36,6 +38,32 @@ export default plugin<{ jsonStorage: Settings }>({
 				}),
 			)
 		}
+		cleanup(
+			getModuleWithImportedPath<MemoModule>(
+				'modules/chat_input/native/accessories/ChatInputSendButton.tsx',
+				module => {
+					if (typeof module?.default?.type !== 'function') return
+					cleanup(
+						after(module.default, 'type', tree => {
+							if (!storage.cache?.hideMic || !isValidElement<ActionProps>(tree))
+								return tree
+							// Discord 352 reserves a whole slot for the mic, but reuses it to send text.
+							if (tree.props.sendVoiceMessageEnabled === true) return null
+							const voice =
+								lookupModuleWithImportedPath<MemoModule>(VoiceButtonPath)[0]
+									?.default
+							if (
+								voice &&
+								isValidElement(tree.props.children) &&
+								(tree.props.children.type as unknown) === voice
+							)
+								return null
+							return tree
+						}),
+					)
+				},
+			),
+		)
 		cleanup(
 			getModuleWithImportedPath<MemoModule>(
 				'modules/chat_input/native/action_buttons/ChatInputRightActions.tsx',
