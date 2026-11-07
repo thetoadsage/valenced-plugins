@@ -5,3 +5,6 @@ It is released under the GNU General Public License v3.0 or later.
 Adapted from Valenced Community Plugins by NexzaDev and kemo.
 https://github.com/Valenced/valenced-community-plugins/tree/ef8f4ff782033ade38aa555b751dfb8e2350ad31/plugins/read-all-notifications
 The Toad variant replaces the in-app button icon with a bundled checkmark PNG.
+
+Double-checkmark icon adapted from Equicord, licensed under GPL-3.0-or-later.
+https://github.com/Equicord/Equicord/blob/main/src/components/Icons.tsx
