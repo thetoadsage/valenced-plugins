@@ -40,6 +40,15 @@ export default function SettingsComponent({
 						onValueChange={hideMic => storage.set({ hideMic })}
 					/>
 				</Design.TableRowGroup>
+				<Design.TableRowGroup title="Action buttons">
+					<Design.TableSwitchRow
+						label="Keep visible while typing"
+						value={settings.keepActionsVisible}
+						onValueChange={keepActionsVisible =>
+							storage.set({ keepActionsVisible })
+						}
+					/>
+				</Design.TableRowGroup>
 			</ScrollView>
 		</Page>
 	)

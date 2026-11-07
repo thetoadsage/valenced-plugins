@@ -1,3 +1,7 @@
 Hide Chat Buttons was inspired by Equicord's HideChatButtons plugin.
 https://github.com/Equicord/Equicord/tree/main/src/equicordplugins/hideChatButtons
 This mobile implementation is independent of the Equicord code.
+
+Mobile integration references Better Chat Buttons by Palm and contributors.
+https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/better-chat-buttons
+Valenced Community Plugins is licensed under GPL-3.0. See LICENSE.

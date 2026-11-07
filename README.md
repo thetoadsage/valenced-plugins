@@ -74,7 +74,7 @@ Tap the bell in the chat bar to add Discord's `@silent` prefix to the next messa
 
 ## Hide Chat Buttons
 
-Choose independently whether to hide the plus, gift, emoji, or voice-message microphone in the chat bar. All four remain visible by default. Hiding the plus also hides its attachment and actions menu. The Silent Message Toggle bell is unaffected. Reload Discord after changing these settings or disabling the plugin.
+Choose independently whether to hide the plus, gift, emoji, or voice-message microphone in the chat bar. All four remain visible by default. Hiding the plus also hides its attachment and actions menu. Optionally keep the remaining action buttons visible while typing. The Silent Message Toggle bell is unaffected. Reload Discord after changing these settings or disabling the plugin. Disable the community Better Chat Buttons plugin to avoid overlapping hooks.
 
 ## Development
 
