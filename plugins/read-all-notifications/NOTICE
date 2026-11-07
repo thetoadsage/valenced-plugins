@@ -1,0 +1,7 @@
+Read All Notifications is a port of kemo's (https://github.com/kem0x) ReadAllNotificationsButton plugin for Vencord.
+Original code: https://github.com/Vendicated/Vencord/tree/main/src/plugins/readAllNotificationsButton
+It is released under the GNU General Public License v3.0 or later.
+
+Adapted from Valenced Community Plugins by NexzaDev and kemo.
+https://github.com/Valenced/valenced-community-plugins/tree/ef8f4ff782033ade38aa555b751dfb8e2350ad31/plugins/read-all-notifications
+The Toad variant replaces the in-app button icon with a bundled checkmark PNG.

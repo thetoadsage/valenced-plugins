@@ -9,6 +9,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 | [No Reply Mention](#no-reply-mention) | Turns off the automatic ping when replying. |
 | [Silent Message Toggle](#silent-message-toggle) | Sends messages without notifications using a chat button. |
 | [Hide Chat Buttons](#hide-chat-buttons) | Hides selected buttons from the chat bar. |
+| [Read All Notifications (Toad)](#read-all-notifications-toad) | Marks unread server channels as read from the server list. |
 
 ## Install
 
@@ -75,6 +76,10 @@ Tap the bell in the chat bar to add Discord's `@silent` prefix to the next messa
 ## Hide Chat Buttons
 
 Choose independently whether to hide the plus, gift, emoji, or voice-message microphone in the chat bar. All four remain visible by default. Hiding the plus also hides its attachment and actions menu. Optionally keep the remaining action buttons visible while typing. The Silent Message Toggle bell is unaffected. Reload Discord after changing these settings or disabling the plugin. Disable the community Better Chat Buttons plugin to avoid overlapping hooks.
+
+## Read All Notifications (Toad)
+
+Tap the checkmark below Direct Messages to mark unread server channels and joined threads as read. Disable the community **Read All Notifications** plugin and restart Discord before testing this version. This version bundles its checkmark image and still needs an iPhone check.
 
 ## Development
 
