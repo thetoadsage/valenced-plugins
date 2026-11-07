@@ -196,6 +196,32 @@
         }
       }
     },
+    "thetoadsage.read-all-notifications": {
+      "name": "Read All Notifications (Toad)",
+      "description": "Mark unread server channels as read with a button under your DMs in the server list.",
+      "author": "NexzaDev (https://github.com/NexzaDev \"GitHub\")",
+      "contributors": [
+        "kemo (https://github.com/kem0x \"GitHub\")"
+      ],
+      "channels": {
+        "latest": "0.1.0"
+      },
+      "versions": {
+        "0.1.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.read-all-notifications@0.1.0.zip",
+          "sha256": "5bf0fc2cb8079744a73d6b594327aa88edb36246e1bd53f90cede254fcb821d8",
+          "size": 14643,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <353.0"
+            }
+          }
+        }
+      }
+    },
     "thetoadsage.silent-message-toggle": {
       "name": "Silent Message Toggle",
       "description": "Adds a chat button for sending messages without notifications.",
