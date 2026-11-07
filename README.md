@@ -8,6 +8,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 | [Toad URL Cleaner](#toad-url-cleaner) | Removes tracking from links copied, sent, or edited in Discord. |
 | [No Reply Mention](#no-reply-mention) | Turns off the automatic ping when replying. |
 | [Silent Message Toggle](#silent-message-toggle) | Sends messages without notifications using a chat button. |
+| [Hide Chat Buttons](#hide-chat-buttons) | Hides selected buttons from the chat bar. |
 
 ## Install
 
@@ -21,7 +22,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention, Silent Message Toggle and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
+These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention, Silent Message Toggle, Hide Chat Buttons and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
 
 ## Message Logger for iOS
 
@@ -70,6 +71,10 @@ In settings, add comma- or space-separated user and role IDs to control exceptio
 ## Silent Message Toggle
 
 Tap the bell in the chat bar to add Discord's `@silent` prefix to the next message. The toggle turns off after sending by default. Settings can keep it enabled after sending or when changing channels. Silent messages suppress notifications, but mentions remain visible in Discord.
+
+## Hide Chat Buttons
+
+Choose independently whether to hide the plus, gift, emoji, or voice-message microphone in the chat bar. All four remain visible by default. Hiding the plus also hides its attachment and actions menu. The Silent Message Toggle bell is unaffected. Reload Discord after changing these settings or disabling the plugin.
 
 ## Development
 

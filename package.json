@@ -7,7 +7,7 @@
 		"package": "npm run build && node scripts/package.mjs",
 		"test": "npm run build && node --experimental-strip-types --test tests/*.test.ts",
 		"lint": "biome check plugins scripts tests package.json repo.config.json",
-		"lint:types": "tsc -p plugins/message-logger/tsconfig.json && tsc -p plugins/url-cleaner/tsconfig.json && tsc -p plugins/no-reply-mention/tsconfig.json && tsc -p plugins/silent-message-toggle/tsconfig.json",
+		"lint:types": "tsc -p plugins/message-logger/tsconfig.json && tsc -p plugins/url-cleaner/tsconfig.json && tsc -p plugins/no-reply-mention/tsconfig.json && tsc -p plugins/silent-message-toggle/tsconfig.json && tsc -p plugins/hide-chat-buttons/tsconfig.json",
 		"generate-index": "valenced-plugin generate-index"
 	},
 	"dependencies": {
