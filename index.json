@@ -8,7 +8,7 @@
       "description": "Choose which buttons to hide from the chat bar.",
       "author": "thetoadsage",
       "channels": {
-        "latest": "0.1.1"
+        "latest": "0.1.2"
       },
       "versions": {
         "0.1.0": {
@@ -28,6 +28,19 @@
           "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.hide-chat-buttons@0.1.1.zip",
           "sha256": "69219776ebb6b38a05834ea73fc6a0db019c5b306a5f022bbd074a3e11cdd340",
           "size": 13220,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <353.0"
+            }
+          }
+        },
+        "0.1.2": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.hide-chat-buttons@0.1.2.zip",
+          "sha256": "4f07910037a1ef2130c6d2126b18204e4cd96adb2f90b366e523c5557946c194",
+          "size": 13786,
           "dependencies": {
             "valenced.api": {
               "version": ">=1 <2"
