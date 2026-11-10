@@ -23,7 +23,9 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-These plugins target **Discord 352.x** and **Valenced API 1.x** on iOS. They use private Discord APIs that can change between versions. No Reply Mention, Silent Message Toggle, Hide Chat Buttons and URL Cleaner have local integration coverage but have not been tested on a physical iPhone; Message Logger's device coverage is still limited.
+The manifests admit **Discord 352.x and 353.x** (`>=352.0 <354.0`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
+
+Physical iPhone testing on Discord 352.x is limited to some Message Logger and Hide Chat Buttons behavior on earlier plugin releases. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. All six updated plugins still need iPhone testing on Discord 353.0.
 
 ## Message Logger for iOS (toad)
 
