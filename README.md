@@ -25,7 +25,7 @@ Disable any equivalent community plugin first to avoid overlapping hooks. Plugin
 
 The manifests admit **Discord 352.x and 353.x** (`>=352.0 <354.0`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
 
-Physical iPhone testing on Discord 352.x is limited to some Message Logger and Hide Chat Buttons behavior on earlier plugin releases. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. All six updated plugins still need iPhone testing on Discord 353.0.
+Earlier releases have partial iPhone coverage on Discord 352.x, including Message Logger, Hide Chat Buttons, and URL Cleaner. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. All six updated plugins still need iPhone testing on Discord 353.0.
 
 ## Message Logger for iOS (toad)
 
