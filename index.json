@@ -282,7 +282,7 @@
         "kemo (https://github.com/kem0x \"GitHub\")"
       ],
       "channels": {
-        "latest": "0.1.3"
+        "latest": "0.1.4"
       },
       "versions": {
         "0.1.0": {
@@ -328,6 +328,19 @@
           "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.read-all-notifications@0.1.3.zip",
           "sha256": "021109b69b12f9d5381ed81d6caf5c442b3df277071ba75cc208d3bd76ca148d",
           "size": 14970,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
+        },
+        "0.1.4": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.read-all-notifications@0.1.4.zip",
+          "sha256": "c1e03c7bb9fa6fd947438605bf85b395a182fe8b6f17bbae9bcfce3d1f123ed0",
+          "size": 15560,
           "dependencies": {
             "valenced.api": {
               "version": ">=1 <2"
