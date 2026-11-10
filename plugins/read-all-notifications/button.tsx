@@ -1,7 +1,9 @@
 import { Design } from '@valenced/discord/design'
+import { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { markAllAsRead } from './unread'
 import type { ComponentType } from 'react'
+import type { createServerBarLayout } from './layout'
 
 const { ImageButton } = Design
 
@@ -13,6 +15,9 @@ const Checkmark = {
 
 const EntryComponentName = 'GuildsBarAnimatedItemWrapper'
 const DirectMessagesLabel = 'Direct Messages'
+const MarginTop = 6
+const MarginBottom = 2
+type ServerBarLayout = ReturnType<typeof createServerBarLayout>
 
 type EntryProps = Record<string, unknown>
 type EntryComponent = ComponentType<EntryProps>
@@ -42,9 +47,20 @@ function getComponentName(type: unknown): string | undefined {
 	return getComponentName(inner) ?? getComponentName(render)
 }
 
-function ReadAllButton() {
+function ReadAllButton({ layout }: { layout: ServerBarLayout }) {
+	const [owner] = useState(() => Symbol())
+	useEffect(() => () => layout.release(owner), [layout, owner])
+
 	return (
-		<View style={styles.container}>
+		<View
+			style={styles.container}
+			onLayout={({ nativeEvent }) =>
+				layout.measure(
+					owner,
+					nativeEvent.layout.height + MarginTop + MarginBottom,
+				)
+			}
+		>
 			<ImageButton
 				accessibilityLabel="Mark all as read"
 				accessibilityRole="button"
@@ -57,7 +73,7 @@ function ReadAllButton() {
 	)
 }
 
-export function createDirectMessagesEntryPatcher() {
+export function createDirectMessagesEntryPatcher(layout: ServerBarLayout) {
 	const wrappers = new WeakMap<object, EntryComponent>()
 	const wrapperTypes = new WeakSet<object>()
 	let renderingWrapper = false
@@ -72,7 +88,7 @@ export function createDirectMessagesEntryPatcher() {
 				return (
 					<>
 						<Original {...props} />
-						<ReadAllButton />
+						<ReadAllButton layout={layout} />
 					</>
 				)
 			} finally {
@@ -111,7 +127,7 @@ export function createDirectMessagesEntryPatcher() {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		marginBottom: 2,
-		marginTop: 6,
+		marginBottom: MarginBottom,
+		marginTop: MarginTop,
 	},
 })

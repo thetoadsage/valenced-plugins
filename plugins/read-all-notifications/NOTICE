@@ -8,3 +8,6 @@ The Toad variant replaces the in-app button icon with a bundled checkmark PNG.
 
 Double-checkmark icon adapted from Equicord, licensed under GPL-3.0-or-later.
 https://github.com/Equicord/Equicord/blob/main/src/components/Icons.tsx
+
+Server bar layout correction based on NexzaDev's upstream diagnosis and patch.
+https://github.com/Valenced/valenced-community-plugins/pull/49
