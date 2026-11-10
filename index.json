@@ -8,7 +8,7 @@
       "description": "Choose which buttons to hide from the chat bar.",
       "author": "thetoadsage",
       "channels": {
-        "latest": "0.1.3"
+        "latest": "0.1.4"
       },
       "versions": {
         "0.1.0": {
@@ -62,6 +62,19 @@
               "version": ">=352.0 <353.0"
             }
           }
+        },
+        "0.1.4": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.hide-chat-buttons@0.1.4.zip",
+          "sha256": "6b6f315a74d0903b62503287de813c3fbc233b3a768b6bd5fb8714c7708fdaf6",
+          "size": 13793,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
         }
       }
     },
@@ -74,7 +87,7 @@
         "Vendicated and Vencord contributors (https://github.com/Vendicated/Vencord \"Behavior and design reference\")"
       ],
       "channels": {
-        "latest": "0.5.4"
+        "latest": "0.5.5"
       },
       "versions": {
         "0.1.0": {
@@ -193,6 +206,19 @@
               "version": ">=352.0 <353.0"
             }
           }
+        },
+        "0.5.5": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.message-logger@0.5.5.zip",
+          "sha256": "60610a036eb04c911c72059d8c977348e6c582eda2c651b78a7a103f010a2b36",
+          "size": 28794,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
         }
       }
     },
@@ -204,7 +230,7 @@
         "Vencord contributors (https://github.com/Vendicated/Vencord/tree/main/src/plugins/noReplyMention \"Original plugin\")"
       ],
       "channels": {
-        "latest": "0.1.1"
+        "latest": "0.1.2"
       },
       "versions": {
         "0.1.0": {
@@ -232,6 +258,19 @@
               "version": ">=352.0 <353.0"
             }
           }
+        },
+        "0.1.2": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.no-reply-mention@0.1.2.zip",
+          "sha256": "fbdefb438f2a5d67feeb6ea3ea3dc2080ae9ad42578f5091b103936d3a73542d",
+          "size": 13313,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
         }
       }
     },
@@ -243,7 +282,7 @@
         "kemo (https://github.com/kem0x \"GitHub\")"
       ],
       "channels": {
-        "latest": "0.1.2"
+        "latest": "0.1.3"
       },
       "versions": {
         "0.1.0": {
@@ -284,6 +323,19 @@
               "version": ">=352.0 <353.0"
             }
           }
+        },
+        "0.1.3": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.read-all-notifications@0.1.3.zip",
+          "sha256": "021109b69b12f9d5381ed81d6caf5c442b3df277071ba75cc208d3bd76ca148d",
+          "size": 14970,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
         }
       }
     },
@@ -296,7 +348,7 @@
         "Valenced Community Plugins contributors (https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/silent-typing \"Mobile chat button reference\")"
       ],
       "channels": {
-        "latest": "0.1.1"
+        "latest": "0.1.2"
       },
       "versions": {
         "0.1.0": {
@@ -324,6 +376,19 @@
               "version": ">=352.0 <353.0"
             }
           }
+        },
+        "0.1.2": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.silent-message-toggle@0.1.2.zip",
+          "sha256": "f89e11a6c545243089d87d79f61fde33416d43de807592d7ca2f84af65c18566",
+          "size": 13883,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
+            }
+          }
         }
       }
     },
@@ -335,7 +400,7 @@
         "hakuxyz and nexpid (https://github.com/Valenced/valenced-community-plugins/tree/main/plugins/clear-urls \"Valenced integration reference\")"
       ],
       "channels": {
-        "latest": "0.1.1"
+        "latest": "0.1.2"
       },
       "versions": {
         "0.1.0": {
@@ -361,6 +426,19 @@
             },
             "discord": {
               "version": ">=352.0 <353.0"
+            }
+          }
+        },
+        "0.1.2": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.url-cleaner@0.1.2.zip",
+          "sha256": "b78eee06108e0af194e662eb6d6f066853b5fdbabda684ac1a10874e1587f909",
+          "size": 49098,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": ">=352.0 <354.0"
             }
           }
         }
