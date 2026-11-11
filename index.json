@@ -352,6 +352,32 @@
         }
       }
     },
+    "thetoadsage.sf-pro": {
+      "name": "SF Pro (toad)",
+      "description": "Uses the iPhone’s San Francisco system font in place of Discord’s gg sans. Requires a Valenced iOS loader with system-ui font support.",
+      "author": "thetoadsage",
+      "channels": {
+        "latest": "0.1.0"
+      },
+      "versions": {
+        "0.1.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.sf-pro@0.1.0.zip",
+          "sha256": "c1f510f428785fd5efa5c32f7aa5bc446075ed7fc00fbf6ac6ab57a725777143",
+          "size": 12547,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "valenced.api.themes": {
+              "version": ">=1.0.1 <2"
+            },
+            "discord": {
+              "version": ">=352.2 <354.0"
+            }
+          }
+        }
+      }
+    },
     "thetoadsage.silent-message-toggle": {
       "name": "Silent Message Toggle (toad)",
       "description": "Adds a chat button for sending messages without notifications.",
