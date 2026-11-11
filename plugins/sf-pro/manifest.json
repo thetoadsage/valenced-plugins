@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"id": "thetoadsage.sf-pro",
+	"name": "SF Pro (toad)",
+	"description": "Uses the iPhone’s San Francisco system font in place of Discord’s gg sans. Requires a Valenced iOS loader with system-ui font support.",
+	"author": "thetoadsage",
+	"version": "0.1.0",
+	"dependencies": {
+		"valenced.api": { "version": ">=1 <2" },
+		"valenced.api.themes": { "version": ">=1.0.1 <2" },
+		"discord": { "version": ">=352.2 <354.0" }
+	},
+	"dist": { "script": "index.js" }
+}

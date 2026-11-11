@@ -1,0 +1,77 @@
+--- a/ios/Sources/Themes/ThemesFontsHook.mm
++++ b/ios/Sources/Themes/ThemesFontsHook.mm
+@@ -10,7 +10,21 @@
+ NS_ASSUME_NONNULL_BEGIN
+ 
+ static const int VTHDefaultFontWeight = 400;
++static NSString *const VTHSystemUIFont = @"system-ui";
+ 
++static UIFontWeight VTHSystemUIFontWeight(NSString *name, NSNumber *trait) {
++    if ([name hasPrefix:@"ggsans-"]) {
++        NSString *style = [name substringFromIndex:[@"ggsans-" length]];
++        if ([style hasSuffix:@"Italic"]) style = [style substringToIndex:style.length - [@"Italic" length]];
++        if ([style isEqualToString:@"Normal"]) return UIFontWeightRegular;
++        if ([style isEqualToString:@"Medium"]) return UIFontWeightMedium;
++        if ([style isEqualToString:@"Semibold"]) return UIFontWeightSemibold;
++        if ([style isEqualToString:@"Bold"]) return UIFontWeightBold;
++        if ([style isEqualToString:@"ExtraBold"]) return UIFontWeightHeavy;
++    }
++    return trait ? (UIFontWeight)trait.doubleValue : UIFontWeightRegular;
++}
++
+ @interface VTHFontApplier ()
+ @property (nonatomic, strong) NSMutableDictionary<NSString *, NSArray<NSString *> *> *postScriptsByName;
+ @property (nonatomic, strong) NSMutableDictionary<NSString *, NSArray<VTHFontVariant *> *> *variantsByName;
+@@ -21,7 +35,8 @@
+ - (UIFont *)fontWithPostScript:(NSString *)postScript cascade:(nullable NSArray *)cascade size:(CGFloat)size;
+ @end
+ 
+-static NSString *_Nullable VTHRegisterFontFile(NSString *path) {
++static NSString *_Nullable VTHRegisterFont(NSString *path) {
++    if ([path isEqualToString:VTHSystemUIFont]) return VTHSystemUIFont;
+     if (path.length == 0 || ![[NSFileManager defaultManager] fileExistsAtPath:path]) return nil;
+ 
+     NSData *data = [NSData dataWithContentsOfFile:path];
+@@ -103,6 +118,24 @@
+ #pragma mark - Application
+ 
+ - (UIFont *)fontWithPostScript:(NSString *)postScript cascade:(nullable NSArray *)cascade size:(CGFloat)size {
++    if ([postScript isEqualToString:VTHSystemUIFont]) {
++        UIFontDescriptor *requested = cascade.firstObject;
++        NSString *name = requested.postscriptName;
++        NSDictionary *traits = requested.fontAttributes[UIFontDescriptorTraitsAttribute];
++        NSNumber *weight = traits[UIFontWeightTrait];
++        NSNumber *slant = traits[UIFontSlantTrait];
++        CGFloat pointSize = size > 0 ? size : requested.pointSize;
++        if (pointSize <= 0) pointSize = UIFont.systemFontSize;
++        UIFont *font = [UIFont systemFontOfSize:pointSize weight:VTHSystemUIFontWeight(name, weight)];
++        BOOL italic = [name hasSuffix:@"Italic"] || (requested.symbolicTraits & UIFontDescriptorTraitItalic) || slant.doubleValue != 0;
++        if (!italic) return font;
++        UIFontDescriptor *descriptor = [font.fontDescriptor fontDescriptorWithSymbolicTraits:
++            font.fontDescriptor.symbolicTraits | UIFontDescriptorTraitItalic];
++        if (!descriptor) return font;
++        return ((UIFont * (*)(id, SEL, UIFontDescriptor *, CGFloat))self.fontWithDescriptorOriginal)(
++            [UIFont class], @selector(fontWithDescriptor:size:), descriptor, pointSize);
++    }
++
+     UIFontDescriptor *replacement = [UIFontDescriptor fontDescriptorWithName:postScript size:size];
+     if (!cascade.count) return ((UIFont * (*)(id, SEL, UIFontDescriptor *, CGFloat))self.fontWithDescriptorOriginal)([UIFont class], @selector(fontWithDescriptor:size:), replacement, size);
+ 
+@@ -124,7 +157,7 @@
+             NSMutableArray<NSString *> *postScripts = [NSMutableArray array];
+             NSMutableArray<VTHFontVariant *> *variants = [NSMutableArray array];
+             for (VTHFontVariant *variant in source.variants) {
+-                NSString *ps = VTHRegisterFontFile(variant.path);
++                NSString *ps = VTHRegisterFont(variant.path);
+                 if (!ps) {
+                     ValencedLog(@"Themes: font file missing for %@: %@", family, variant.path);
+                     continue;
+@@ -146,7 +179,7 @@
+         NSMutableArray<NSString *> *postScripts = [NSMutableArray arrayWithCapacity:variants.count];
+         NSMutableArray<VTHFontVariant *> *kept = [NSMutableArray arrayWithCapacity:variants.count];
+         for (VTHFontVariant *variant in variants) {
+-            NSString *ps = VTHRegisterFontFile(variant.path);
++            NSString *ps = VTHRegisterFont(variant.path);
+             if (!ps) continue;
+             [postScripts addObject:ps];
+             [kept addObject:variant];
