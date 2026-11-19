@@ -23,9 +23,9 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-The manifests admit **Discord 352.x and 353.x** (`>=352.0 <354.0`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
+The manifests admit **Discord 352.x through 354.x** (`>=352.0 <355.0`, with SF Pro requiring `>=352.2`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
 
-Earlier releases have partial iPhone coverage on Discord 352.x, including Message Logger, Hide Chat Buttons, and URL Cleaner. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. All six updated plugins still need iPhone testing on Discord 353.0.
+Earlier releases have partial iPhone coverage on Discord 352.x, including Message Logger, Hide Chat Buttons, and URL Cleaner. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. iPhone testing on Discord 354.0 is pending.
 
 ## Message Logger for iOS (toad)
 
