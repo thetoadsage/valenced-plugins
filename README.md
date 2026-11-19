@@ -4,6 +4,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 | Plugin | What it does |
 | --- | --- |
+| [Toad Color Themes](#toad-color-themes) | Adds four palettes to Discord’s Light, Dark, Darker, and Midnight appearances. |
 | [Message Logger for iOS (toad)](#message-logger-for-ios-toad) | Saves deleted messages, edit history, and optionally attachments. |
 | [URL Cleaner (toad)](#url-cleaner-toad) | Removes tracking from links copied, sent, or edited in Discord. |
 | [No Reply Mention (toad)](#no-reply-mention-toad) | Turns off the automatic ping when replying. |
@@ -23,9 +24,22 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-The manifests admit **Discord 352.x through 354.x** (`>=352.0 <355.0`, with SF Pro requiring `>=352.2`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
+The manifests admit **Discord 352.x through 354.x** (`>=352.0 <355.0`, with SF Pro and Toad Color Themes requiring `>=352.2`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
 
 Earlier releases have partial iPhone coverage on Discord 352.x, including Message Logger, Hide Chat Buttons, and URL Cleaner. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. iPhone testing on Discord 354.0 is pending.
+
+## Toad Color Themes
+
+Install and enable **Toad Color Themes** with **Themes API** 1.0.1 or later and Valenced’s **Themes** settings enabled. Reload Discord if prompted. Open **Valenced → Themes → Colors → Toad** and choose a palette. Select **Discord** in **Colors** to restore the default colors.
+
+| Theme | Palette |
+| --- | --- |
+| Fern | Fern green, warm ivory, and woodland shadows |
+| Fjord | Glacier blue, pale mist, and deep navy |
+| Cinder | Copper, parchment, and charcoal brown |
+| Wisteria | Lavender, lilac whites, and dusky plum |
+
+Each theme follows Discord’s Light, Dark, Darker, and Midnight appearances. The manifest admits Discord 352.2 through 354.x. On-device testing is pending.
 
 ## Message Logger for iOS (toad)
 
