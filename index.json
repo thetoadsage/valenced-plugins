@@ -3,6 +3,33 @@
   "name": "Toad’s Valenced Plugins",
   "description": "JavaScript-only plugins adapted for sideloaded Discord on iOS. Device testing status is documented in the source repository.",
   "plugins": {
+    "thetoadsage.fern": {
+      "name": "Toad Color Themes",
+      "description": "Fern, Fjord, Cinder, and Wisteria color themes for Discord.",
+      "author": "thetoadsage",
+      "icon": "PaintPaletteIcon",
+      "channels": {
+        "latest": "0.2.0"
+      },
+      "versions": {
+        "0.2.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.fern@0.2.0.zip",
+          "sha256": "b119cc58ce18ecc049522565f93bf948a7420559897ba577dae80990c5aab81b",
+          "size": 13980,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "valenced.api.themes": {
+              "version": ">=1.0.1 <2"
+            },
+            "discord": {
+              "version": ">=352.2 <355.0"
+            }
+          }
+        }
+      }
+    },
     "thetoadsage.hide-chat-buttons": {
       "name": "Hide Chat Buttons (toad)",
       "description": "Choose which buttons to hide from the chat bar.",
