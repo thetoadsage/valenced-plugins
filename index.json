@@ -539,6 +539,33 @@
         }
       }
     },
+    "thetoadsage.toad-outline": {
+      "name": "Toad Outline",
+      "description": "Rounded outline icons for Discord navigation and chat actions.",
+      "author": "thetoadsage",
+      "icon": "PaintPaletteIcon",
+      "channels": {
+        "latest": "0.1.0"
+      },
+      "versions": {
+        "0.1.0": {
+          "url": "https://raw.githubusercontent.com/thetoadsage/valenced-plugins/gh-pages/pool/thetoadsage.toad-outline@0.1.0.zip",
+          "sha256": "69035f210d03c1834b25b837a9b84c8cf2b0e9cc5ef6122e1b7c5915d0a41974",
+          "size": 27075,
+          "dependencies": {
+            "valenced.api": {
+              "version": ">=1 <2"
+            },
+            "valenced.api.themes": {
+              "version": ">=1.0.1 <2"
+            },
+            "discord": {
+              "version": ">=352.2 <355.0"
+            }
+          }
+        }
+      }
+    },
     "thetoadsage.url-cleaner": {
       "name": "URL Cleaner (toad)",
       "description": "Cleans tracking, embedded redirects, and optional product-link clutter using Clipboard Cleaner rules.",
