@@ -1,0 +1,15 @@
+{
+	"format": 1,
+	"id": "thetoadsage.toad-outline",
+	"name": "Toad Outline",
+	"description": "Rounded outline icons for Discord navigation and chat actions.",
+	"author": "thetoadsage",
+	"icon": "PaintPaletteIcon",
+	"version": "0.1.0",
+	"dependencies": {
+		"valenced.api": { "version": ">=1 <2" },
+		"valenced.api.themes": { "version": ">=1.0.1 <2" },
+		"discord": { "version": ">=352.2 <355.0" }
+	},
+	"dist": { "script": "index.js" }
+}

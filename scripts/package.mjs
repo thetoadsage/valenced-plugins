@@ -1,5 +1,12 @@
 import { createHash } from 'node:crypto'
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	writeFileSync,
+} from 'node:fs'
+import { relative, resolve, sep } from 'node:path'
 import { zipSync } from 'fflate'
 
 const sums = []
@@ -27,6 +34,20 @@ for (const directory of readdirSync('plugins').sort()) {
 					]),
 				)
 			: {}),
+	}
+	const assets = resolve(root, 'assets')
+	if (existsSync(assets)) {
+		const assetFiles = readdirSync(assets, {
+			recursive: true,
+			withFileTypes: true,
+		})
+			.filter(entry => entry.isFile())
+			.map(entry => resolve(entry.parentPath, entry.name))
+			.sort()
+		for (const file of assetFiles) {
+			const name = relative(assets, file).split(sep).join('/')
+			files[`assets/${name}`] = readFileSync(file)
+		}
 	}
 	const entries = Object.fromEntries(
 		Object.entries(files).map(([name, bytes]) => [

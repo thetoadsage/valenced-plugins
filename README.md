@@ -4,6 +4,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 | Plugin | What it does |
 | --- | --- |
+| [Toad Outline](#toad-outline) | Adds rounded outline icons for navigation and chat actions. |
 | [Toad Color Themes](#toad-color-themes) | Adds four palettes to Discord’s Light, Dark, Darker, and Midnight appearances. |
 | [Message Logger for iOS (toad)](#message-logger-for-ios-toad) | Saves deleted messages, edit history, and optionally attachments. |
 | [URL Cleaner (toad)](#url-cleaner-toad) | Removes tracking from links copied, sent, or edited in Discord. |
@@ -24,7 +25,7 @@ JavaScript-only plugins for [Valenced](https://github.com/Valenced/Valenced) on 
 
 Disable any equivalent community plugin first to avoid overlapping hooks. Plugin ZIPs are also available as build artifacts, although some iOS builds hide the file installer. You do not need to rebuild Discord.
 
-The manifests admit **Discord 352.x through 354.x** (`>=352.0 <355.0`, with SF Pro and Toad Color Themes requiring `>=352.2`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
+The manifests admit **Discord 352.x through 354.x** (`>=352.0 <355.0`, with SF Pro, Toad Color Themes, and Toad Outline requiring `>=352.2`) and require **Valenced API 1.x** on iOS. The plugins use private Discord APIs that can change between versions.
 
 Earlier releases have partial iPhone coverage on Discord 352.x, including Message Logger, Hide Chat Buttons, and URL Cleaner. The Valenced fork launched on Discord 353.0 build 122208, where the previous manifest range blocked all six plugins. iPhone testing on Discord 354.0 is pending.
 
@@ -40,6 +41,12 @@ Install and enable **Toad Color Themes** with **Themes API** 1.0.1 or later and 
 | Wisteria | Lavender, lilac whites, and dusky plum |
 
 Each theme follows Discord’s Light, Dark, Darker, and Midnight appearances. The manifest admits Discord 352.2 through 354.x. On-device testing is pending.
+
+## Toad Outline
+
+Install and enable **Toad Outline** with **Themes API** 1.0.1 or later and Valenced’s **Themes** settings enabled. Choose **Toad Outline** under **Valenced → Themes → Icons → Toad**. Reload Discord if prompted. Select **Discord** in **Icons** to restore the default icons.
+
+The pack includes Home, Chat, Search, Inbox, Friends, Settings, Bell, Back, More, Add, Send, and Close. It replaces matching Discord assets wherever the app uses them, and can be paired with any color theme. The manifest admits Discord 352.2 through 354.x. On-device asset coverage is pending.
 
 ## Message Logger for iOS (toad)
 
