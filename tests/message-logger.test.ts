@@ -1429,6 +1429,43 @@ test('cached files stay account-isolated and ordinary text edits do not rewrite 
 	)
 })
 
+test('returning to an account resumes its interrupted attachment downloads', async t => {
+	const requests: any[] = []
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{
+			requests,
+			deferDownloads: true,
+			network: { [attachmentURL]: { bytes: [1, 2, 3, 4] } },
+		},
+	)
+	h.records.set('m1', attachmentMessage())
+	h.dispatch({ type: 'MESSAGE_DELETE', id: 'm1', channelId: 'c1' })
+	await h.settle()
+	assert.equal(requests.length, 1)
+
+	h.dispatch({ type: 'LOGOUT' })
+	h.setAccount('second')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	assert.equal(requests[0].done, true)
+	assert.equal(requests.length, 1)
+	h.dispatch({ type: 'LOGOUT' })
+	h.setAccount('self')
+	h.dispatch({ type: 'LOGIN_SUCCESS' })
+	await h.settle()
+	assert.equal(requests.length, 2)
+	assert.equal(requests[1].url, attachmentURL)
+	requests[1].complete()
+	await h.settle()
+	assert.ok(
+		h.disk.has(
+			'/documents/valenced/messagelogger/attachments/self/m1_a-file.png',
+		),
+	)
+})
+
 test('corrupt attachment cache does not block text history and is preserved until cleared', async t => {
 	const disk = new Map([
 		[
@@ -1498,6 +1535,70 @@ test('removed attachments are downloaded and failed URLs retry only on request o
 			)!,
 		).files.length,
 		1,
+	)
+})
+
+test('older edit URLs do not trigger retries of an unchanged failed attachment URL', async t => {
+	const requests: any[] = []
+	const expiredURL = `${attachmentURL}&version=2`
+	const renewedURL = `${attachmentURL}&version=3`
+	const h = harness(
+		t,
+		{ saveAttachments: true },
+		{
+			requests,
+			network: {
+				[expiredURL]: { status: 403 },
+				[renewedURL]: { bytes: [1, 2, 3, 4] },
+			},
+		},
+	)
+	const record = attachmentMessage()
+	h.records.set(record.id, record)
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: {
+			id: record.id,
+			channel_id: 'c1',
+			content: 'Edited file message',
+			attachments: [{ ...record.attachments[0], url: expiredURL }],
+		},
+	})
+	h.dispatch({ type: 'MESSAGE_DELETE', id: record.id, channelId: 'c1' })
+	await h.settle()
+	assert.deepEqual(
+		requests.map(request => request.url),
+		[expiredURL],
+	)
+
+	h.records.set('m2', message('m2', 'Before'))
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: { id: 'm2', channel_id: 'c1', content: 'After' },
+	})
+	await h.settle()
+	assert.deepEqual(
+		requests.map(request => request.url),
+		[expiredURL],
+	)
+
+	h.dispatch({
+		type: 'MESSAGE_UPDATE',
+		message: {
+			id: record.id,
+			channel_id: 'c1',
+			attachments: [{ ...record.attachments[0], url: renewedURL }],
+		},
+	})
+	await h.settle()
+	assert.deepEqual(
+		requests.map(request => request.url),
+		[expiredURL, renewedURL],
+	)
+	assert.ok(
+		h.disk.has(
+			'/documents/valenced/messagelogger/attachments/self/m1_a-file.png',
+		),
 	)
 })
 
@@ -1877,6 +1978,20 @@ test('saved edits reappear inline on live messages after startup and remain edit
 	assert.match(h.text(restoredId(3)), /Second/)
 	assert.match(h.text(restoredId(3)), /Server 3/)
 	assert.ok(h.events.some((event: any) => event.type === 'MESSAGE_UPDATE'))
+	const beforeColor = h.events.length
+	await h.storage.set({ editedColor: '#123456' })
+	await h.settle()
+	assert.ok(
+		h.events
+			.slice(beforeColor)
+			.some(
+				event =>
+					event.type === 'MESSAGE_UPDATE' && event.message.id === restoredId(3),
+			),
+	)
+	const recolored = h.row(restoredId(3))
+	assert.equal(recolored.changeType, 2)
+	assert.equal(recolored.message.textColor, 0xff123456)
 	const beforeToggle = h.events.length
 	await h.storage.set({ inlineEdits: false })
 	await h.settle()

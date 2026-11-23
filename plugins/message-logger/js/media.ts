@@ -55,10 +55,11 @@ export class AttachmentCache {
 	private loaded = false
 	private blocked = false
 	private paused = false
+	private clearing = false
 	private revision = 0
 	private task?: Promise<void>
 	private processed = -1
-	private request?: XMLHttpRequest
+	private cancelDownload?: () => void
 	private statuses = new Map<string, string>()
 	error = ''
 	constructor(
@@ -168,9 +169,16 @@ export class AttachmentCache {
 		}
 		if ([...this.files.keys()].join('\0') !== before) this.dirty = true
 	}
-	private download(url: string, limit: number): Promise<Uint8Array> {
+	private download(
+		url: string,
+		limit: number,
+	): Promise<Uint8Array | undefined> {
 		return new Promise((resolve, reject) => {
-			const xhr = (this.request = new XMLHttpRequest())
+			const xhr = new XMLHttpRequest()
+			this.cancelDownload = () => {
+				resolve(undefined)
+				xhr.abort()
+			}
 			xhr.open('GET', url, true)
 			xhr.responseType = 'arraybuffer'
 			xhr.timeout = 30000
@@ -216,23 +224,26 @@ export class AttachmentCache {
 					if (!entry.deleted && !entry.removedAttachments.includes(att.id))
 						continue
 					const key = keyFor(entry.id, att.id)
-					if (key) {
-						if (previous.get(key)?.url !== att.url) this.statuses.delete(key)
-						this.desired.set(key, att)
-					}
+					if (key) this.desired.set(key, att)
 				}
 		}
+		for (const [key, att] of this.desired)
+			if (previous.get(key)?.url !== att.url) this.statuses.delete(key)
 		this.revision++
-		if (!this.settings().saveAttachments) this.request?.abort()
+		if (!this.settings().saveAttachments) this.cancelDownload?.()
 		this.start()
 	}
 	private start() {
-		if (this.task || this.paused) return
+		if (this.task || this.paused || this.clearing) return
 		this.task = Promise.resolve()
 			.then(async () => {
 				await this.load()
 				if (this.blocked) return
-				while (!this.paused && this.processed !== this.revision) {
+				while (
+					!this.paused &&
+					!this.clearing &&
+					this.processed !== this.revision
+				) {
 					this.processed = this.revision
 					await this.prune()
 					if (this.retryMissing) {
@@ -242,9 +253,15 @@ export class AttachmentCache {
 					}
 					if (this.dirty) await this.persist()
 					if (!this.settings().saveAttachments) continue
-					for (const [key, att] of [...this.desired]) {
-						if (this.paused || !this.settings().saveAttachments) break
-						if (this.files.has(key) || this.statuses.has(key)) continue
+					for (const key of [...this.desired.keys()]) {
+						if (
+							this.paused ||
+							this.clearing ||
+							!this.settings().saveAttachments
+						)
+							break
+						const att = this.desired.get(key)
+						if (!att || this.files.has(key) || this.statuses.has(key)) continue
 						const limit =
 							bounded(
 								this.settings().maxAttachmentMiB,
@@ -269,11 +286,14 @@ export class AttachmentCache {
 						try {
 							const bytes = await this.download(att.url, limit)
 							if (
+								!bytes ||
 								this.paused ||
 								!this.settings().saveAttachments ||
 								!this.desired.has(key)
-							)
+							) {
+								this.statuses.delete(key)
 								continue
+							}
 							const file = {
 								key,
 								filename: (att.filename || att.id).slice(0, 1000),
@@ -302,12 +322,12 @@ export class AttachmentCache {
 							if (
 								this.paused ||
 								!this.settings().saveAttachments ||
-								!this.desired.has(key)
+								this.desired.get(key)?.url !== att.url
 							)
 								this.statuses.delete(key)
 							else this.statuses.set(key, String(e))
 						} finally {
-							this.request = undefined
+							this.cancelDownload = undefined
 							this.notify()
 						}
 					}
@@ -360,46 +380,43 @@ export class AttachmentCache {
 		await Share.share({ url: `file://${path}` })
 	}
 	async clear() {
-		this.pause()
-		await this.task
+		if (this.clearing) return
+		this.clearing = true
+		this.cancelDownload?.()
 		try {
+			await this.task
 			if (!(await FileModule.clearFolder('documents', this.directory())))
 				throw Error('Could not clear attachment folder')
-		} catch {
-			this.error =
-				'Could not clear saved attachment files. Check available storage.'
-			this.paused = false
-			this.notify()
-			return
-		}
-		this.files.clear()
-		this.uncommitted.clear()
-		this.dirty = true
-		this.statuses = new Map(
-			[...this.desired.keys()].map(key => [
-				key,
-				'Removed from saved files; retry to download again',
-			]),
-		)
-		this.error = ''
-		this.blocked = false
-		this.loaded = true
-		try {
+			this.files.clear()
+			this.uncommitted.clear()
+			this.dirty = true
+			this.statuses = new Map(
+				[...this.desired.keys()].map(key => [
+					key,
+					'Removed from saved files; retry to download again',
+				]),
+			)
+			this.blocked = false
+			this.loaded = true
 			await this.persist()
+			this.error = ''
 		} catch {
 			this.error =
 				'Could not clear saved attachment files. Check available storage.'
+		} finally {
+			this.clearing = false
+			this.notify()
 		}
-		// Downloads remain paused until the next archive change or settings apply.
-		this.paused = false
-		this.notify()
 	}
 	pause() {
 		this.paused = true
-		this.request?.abort()
+		this.cancelDownload?.()
 	}
 	resume() {
+		if (!this.paused) return
 		this.paused = false
+		this.revision++
+		this.start()
 	}
 	usage() {
 		return {

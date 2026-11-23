@@ -3,6 +3,7 @@ import { getModules } from '@valenced/modules/finders'
 import { withProps } from '@valenced/modules/finders/filters'
 import { instead } from '@valenced/patcher'
 import { archive, bounded } from './archive'
+import { getLogColors } from './colors'
 import {
 	forgetRestoredLog,
 	hydrateRestoredLog,
@@ -142,7 +143,7 @@ export function restoreSavedDeletions(
 	const inserted = new Map<string, Set<string>>()
 	const hydrated = new Map<string, ArchivedMessage>()
 	const shownEdits = new Map<string, Map<string, ArchivedMessage>>()
-	const shownInline = new Map<string, boolean>()
+	const editStyles = new Map<string, { inline: boolean; color: string }>()
 	const unpatches: Array<() => void> = []
 	const patched = new WeakSet<object>()
 	const self = () =>
@@ -166,8 +167,11 @@ export function restoreSavedDeletions(
 		const previous = new Set(inserted.get(collection.channelId) ?? [])
 		const archived = archive?.channelEntries(collection.channelId) ?? []
 		const oldEdits = shownEdits.get(collection.channelId) ?? new Map()
-		const oldInline = shownInline.get(collection.channelId)
-		const inline = settings().inlineEdits
+		const oldStyle = editStyles.get(collection.channelId)
+		const style = {
+			inline: settings().inlineEdits,
+			color: getLogColors().edited,
+		}
 		const liveIds = new Map(current.map(message => [message.id, message]))
 		const nextEdits = new Map(
 			(forceOff ? [] : archived)
@@ -184,11 +188,12 @@ export function restoreSavedDeletions(
 				.map(entry => [entry.id, entry] as const),
 		)
 		shownEdits.set(collection.channelId, nextEdits)
-		shownInline.set(collection.channelId, inline)
+		editStyles.set(collection.channelId, style)
+		const styleChanged =
+			oldStyle?.inline !== style.inline || oldStyle.color !== style.color
 		const refreshIds = new Set([...oldEdits.keys(), ...nextEdits.keys()])
 		for (const id of refreshIds) {
-			if (oldEdits.get(id) === nextEdits.get(id) && oldInline === inline)
-				continue
+			if (oldEdits.get(id) === nextEdits.get(id) && !styleChanged) continue
 			const channel = collection.channelId
 			Promise.resolve().then(() => {
 				if (active && archive?.accountId() === owner && self() === owner)
@@ -273,7 +278,7 @@ export function restoreSavedDeletions(
 				inserted.clear()
 				hydrated.clear()
 				shownEdits.clear()
-				shownInline.clear()
+				editStyles.clear()
 				channels.clear()
 				lastAccount = account
 			}
